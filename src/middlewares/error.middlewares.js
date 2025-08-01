@@ -10,6 +10,7 @@ const errorMiddleware = (err, req, res, next) => {
     }
 
     if (err.code === 11000) {
+      console.log(err);
       const message = "Duplicate field value entered";
       error = new Error(message);
       error.statusCode = 400;

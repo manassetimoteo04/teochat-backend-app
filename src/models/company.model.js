@@ -16,6 +16,7 @@ const CompanySchema = new mongoose.Schema(
     market: [String],
     createdBy: {
       type: mongoose.Types.ObjectId,
+      ref: "User",
     },
     members: [String],
     logo: String,

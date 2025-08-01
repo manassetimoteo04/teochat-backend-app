@@ -2,12 +2,13 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import { User } from "../models/user.model.js";
 import generateTokens from "../utils/generateTokens.js";
+import { JWT_COOKIE_EXPIRES_IN } from "../configs/env.js";
 
 export const signUp = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { password, email, name, companies } = req.body;
+    const { password, email, name } = req.body;
 
     if (!password || !email || !name) {
       const error = new Error(
@@ -26,12 +27,16 @@ export const signUp = async (req, res, next) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
-    const user = await User.create([
-      { name, email, password: hashed, companies },
-    ]);
+    const user = await User.create([{ name, email, password: hashed }]);
     const token = generateTokens({ user: user[0]._id });
     await session.commitTransaction();
     session.endSession();
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // true se for HTTPS
+      sameSite: "lax",
+      maxAge: JWT_COOKIE_EXPIRES_IN * 1000 * 60 * 60 * 24, // 1 dia
+    });
     res.status(201).json({
       success: true,
       message: "Conta criada com successo",
@@ -65,6 +70,13 @@ export const signIn = async (req, res, next) => {
     }
 
     const token = generateTokens({ user: user._id });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: JWT_COOKIE_EXPIRES_IN * 1000 * 60 * 60 * 24, // 1 dia
+    });
+
     res.status(200).json({
       success: true,
       token,

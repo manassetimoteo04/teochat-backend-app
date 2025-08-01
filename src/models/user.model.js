@@ -17,13 +17,12 @@ const userSchema = new mongoose.Schema(
     },
     companies: [
       {
-        id: {
+        companyId: {
           type: String,
-          required: true,
+          ref: "Company",
         },
         role: {
           type: String,
-          required: true,
           enum: ["admin", "super_admin", "member"],
           default: "member",
         },
