@@ -1,0 +1,40 @@
+import mongoose from "mongoose";
+
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "O Usuário deve conter um nome"],
+    },
+    email: {
+      type: String,
+      unique: true,
+      required: [true, "O usuário deve conter um email"],
+    },
+    password: {
+      type: String,
+      required: [true, "O usuário deve conter uma senha"],
+    },
+    companies: [
+      {
+        id: {
+          type: String,
+          required: true,
+        },
+        role: {
+          type: String,
+          required: true,
+          enum: ["admin", "super_admin", "member"],
+          default: "member",
+        },
+        joined: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+  },
+  { timestamps: true }
+);
+
+export const User = mongoose.model("User", userSchema);
