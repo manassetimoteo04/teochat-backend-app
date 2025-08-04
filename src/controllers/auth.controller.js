@@ -1,48 +1,27 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
-import { User } from "../models/user.model.js";
-import generateTokens from "../utils/generateTokens.js";
 import { JWT_COOKIE_EXPIRES_IN } from "../configs/env.js";
+import AuthServices from "../services/auth.services.js";
 
 export const signUp = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { password, email, name } = req.body;
-
-    if (!password || !email || !name) {
-      const error = new Error(
-        "Por favor providencie todos os campos, nome, email e senha"
-      );
-      error.statusCode = 400;
-      throw error;
-    }
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
-      const error = new Error("Já existe uma conta cadastrada com este email.");
-      error.statusCode = 409;
-      throw error;
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    const hashed = await bcrypt.hash(password, salt);
-    const user = await User.create([{ name, email, password: hashed }]);
-    const token = generateTokens({ user: user[0]._id });
+    const auth = new AuthServices(req);
+    const { token, user } = await auth.signUp();
     await session.commitTransaction();
     session.endSession();
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // true se for HTTPS
+      secure: false,
       sameSite: "lax",
-      maxAge: JWT_COOKIE_EXPIRES_IN * 1000 * 60 * 60 * 24, // 1 dia
+      maxAge: JWT_COOKIE_EXPIRES_IN * 1000 * 60 * 60 * 24,
     });
     res.status(201).json({
       success: true,
       message: "Conta criada com successo",
+      token,
       data: {
-        token,
-        user: user[0],
+        user,
       },
     });
   } catch (error) {
@@ -54,22 +33,10 @@ export const signUp = async (req, res, next) => {
 
 export const signIn = async (req, res, next) => {
   try {
-    const { password, email } = req.body;
+    const auth = new AuthServices(req);
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      const error = new Error("Nenhuma usuário encontrado");
-      error.statusCode = 404;
-      throw error;
-    }
-    const isPassordValid = await bcrypt.compare(password, user.password);
-    if (!isPassordValid) {
-      const error = new Error("Senha incorreta");
-      error.statusCode = 401;
-      throw error;
-    }
+    const { token, user } = await auth.signIn();
 
-    const token = generateTokens({ user: user._id });
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,

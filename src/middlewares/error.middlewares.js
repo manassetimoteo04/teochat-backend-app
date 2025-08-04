@@ -10,7 +10,6 @@ const errorMiddleware = (err, req, res, next) => {
     }
 
     if (err.code === 11000) {
-      console.log(err);
       const message = "Duplicate field value entered";
       error = new Error(message);
       error.statusCode = 400;
@@ -23,7 +22,10 @@ const errorMiddleware = (err, req, res, next) => {
     }
     res
       .status(error.statusCode || 500)
-      .json({ success: false, error: error.message || "Internal server erro" });
+      .json({
+        success: false,
+        error: error.message || "Internal server error",
+      });
   } catch (error) {
     next(error);
   }

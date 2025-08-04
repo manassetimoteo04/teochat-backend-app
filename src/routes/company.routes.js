@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  createCompany,
+  createNewCompany,
   deleteCompany,
   getCompanies,
   getCompany,
@@ -12,8 +12,8 @@ const companyRoute = Router();
 
 companyRoute.get("/", authorize, getCompanies);
 companyRoute.get("/:id", authorize, getCompany);
-companyRoute.post("/", authorize, createCompany);
-companyRoute.put("/:id", authorize, updateCompany);
+companyRoute.post("/", authorize, createNewCompany);
+companyRoute.patch("/:id", authorize, updateCompany);
 companyRoute.delete("/:id", authorize, deleteCompany);
 
 export default companyRoute;

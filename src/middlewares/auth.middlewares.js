@@ -19,7 +19,8 @@ export const authorize = async (req, res, next) => {
     const user = await User.findById(decoded.user);
     if (!user) return res.status(401).json({ message: "Unauthorized" });
 
-    req.user = { id: user._id, role: "admin" };
+    req.user = { id: user._id, role: "super_admin" };
+    req.company = decoded.company;
     next();
   } catch (error) {
     next(error);
