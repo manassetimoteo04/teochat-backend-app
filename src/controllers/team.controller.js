@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-import restrictToRole from "../utils/restrictToRole.js";
-import Team from "../models/team.model.js";
+
 import TeamServices from "../services/team.services.js";
 
 export const createTeam = async (req, res, next) => {

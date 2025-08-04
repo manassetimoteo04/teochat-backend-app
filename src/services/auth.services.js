@@ -1,13 +1,13 @@
 import { User } from "../models/user.model.js";
-import generateTokens from "../utils/generateTokens.js";
 import bcrypt from "bcrypt";
+import Services from "./services.js";
 
-class AuthServices {
+class AuthServices extends Services {
   constructor(req) {
+    super();
     this.req = req;
   }
   async signUp() {
-    console.log(this.req);
     const { password, email, name } = this.req.body;
     if (!password || !email || !name) {
       const error = new Error(
@@ -27,7 +27,7 @@ class AuthServices {
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
     const user = await User.create([{ name, email, password: hashed }]);
-    const token = generateTokens({
+    const token = this.generateTokens({
       user: user[0]._id,
       company: "688ce99dd0cf6dbdcf8c9030",
     });
@@ -50,7 +50,7 @@ class AuthServices {
       throw error;
     }
 
-    const token = generateTokens({
+    const token = this.generateTokens({
       user: user._id,
       company: "688ce99dd0cf6dbdcf8c9030",
     });

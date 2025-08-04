@@ -1,9 +1,10 @@
 import Company from "../models/company.model.js";
 import { User } from "../models/user.model.js";
-import restrictToRole from "../utils/restrictToRole.js";
+import Services from "./services.js";
 
-class CompanyServices {
+class CompanyServices extends Services {
   constructor(req) {
+    super();
     this.req = req;
   }
   async createCompany() {
@@ -61,7 +62,7 @@ class CompanyServices {
       error.statusCode = 401;
       throw error;
     }
-    restrictToRole(["super_admin"], this.req.user.role);
+    this.restrictedActions(["super_admin"], this.req.user.role);
     const updatedCompany = await Company.findByIdAndUpdate(
       this.req.params.id,
       this.req.body,
@@ -88,7 +89,7 @@ class CompanyServices {
       error.statusCode = 401;
       throw error;
     }
-    restrictToRole(["super_admin"], this.req.user.role);
+    this.restrictedActions(["super_admin"], this.req.user.role);
 
     const company = await Company.findById(this.req.params.id, this.req.body);
     if (!company) {
