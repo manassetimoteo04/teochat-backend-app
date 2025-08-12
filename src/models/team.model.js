@@ -21,6 +21,10 @@ const teamSchema = new Schema(
       type: Types.ObjectId,
       ref: "User",
     },
+    agendaId: {
+      type: Types.ObjectId,
+      ref: "Agenda",
+    },
   },
   { timestamp: true }
 );
