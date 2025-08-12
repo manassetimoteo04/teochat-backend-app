@@ -18,7 +18,7 @@ const CompanySchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
-    members: [String],
+    members: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     logo: String,
   },
   { timestamps: true }

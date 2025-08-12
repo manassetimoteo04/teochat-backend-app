@@ -45,7 +45,7 @@ class TeamServices extends Services {
     const team = await Team.findByIdAndUpdate(
       this.req.params.id,
       {
-        $push: { members: this.req.params.userId },
+        $addToSet: { members: this.req.params.userId },
       },
       { new: true }
     );

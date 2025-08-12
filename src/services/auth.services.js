@@ -29,7 +29,7 @@ class AuthServices extends Services {
     const user = await User.create([{ name, email, password: hashed }]);
     const token = this.generateTokens({
       user: user[0]._id,
-      company: "688ce99dd0cf6dbdcf8c9030",
+      company: "689a4e9c0eda020b23090b31",
     });
     return { user, token };
   }
@@ -49,10 +49,11 @@ class AuthServices extends Services {
       error.statusCode = 401;
       throw error;
     }
+    user.password = undefined;
 
     const token = this.generateTokens({
       user: user._id,
-      company: "688ce99dd0cf6dbdcf8c9030",
+      company: "689a120aa96c4106d41c210a",
     });
     return { token, user };
   }
