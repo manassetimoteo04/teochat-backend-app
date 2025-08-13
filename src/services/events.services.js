@@ -11,7 +11,7 @@ class EventServices extends Services {
     return events;
   }
   async createEvent() {
-    this.restrictedActions("admin", "super_admin", this.req.user.role);
+    this.restrictedActions(["admin", "super_admin"], this.req.user.role);
     const { agendaId, start, end } = this.req.body;
     const conflict = await Event.findOne({
       agendaId,
