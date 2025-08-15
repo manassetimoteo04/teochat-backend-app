@@ -15,7 +15,7 @@ export async function createEvent(req, res, next) {
     const services = new EventServices(req);
     const events = await services.createEvent();
 
-    res.status(200).json({ success: true, data: events });
+    res.status(201).json({ success: true, data: events });
   } catch (error) {
     next(error);
   }

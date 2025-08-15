@@ -33,7 +33,6 @@ class TeamServices extends Services {
       error.statusCode = 404;
       throw error;
     }
-    console.log(company);
     const isMember = company?.members?.some((com) =>
       com.equals(this.req.user.id)
     );
@@ -69,12 +68,12 @@ class TeamServices extends Services {
     const team = await Team.findByIdAndUpdate(
       this.req.params.id,
       {
-        $addToSet: { members: this.req.params.userId },
+        $addToSet: { members: this.req.body.member },
       },
       { new: true }
     );
     await Agenda.findByIdAndUpdate(team.agendaId, {
-      $addToSet: { users: this.req.params.userId },
+      $addToSet: { users: this.req.body.member },
     });
     return { team };
   }

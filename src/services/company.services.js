@@ -89,7 +89,7 @@ class CompanyServices extends Services {
     return { members: members };
   }
   async addCompanyMember() {
-    this.restrictedActions(["admin", "super_admin"], this.req.role);
+    this.restrictedActions(["admin", "super_admin"], this.req.user.role);
 
     const members = await Company.findByIdAndUpdate(
       this.req.params.id,
@@ -100,6 +100,11 @@ class CompanyServices extends Services {
     )
       .populate("members")
       .select("members");
+    if (!members) {
+      const error = new Error("Nenhuma empresa encontrada com este id");
+      error.statusCode = 404;
+      throw error;
+    }
     return { members };
   }
 

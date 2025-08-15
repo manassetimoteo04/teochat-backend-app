@@ -1,3 +1,4 @@
+import agenda from "../jobs/index.js";
 import Event from "../models/events.model.js";
 import Services from "./services.js";
 
@@ -22,7 +23,7 @@ class EventServices extends Services {
         },
       ],
     });
-
+    console.log(agendaId);
     if (conflict) {
       const error = new Error(
         "Já existe um evento neste horário para essa agenda."
@@ -33,8 +34,20 @@ class EventServices extends Services {
 
     const events = await Event.create({
       createdBy: this.req.user.id,
-      participants: [this.req.user.id],
+      participants: [
+        this.req.user.id,
+        this.req.user.id,
+        this.req.user.id,
+        this.req.user.id,
+      ],
       ...this.req.body,
+    });
+    const reminderTime = new Date(Date.now() + 1 * 60 * 1000);
+    console.log(reminderTime);
+    await agenda.schedule(reminderTime, "sendEventReminders", {
+      eventId: events._id,
+      participants: events.participants,
+      time: reminderTime,
     });
     return events;
   }
