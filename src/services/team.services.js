@@ -1,5 +1,6 @@
 import Agenda from "../models/agenda.model.js";
 import Team from "../models/team.model.js";
+import Company from "../models/company.model.js";
 import Services from "./services.js";
 
 class TeamServices extends Services {
@@ -26,6 +27,23 @@ class TeamServices extends Services {
   }
   async getCompanyTeams() {
     this.restrictedActions(["super_admin", "admin"], this.req.user?.role);
+    const company = await Company.findById(this.req.params.companyId);
+    if (!company) {
+      const error = new Error("Nenhuma empresa foi encontrada com este id");
+      error.statusCode = 404;
+      throw error;
+    }
+    console.log(company);
+    const isMember = company?.members?.some((com) =>
+      com.equals(this.req.user.id)
+    );
+    if (!isMember) {
+      const error = new Error(
+        "Não podes executar esta acção, não és membro desta empresa"
+      );
+      error.statusCode = 404;
+      throw error;
+    }
     const teams = await Team.find({ companyId: this.req.params.companyId });
     return { teams };
   }
