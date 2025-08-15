@@ -20,7 +20,7 @@ export const authorize = async (req, res, next) => {
     if (!user) return res.status(401).json({ message: "Unauthorized" });
 
     req.user = { id: user._id, role: "super_admin" };
-    req.company = decoded.company;
+    req.company = "689c9aa25c930977c87dde07";
     next();
   } catch (error) {
     next(error);
