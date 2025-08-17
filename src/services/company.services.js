@@ -25,12 +25,17 @@ class CompanyServices extends Services {
     return { company };
   }
   async getCompanies() {
-    const user = await User.findById(this.req.user.id);
-    const companyIds = user.companies.map((com) => com.companyId);
-    const companies = await Company.find({
-      _id: { $in: companyIds },
+    const user = await User.findById(this.req.user.id).populate({
+      path: "companies.companyId",
+      select: "name description createdAt logo",
     });
-    return { companies };
+    return {
+      companies: user.companies.map((com) => ({
+        role: com.role,
+        joinedAt: com.joined,
+        company: com.companyId,
+      })),
+    };
   }
   async getCompany() {
     const company = await Company.findById(this.req.params.id);

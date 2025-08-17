@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   resendVerificationCode,
+  selectCompany,
   signIn,
   signUp,
   verifyAccount,
@@ -18,6 +19,7 @@ authRouter.post(
   resendVerificationCode
 );
 authRouter.get("/me", signIn);
+authRouter.get("/select-company", selectCompany);
 authRouter.patch("/me", signIn);
 
 export default authRouter;

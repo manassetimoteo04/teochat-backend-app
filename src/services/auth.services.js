@@ -1,6 +1,7 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import Services from "./services.js";
+import Company from "../models/company.model.js";
 
 class AuthServices extends Services {
   constructor(req) {
@@ -34,7 +35,6 @@ class AuthServices extends Services {
     ]);
     const token = this.generateTokens({
       user: user[0]._id,
-      company: "689a4e9c0eda020b23090b31",
     });
     return { user, token, confirmCode };
   }
@@ -44,13 +44,13 @@ class AuthServices extends Services {
 
     const user = await User.findOne({ email });
     if (!user) {
-      const error = new Error("Nenhuma usuário encontrado");
+      const error = new Error("Email ou palavra-passe errada");
       error.statusCode = 404;
       throw error;
     }
     const isPassordValid = await bcrypt.compare(password, user.password);
     if (!isPassordValid) {
-      const error = new Error("Senha incorreta");
+      const error = new Error("Email ou palavra-passe errada");
       error.statusCode = 401;
       throw error;
     }
@@ -58,7 +58,6 @@ class AuthServices extends Services {
     user.password = undefined;
     const token = this.generateTokens({
       user: user._id,
-      company: "689a120aa96c4106d41c210a",
     });
     return { token, user };
   }
@@ -105,6 +104,28 @@ class AuthServices extends Services {
     user.confirmExpiresIn = confirmExpiresIn;
     await user.save();
     return { user, code };
+  }
+  async selectCompany(companyId) {
+    const user = await User.findById(this.req.user.id).select("-password");
+    if (!user) {
+      const error = new Error("Email ou palavra-passe errada");
+      error.statusCode = 404;
+      throw error;
+    }
+    const company = await Company.findById(this.req.params.id);
+    const isMember = company.members.some((id) => this.req.user.id.equals(id));
+    if (!isMember) {
+      const error = new Error(
+        "Não podes seleciona esta empresa, não és membro"
+      );
+      error.statusCode = 401;
+      throw error;
+    }
+    const token = this.generateTokens({
+      user: user._id,
+      companyId,
+    });
+    return { token, user };
   }
 }
 

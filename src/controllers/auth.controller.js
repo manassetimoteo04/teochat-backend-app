@@ -98,9 +98,29 @@ export const resendVerificationCode = async (req, res, next) => {
       }),
     };
     sendEmail(email);
+    res.status(204).json({
+      success: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const selectCompany = async (req, res, next) => {
+  try {
+    const auth = new AuthServices();
+    const { token } = await auth.resendVerificationCode({
+      user: req.user.id,
+    });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: JWT_COOKIE_EXPIRES_IN * 1000 * 60 * 60 * 24,
+    });
+
     res.status(200).json({
       success: true,
-      data: { user },
+      data: { token },
     });
   } catch (error) {
     next(error);
