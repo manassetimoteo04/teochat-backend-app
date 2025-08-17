@@ -70,6 +70,28 @@ class AuthServices extends Services {
     }
     return code;
   }
+  async verifyAccount({ code, user: id }) {
+    const user = await User.findById(id);
+    if (user.confirmCode !== code) {
+      const error = new Error(
+        "Código inválido por favor, verifique o código no email ou solicite outro"
+      );
+      error.statusCode = 401;
+      throw error;
+    }
+    const codeExpired = new Date(user.confirmExpiresIn) < new Date();
+    if (codeExpired) {
+      const error = new Error("Código expirado por favor, solicite outro");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    user.isConfirmed = true;
+    user.confirmCode = undefined;
+    user.confirmExpiresIn = undefined;
+    await user.save();
+    return { user };
+  }
 }
 
 export default AuthServices;

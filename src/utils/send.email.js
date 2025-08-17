@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { EMAIL_PASSWORD, EMAIL_USERNAME } from "../configs/env.js";
+// import { EMAIL_PASSWORD, EMAIL_USERNAME } from "../configs/env.js";
 
 export default async function sendEmail(data) {
   const testAccount = await nodemailer.createTestAccount();

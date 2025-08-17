@@ -65,3 +65,19 @@ export const signIn = async (req, res, next) => {
     next(error);
   }
 };
+
+export const verifyAccount = async (req, res, next) => {
+  try {
+    const auth = new AuthServices();
+    const user = await auth.verifyAccount({
+      code: req.body.verificationCode,
+      user: req.user.id,
+    });
+    res.status(200).json({
+      success: true,
+      data: { user },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
