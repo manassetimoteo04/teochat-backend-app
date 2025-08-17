@@ -11,9 +11,9 @@ export const authorize = async (req, res, next) => {
     ) {
       token = req.headers.authorization.split(" ")[1];
     }
-    if (!token && cookie) {
-      token = cookie.token;
-    }
+
+    token = cookie.token || token;
+
     if (!token) return res.status(401).json({ message: "Unauthorized" });
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(decoded.user);
@@ -21,6 +21,7 @@ export const authorize = async (req, res, next) => {
 
     req.user = { id: user._id, role: "super_admin" };
     req.company = "689f1e3a915d23b01ef6ddd6";
+
     next();
   } catch (error) {
     next(error);

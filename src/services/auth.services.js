@@ -92,6 +92,20 @@ class AuthServices extends Services {
     await user.save();
     return { user };
   }
+  async resendVerificationCode({ user: id }) {
+    const user = await User.findById(id);
+    if (!user) {
+      const error = new Error("Nenhum usuário encontrado com este ID");
+      error.statusCode = 404;
+      throw error;
+    }
+    const code = await this.generateVerification();
+    const confirmExpiresIn = Date.now() + 10 * 60 * 1000;
+    user.confirmCode = code;
+    user.confirmExpiresIn = confirmExpiresIn;
+    await user.save();
+    return { user, code };
+  }
 }
 
 export default AuthServices;

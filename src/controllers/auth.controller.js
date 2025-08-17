@@ -81,3 +81,28 @@ export const verifyAccount = async (req, res, next) => {
     next(error);
   }
 };
+export const resendVerificationCode = async (req, res, next) => {
+  try {
+    const auth = new AuthServices();
+    const { user, code } = await auth.resendVerificationCode({
+      user: req.user.id,
+    });
+    const email = {
+      to: user.email,
+      subject: "Verificação da Conta TeoChat",
+      html: generateEmailTemplate({
+        templateType: "verification",
+        companyName: "TeoChat",
+        footerNote: "Não compartilhe este código com ninguém",
+        userData: { code },
+      }),
+    };
+    sendEmail(email);
+    res.status(200).json({
+      success: true,
+      data: { user },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
