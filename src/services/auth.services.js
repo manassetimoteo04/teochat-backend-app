@@ -23,15 +23,20 @@ class AuthServices extends Services {
       error.statusCode = 409;
       throw error;
     }
+    const code = await this.generateVerification();
 
+    const confirmCode = code;
+    const confirmExpiresIn = Date.now() + 10 * 60 * 1000;
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
-    const user = await User.create([{ name, email, password: hashed }]);
+    const user = await User.create([
+      { name, email, password: hashed, confirmCode, confirmExpiresIn },
+    ]);
     const token = this.generateTokens({
       user: user[0]._id,
       company: "689a4e9c0eda020b23090b31",
     });
-    return { user, token };
+    return { user, token, confirmCode };
   }
 
   async signIn() {
@@ -49,13 +54,21 @@ class AuthServices extends Services {
       error.statusCode = 401;
       throw error;
     }
-    user.password = undefined;
 
+    user.password = undefined;
     const token = this.generateTokens({
       user: user._id,
       company: "689a120aa96c4106d41c210a",
     });
     return { token, user };
+  }
+  async generateVerification() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let code = "";
+    for (let i = 0; i < 8; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
   }
 }
 

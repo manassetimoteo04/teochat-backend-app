@@ -32,8 +32,21 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
+    isConfirmed: {
+      type: Boolean,
+      default: false,
+    },
+    confirmCode: {
+      type: String,
+      default: null,
+    },
+    confirmExpiresIn: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
+
+userSchema.pre("save", () => {});
 
 export const User = mongoose.model("User", userSchema);

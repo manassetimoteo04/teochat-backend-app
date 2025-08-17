@@ -1,4 +1,6 @@
 import agenda from "../jobs/index.js";
+import Agenda from "../models/agenda.model.js";
+import Company from "../models/company.model.js";
 import Event from "../models/events.model.js";
 import Services from "./services.js";
 
@@ -23,7 +25,6 @@ class EventServices extends Services {
         },
       ],
     });
-    console.log(agendaId);
     if (conflict) {
       const error = new Error(
         "Já existe um evento neste horário para essa agenda."
@@ -32,6 +33,10 @@ class EventServices extends Services {
       throw error;
     }
 
+    const companyName = await Company.findById(this.req.company).select("name");
+    const teamName = await Agenda.findById(this.req.body.agendaId)
+      .populate("teamId")
+      .select("teamId");
     const events = await Event.create({
       createdBy: this.req.user.id,
       participants: [
@@ -42,12 +47,14 @@ class EventServices extends Services {
       ],
       ...this.req.body,
     });
-    const reminderTime = new Date(Date.now() + 1 * 60 * 1000);
-    console.log(reminderTime);
+    const reminderTime = new Date(Date.now() * 60 * 1000);
+    console.log(companyName.name, teamName.teamId.name);
     await agenda.schedule(reminderTime, "sendEventReminders", {
       eventId: events._id,
       participants: events.participants,
       time: reminderTime,
+      companyName: companyName.name,
+      teamName: teamName.teamId.name,
     });
     return events;
   }

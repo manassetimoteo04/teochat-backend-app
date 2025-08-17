@@ -1,22 +1,26 @@
 import nodemailer from "nodemailer";
 import { EMAIL_PASSWORD, EMAIL_USERNAME } from "../configs/env.js";
 
-export default async function (data) {
-  const transport = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
+export default async function sendEmail(data) {
+  const testAccount = await nodemailer.createTestAccount();
+
+  const transporter = nodemailer.createTransport({
+    host: testAccount.smtp.host,
+    port: testAccount.smtp.port,
+    secure: testAccount.smtp.secure,
     auth: {
-      user: EMAIL_USERNAME,
-      pass: EMAIL_PASSWORD,
+      user: testAccount.user,
+      pass: testAccount.pass,
     },
   });
+
   const { to, subject, html } = data;
-  const info = await transport.sendMail({
+  const info = await transporter.sendMail({
     from: '"TeoTeam" <no-reply@teoteam.com>',
     to,
     subject,
     html,
   });
 
-  console.log("Preview URL:", info.messageId);
+  console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
 }

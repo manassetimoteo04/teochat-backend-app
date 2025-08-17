@@ -16,8 +16,18 @@ import { BASE_URL } from "./configs/env.js";
 
 const app = express();
 
-app.use(cors({ origin: BASE_URL, credentials: true }));
-app.use(helmet());
+app.use(
+  cors({
+    origin: BASE_URL,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
+  })
+);
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

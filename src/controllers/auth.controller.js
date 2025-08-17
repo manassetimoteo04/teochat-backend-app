@@ -1,15 +1,27 @@
 import mongoose from "mongoose";
 import { JWT_COOKIE_EXPIRES_IN } from "../configs/env.js";
 import AuthServices from "../services/auth.services.js";
-
+import sendEmail from "../utils/send.email.js";
+import { generateEmailTemplate } from "../utils/helpers/generate.emails.js";
 export const signUp = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const auth = new AuthServices(req);
-    const { token, user } = await auth.signUp();
+    const { token, user, confirmCode } = await auth.signUp();
     await session.commitTransaction();
     session.endSession();
+    const email = {
+      to: user[0].email,
+      subject: "Verificação da Conta TeoChat",
+      html: generateEmailTemplate({
+        templateType: "verification",
+        companyName: "TeoChat",
+        footerNote: "Não compartilhe este código com ninguém",
+        userData: { code: confirmCode },
+      }),
+    };
+    sendEmail(email);
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
@@ -19,9 +31,9 @@ export const signUp = async (req, res, next) => {
     res.status(201).json({
       success: true,
       message: "Conta criada com successo",
-      token,
       data: {
         user,
+        token,
       },
     });
   } catch (error) {
