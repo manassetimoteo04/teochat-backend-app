@@ -107,9 +107,9 @@ export const resendVerificationCode = async (req, res, next) => {
 };
 export const selectCompany = async (req, res, next) => {
   try {
-    const auth = new AuthServices();
-    const { token } = await auth.resendVerificationCode({
-      user: req.user.id,
+    const auth = new AuthServices(req);
+    const { token } = await auth.selectCompany({
+      companyId: req.body.companyId,
     });
     res.cookie("token", token, {
       httpOnly: true,
@@ -120,7 +120,22 @@ export const selectCompany = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      data: { token },
+      data: { token, company: req.body.companyId },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getSession = async (req, res, next) => {
+  try {
+    const auth = new AuthServices();
+    const { user, company } = await auth.getSession({
+      token: req.params.token,
+    });
+    res.status(200).json({
+      success: true,
+      data: { user, company },
     });
   } catch (error) {
     next(error);

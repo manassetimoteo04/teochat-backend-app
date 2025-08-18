@@ -2,6 +2,8 @@ import { User } from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import Services from "./services.js";
 import Company from "../models/company.model.js";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET } from "../configs/env.js";
 
 class AuthServices extends Services {
   constructor(req) {
@@ -61,14 +63,7 @@ class AuthServices extends Services {
     });
     return { token, user };
   }
-  async generateVerification() {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let code = "";
-    for (let i = 0; i < 8; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return code;
-  }
+
   async verifyAccount({ code, user: id }) {
     const user = await User.findById(id);
     if (user.confirmCode !== code) {
@@ -105,14 +100,14 @@ class AuthServices extends Services {
     await user.save();
     return { user, code };
   }
-  async selectCompany(companyId) {
-    const user = await User.findById(this.req.user.id).select("-password");
+  async selectCompany({ companyId }) {
+    const user = await User.findById(this.req.user.id);
     if (!user) {
       const error = new Error("Email ou palavra-passe errada");
       error.statusCode = 404;
       throw error;
     }
-    const company = await Company.findById(this.req.params.id);
+    const company = await Company.findById(companyId);
     const isMember = company.members.some((id) => this.req.user.id.equals(id));
     if (!isMember) {
       const error = new Error(
@@ -126,6 +121,40 @@ class AuthServices extends Services {
       companyId,
     });
     return { token, user };
+  }
+  async getSession({ token }) {
+    if (!token) {
+      const error = new Error("Unauthorized");
+      error.statusCode = 401;
+      throw error;
+    }
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.user);
+    const company = await Company.findById(decoded.company);
+
+    if (!user) {
+      const error = new Error("Usuário destã sessão não foi encontrado");
+      error.statusCode = 404;
+      throw error;
+    }
+    if (!company) {
+      const error = new Error(
+        "Empresa não selecionada, por favor selecione uma"
+      );
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const isMember = company.members.some((id) => this.req.user.id.equals(id));
+    if (!isMember) {
+      const error = new Error(
+        "Não podes seleciona esta empresa, não és membro"
+      );
+      error.statusCode = 401;
+      throw error;
+    }
+
+    return { user, company };
   }
 }
 

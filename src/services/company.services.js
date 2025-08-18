@@ -8,9 +8,13 @@ class CompanyServices extends Services {
     this.req = req;
   }
   async createCompany() {
+    const { name, industry, description, invitation } = this.req.body;
     const company = await Company.create([
       {
-        ...this.req.body,
+        name,
+        ownerName: "Manasse Timóteo",
+        industry: industry.split(","),
+        description,
         createdBy: this.req.user.id,
         members: [this.req.user.id],
       },
@@ -22,7 +26,11 @@ class CompanyServices extends Services {
     await User.findByIdAndUpdate(this.req.user.id, {
       $push: { companies: newCompany },
     });
-    return { company };
+    const token = this.generateTokens({
+      user: this.req.user.id,
+      companyId: company[0]._id,
+    });
+    return { company, token };
   }
   async getCompanies() {
     const user = await User.findById(this.req.user.id).populate({

@@ -47,6 +47,4 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.pre("save", () => {});
-
 export const User = mongoose.model("User", userSchema);

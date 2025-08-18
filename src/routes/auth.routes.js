@@ -12,6 +12,7 @@ const authRouter = Router();
 
 authRouter.post("/sign-up", signUp);
 authRouter.post("/sign-in", signIn);
+authRouter.post("/session/:token", signIn);
 authRouter.post("/verify-account", authorize, verifyAccount);
 authRouter.post(
   "/verify-account/resend-code",
@@ -19,7 +20,7 @@ authRouter.post(
   resendVerificationCode
 );
 authRouter.get("/me", signIn);
-authRouter.get("/select-company", selectCompany);
+authRouter.post("/select-company", authorize, selectCompany);
 authRouter.patch("/me", signIn);
 
 export default authRouter;
