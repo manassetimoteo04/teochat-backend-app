@@ -130,12 +130,13 @@ export const selectCompany = async (req, res, next) => {
 export const getSession = async (req, res, next) => {
   try {
     const auth = new AuthServices();
-    const { user, company } = await auth.getSession({
+    const { user, company, role } = await auth.getSession({
       token: req.params.token,
+      userId: req.user.id,
     });
     res.status(200).json({
       success: true,
-      data: { user, company },
+      data: { user, company, role },
     });
   } catch (error) {
     next(error);

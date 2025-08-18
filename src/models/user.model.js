@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema(
     },
     confirmCode: {
       type: String,
-      default: null,
+      default: undefined,
     },
     confirmExpiresIn: {
       type: Date,

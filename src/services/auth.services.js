@@ -101,7 +101,9 @@ class AuthServices extends Services {
     return { user, code };
   }
   async selectCompany({ companyId }) {
-    const user = await User.findById(this.req.user.id);
+    const user = await User.findById(this.req.user.id).select(
+      "-password -isConfirmed -companies"
+    );
     if (!user) {
       const error = new Error("Email ou palavra-passe errada");
       error.statusCode = 404;
@@ -120,32 +122,27 @@ class AuthServices extends Services {
       user: user._id,
       companyId,
     });
+
     return { token, user };
   }
-  async getSession({ token }) {
+  async getSession({ token, userId }) {
     if (!token) {
       const error = new Error("Unauthorized");
       error.statusCode = 401;
       throw error;
     }
     const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await User.findById(decoded.user);
-    const company = await Company.findById(decoded.company);
-
+    const user = await User.findById(decoded.user).select(
+      "-password -isConfirmed"
+    );
+    const company = await Company.findById(decoded.companyId);
     if (!user) {
-      const error = new Error("Usuário destã sessão não foi encontrado");
+      const error = new Error("Usuário desta sessão não foi encontrado");
       error.statusCode = 404;
       throw error;
     }
-    if (!company) {
-      const error = new Error(
-        "Empresa não selecionada, por favor selecione uma"
-      );
-      error.statusCode = 401;
-      throw error;
-    }
 
-    const isMember = company.members.some((id) => this.req.user.id.equals(id));
+    const isMember = company.members.some((id) => id.equals(userId));
     if (!isMember) {
       const error = new Error(
         "Não podes seleciona esta empresa, não és membro"
@@ -153,8 +150,12 @@ class AuthServices extends Services {
       error.statusCode = 401;
       throw error;
     }
-
-    return { user, company };
+    const role = user?.companies
+      ?.filter((com) => com?.companyId === decoded.companyId)
+      .at(0).role;
+    user.companies = undefined;
+    company.members = undefined;
+    return { user, company, role };
   }
 }
 
