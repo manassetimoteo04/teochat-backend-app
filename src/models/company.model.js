@@ -13,12 +13,12 @@ const CompanySchema = new mongoose.Schema(
     description: {
       type: String,
     },
-    market: [String],
+    industry: [String],
     createdBy: {
       type: mongoose.Types.ObjectId,
       ref: "User",
     },
-    members: [String],
+    members: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     logo: String,
   },
   { timestamps: true }

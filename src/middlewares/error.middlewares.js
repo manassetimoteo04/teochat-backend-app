@@ -5,6 +5,7 @@ const errorMiddleware = (err, req, res, next) => {
 
     if (err.name === "CastError") {
       const message = "Resource not found";
+      console.error(error);
       error = new Error(message);
       error.statusCode = 404;
     }
@@ -20,12 +21,10 @@ const errorMiddleware = (err, req, res, next) => {
       error = new Error(message.join(", "));
       error.statusCode = 400;
     }
-    res
-      .status(error.statusCode || 500)
-      .json({
-        success: false,
-        error: error.message || "Internal server error",
-      });
+    res.status(error.statusCode || 500).json({
+      success: false,
+      error: error.message || "Internal server error",
+    });
   } catch (error) {
     next(error);
   }

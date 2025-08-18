@@ -1,14 +1,21 @@
 import mongoose from "mongoose";
 import CompanyServices from "../services/company.services.js";
+import { JWT_COOKIE_EXPIRES_IN } from "../configs/env.js";
 
 export const createNewCompany = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const services = new CompanyServices(req);
-    const { company } = await services.createCompany();
+    const { company, token } = await services.createCompany();
     await session.commitTransaction();
-    res.status(201).json({ success: true, data: company });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: JWT_COOKIE_EXPIRES_IN * 1000 * 60 * 60 * 24,
+    });
+    res.status(201).json({ success: true, data: { company, token } });
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
@@ -36,6 +43,33 @@ export const getCompany = async (req, res, next) => {
     res.status(200).json({
       succes: true,
       data: company,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const getCompanyMembers = async (req, res, next) => {
+  try {
+    const services = new CompanyServices(req);
+    const { members } = await services.getCompanyMembers();
+
+    res.status(200).json({
+      succes: true,
+      data: members,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const addCompanyMember = async (req, res, next) => {
+  try {
+    const services = new CompanyServices(req);
+    const { members } = await services.addCompanyMember();
+
+    res.status(200).json({
+      succes: true,
+      results: members.length,
+      data: members,
     });
   } catch (error) {
     next(error);

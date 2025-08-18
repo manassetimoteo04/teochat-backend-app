@@ -1,15 +1,27 @@
 import mongoose from "mongoose";
 import { JWT_COOKIE_EXPIRES_IN } from "../configs/env.js";
 import AuthServices from "../services/auth.services.js";
-
+import sendEmail from "../utils/send.email.js";
+import { generateEmailTemplate } from "../utils/helpers/generate.emails.js";
 export const signUp = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const auth = new AuthServices(req);
-    const { token, user } = await auth.signUp();
+    const { token, user, confirmCode } = await auth.signUp();
     await session.commitTransaction();
     session.endSession();
+    const email = {
+      to: user[0].email,
+      subject: "Verificação da Conta TeoChat",
+      html: generateEmailTemplate({
+        templateType: "verification",
+        companyName: "TeoChat",
+        footerNote: "Não compartilhe este código com ninguém",
+        userData: { code: confirmCode },
+      }),
+    };
+    sendEmail(email);
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
@@ -19,9 +31,9 @@ export const signUp = async (req, res, next) => {
     res.status(201).json({
       success: true,
       message: "Conta criada com successo",
-      token,
       data: {
         user,
+        token,
       },
     });
   } catch (error) {
@@ -48,6 +60,83 @@ export const signIn = async (req, res, next) => {
       success: true,
       token,
       data: { user },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyAccount = async (req, res, next) => {
+  try {
+    const auth = new AuthServices();
+    const user = await auth.verifyAccount({
+      code: req.body.verificationCode,
+      user: req.user.id,
+    });
+    res.status(200).json({
+      success: true,
+      data: { user },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const resendVerificationCode = async (req, res, next) => {
+  try {
+    const auth = new AuthServices();
+    const { user, code } = await auth.resendVerificationCode({
+      user: req.user.id,
+    });
+    const email = {
+      to: user.email,
+      subject: "Verificação da Conta TeoChat",
+      html: generateEmailTemplate({
+        templateType: "verification",
+        companyName: "TeoChat",
+        footerNote: "Não compartilhe este código com ninguém",
+        userData: { code },
+      }),
+    };
+    sendEmail(email);
+    res.status(204).json({
+      success: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const selectCompany = async (req, res, next) => {
+  try {
+    const auth = new AuthServices(req);
+    const { token } = await auth.selectCompany({
+      companyId: req.body.companyId,
+    });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: JWT_COOKIE_EXPIRES_IN * 1000 * 60 * 60 * 24,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: { token, company: req.body.companyId },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getSession = async (req, res, next) => {
+  try {
+    const auth = new AuthServices();
+    const { user, company, role } = await auth.getSession({
+      token: req.params.token,
+      userId: req.user.id,
+    });
+    res.status(200).json({
+      success: true,
+      data: { user, company, role },
     });
   } catch (error) {
     next(error);

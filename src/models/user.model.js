@@ -32,6 +32,17 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
+    isConfirmed: {
+      type: Boolean,
+      default: false,
+    },
+    confirmCode: {
+      type: String,
+      default: undefined,
+    },
+    confirmExpiresIn: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
