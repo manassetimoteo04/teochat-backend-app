@@ -1,8 +1,7 @@
-import { text } from "express";
 import Event from "../models/events.model.js";
 import { User } from "../models/user.model.js";
 import sendEmail from "../utils/send.email.js";
-import { generateEmailTemplate } from "../utils/helpers/generate.emails.js";
+import { upcomingEventTemplate } from "../utils/helpers/generate.emails.js";
 
 export default (agenda) => {
   agenda.define("sendEventReminders", async (job) => {
@@ -14,25 +13,21 @@ export default (agenda) => {
       const user = await User.findById(participant);
 
       if (!user) return console.log(`❌ Evento ${eventId} não encontrado.`);
-
       const email = {
         to: user.email,
         subject: event.title,
-        html: generateEmailTemplate({
+        html: upcomingEventTemplate({
           companyName,
           teamName,
           userData: event,
-          eventTitle: event.title,
-          eventTime: new Date().toTimeString(),
-          actionText: "Ver evento",
-          actionLink: `http://localhost:5173/events/${eventId}`,
+          eventName: event.title,
+          eventDate: new Date(event.start).toDateString(),
+          eventTime: new Date(event.start).toTimeString(),
+          eventLink: `http://localhost:5173/events/${eventId}`,
         }),
       };
 
       await sendEmail(email);
-      console.log(
-        `📧 Lembrete enviado para evento: ${event.title} enviado para o ${user.name} - ${teamName} - ${companyName}`
-      );
     }
   });
 };

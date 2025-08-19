@@ -21,7 +21,11 @@ export const signUp = async (req, res, next) => {
         userData: { code: confirmCode },
       }),
     };
+
     sendEmail(email);
+    user[0].confirmCode = undefined;
+    user[0].confirmExpiresIn = undefined;
+    console.log(user);
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,

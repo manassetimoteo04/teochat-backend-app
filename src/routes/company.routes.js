@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   addCompanyMember,
+  checkInviteToken,
   createNewCompany,
   deleteCompany,
   getCompanies,
@@ -16,6 +17,8 @@ companyRoute.get("/", authorize, getCompanies);
 companyRoute.get("/:id", authorize, getCompany);
 companyRoute.get("/:id/members", authorize, getCompanyMembers);
 companyRoute.patch("/:id/members", authorize, addCompanyMember);
+companyRoute.post("/invite-member/", authorize, addCompanyMember);
+companyRoute.get("/check-invite/:inviteToken", authorize, checkInviteToken);
 companyRoute.post("/", authorize, createNewCompany);
 companyRoute.patch("/:id", authorize, updateCompany);
 companyRoute.delete("/:id", authorize, deleteCompany);

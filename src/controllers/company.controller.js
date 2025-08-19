@@ -75,6 +75,19 @@ export const addCompanyMember = async (req, res, next) => {
     next(error);
   }
 };
+export const checkInviteToken = async (req, res, next) => {
+  try {
+    const services = new CompanyServices(req);
+    const { company } = await services.checkInviteToken();
+
+    res.status(200).json({
+      succes: true,
+      data: { allowed: true, company },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const updateCompany = async (req, res, next) => {
   try {

@@ -1,6 +1,10 @@
+import jwt from "jsonwebtoken";
 import Company from "../models/company.model.js";
-import { User } from "../models/user.model.js";
 import Services from "./services.js";
+import { User } from "../models/user.model.js";
+import sendEmail from "../utils/send.email.js";
+import { generateEmailTemplate } from "../utils/helpers/generate.emails.js";
+import { JWT_SECRET } from "../configs/env.js";
 
 class CompanyServices extends Services {
   constructor(req) {
@@ -26,6 +30,26 @@ class CompanyServices extends Services {
     await User.findByIdAndUpdate(this.req.user.id, {
       $push: { companies: newCompany },
     });
+
+    const enviteEmails = invitation.split(",");
+    for (const emailItem of enviteEmails) {
+      const token = this.generateTokens({
+        email: emailItem,
+        companyId: company[0]._id,
+      });
+      const actionLink = `http://localhost:5173/companies/join/${token}`;
+      const email = {
+        to: emailItem,
+        subject: `Convite para empresa ${company[0].name} no TeoChat`,
+        html: generateEmailTemplate({
+          companyName: company[0].name,
+          actionLink,
+          secondaryContent: "Este convite expira em 5 dias",
+        }),
+      };
+      console.log(`Enviando convite para ${emailItem}`);
+      await sendEmail(email);
+    }
     const token = this.generateTokens({
       user: this.req.user.id,
       companyId: company[0]._id,
@@ -120,7 +144,33 @@ class CompanyServices extends Services {
     }
     return { members };
   }
-
+  async checkInviteToken() {
+    const decoded = jwt.verify(this.req.params.inviteToken, JWT_SECRET);
+    const user = await User.findById(this.req.user.id);
+    if (!user) {
+      const error = new Error("Usuário foi encontrada");
+      error.statusCode = 404;
+      throw error;
+    }
+    if (user.email !== decoded.email) {
+      const error = new Error(
+        "Este convite somente é válido para o destinatário"
+      );
+      error.statusCode = 401;
+      throw error;
+    }
+    if (
+      user?.companies?.some((com) => com?.companyId?.equals(decoded.companyId))
+    ) {
+      const error = new Error("O para está empresa já foi aceite");
+      error.statusCode = 401;
+      throw error;
+    }
+    const company = await Company.findById(decoded.companyId).select(
+      "-members"
+    );
+    return { company };
+  }
   async updateCompany() {
     const company = await Company.findById(this.req.params.id);
     if (!company) {
