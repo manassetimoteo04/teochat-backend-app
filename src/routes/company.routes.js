@@ -7,6 +7,7 @@ import {
   getCompanies,
   getCompany,
   getCompanyMembers,
+  inviteCompanyMember,
   updateCompany,
 } from "../controllers/company.controller.js";
 import { authorize } from "../middlewares/auth.middlewares.js";
@@ -17,7 +18,7 @@ companyRoute.get("/", authorize, getCompanies);
 companyRoute.get("/:id", authorize, getCompany);
 companyRoute.get("/:id/members", authorize, getCompanyMembers);
 companyRoute.patch("/:id/members", authorize, addCompanyMember);
-companyRoute.post("/invite-member/", authorize, addCompanyMember);
+companyRoute.post("/invite-member/", authorize, inviteCompanyMember);
 companyRoute.get("/check-invite/:inviteToken", authorize, checkInviteToken);
 companyRoute.post("/", authorize, createNewCompany);
 companyRoute.patch("/:id", authorize, updateCompany);

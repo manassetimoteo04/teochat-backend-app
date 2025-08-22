@@ -125,24 +125,47 @@ class CompanyServices extends Services {
     });
     return { members: members };
   }
-  async addCompanyMember() {
+  async inviteCompanyMember() {
     this.restrictedActions(["admin", "super_admin"], this.req.user.role);
-
-    const members = await Company.findByIdAndUpdate(
-      this.req.params.id,
-      {
-        $addToSet: { members: this.req.body.id },
-      },
-      { new: true }
-    )
-      .populate("members")
-      .select("members");
-    if (!members) {
-      const error = new Error("Nenhuma empresa encontrada com este id");
+    const company = await Company.findById(this.req.companyId).populate(
+      "members"
+    );
+    if (!company) {
+      const error = new Error("Nenhuma empresa foi encontrada com este id");
       error.statusCode = 404;
       throw error;
     }
-    return { members };
+
+    const isMember = company.members.some((id) =>
+      this.req.user.id.equals(id._id)
+    );
+    if (!isMember) {
+      const error = new Error(
+        "Não podes executar está acção, não és membro desta empresa"
+      );
+      error.statusCode = 401;
+      throw error;
+    }
+    const { emails } = this.req.body;
+    const enviteEmails = emails.split(",");
+    for (const emailItem of enviteEmails) {
+      const token = this.generateTokens({
+        email: emailItem,
+        companyId: this.req.companyId,
+      });
+      const actionLink = `http://localhost:5173/companies/join/${token}`;
+      const email = {
+        to: emailItem,
+        subject: `Convite para empresa ${company[0].name} no TeoChat`,
+        html: generateEmailTemplate({
+          companyName: company[0].name,
+          actionLink,
+          secondaryContent: "Este convite expira em 5 dias",
+        }),
+      };
+      console.log(`Enviando convite para ${emailItem}`);
+      await sendEmail(email);
+    }
   }
   async checkInviteToken() {
     const decoded = jwt.verify(this.req.params.inviteToken, JWT_SECRET);

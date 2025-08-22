@@ -61,15 +61,13 @@ export const getCompanyMembers = async (req, res, next) => {
     next(error);
   }
 };
-export const addCompanyMember = async (req, res, next) => {
+export const inviteCompanyMember = async (req, res, next) => {
   try {
     const services = new CompanyServices(req);
-    const { members } = await services.addCompanyMember();
+    await services.inviteCompanyMember();
 
     res.status(200).json({
       succes: true,
-      results: members.length,
-      data: members,
     });
   } catch (error) {
     next(error);
