@@ -76,7 +76,26 @@ export const inviteCompanyMember = async (req, res, next) => {
 export const checkInviteToken = async (req, res, next) => {
   try {
     const services = new CompanyServices(req);
-    const { company } = await services.checkInviteToken();
+    const { token, company } = await services.checkInviteToken();
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: JWT_COOKIE_EXPIRES_IN * 1000 * 60 * 60 * 24,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: { token, company },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const acceptInvite = async (req, res, next) => {
+  try {
+    const services = new CompanyServices(req);
+    const { company } = await services.acceptInvite();
 
     res.status(200).json({
       succes: true,

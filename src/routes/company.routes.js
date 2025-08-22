@@ -18,6 +18,7 @@ companyRoute.get("/:id", authorize, getCompany);
 companyRoute.get("/:id/members", authorize, getCompanyMembers);
 companyRoute.post("/invite-member/", authorize, inviteCompanyMember);
 companyRoute.get("/check-invite/:inviteToken", authorize, checkInviteToken);
+companyRoute.get("/accept-invite/:inviteToken", authorize, checkInviteToken);
 companyRoute.post("/", authorize, createNewCompany);
 companyRoute.patch("/:id", authorize, updateCompany);
 companyRoute.delete("/:id", authorize, deleteCompany);

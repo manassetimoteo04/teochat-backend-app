@@ -102,7 +102,7 @@ class AuthServices extends Services {
   }
   async selectCompany({ companyId }) {
     const user = await User.findById(this.req.user.id).select(
-      "-password -isConfirmed -companies"
+      "-password -isConfirmed"
     );
     if (!user) {
       const error = new Error("Email ou palavra-passe errada");
@@ -111,6 +111,7 @@ class AuthServices extends Services {
     }
     const company = await Company.findById(companyId);
     const isMember = company.members.some((id) => this.req.user.id.equals(id));
+
     if (!isMember) {
       const error = new Error(
         "Não podes seleciona esta empresa, não és membro"
@@ -118,9 +119,13 @@ class AuthServices extends Services {
       error.statusCode = 401;
       throw error;
     }
+    const role = user?.companies
+      .filter((com) => com.companyId === companyId)
+      .at(0)?.role;
     const token = this.generateTokens({
       user: user._id,
       companyId,
+      role,
     });
 
     return { token, user };
