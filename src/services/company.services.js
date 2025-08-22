@@ -1,6 +1,10 @@
+import jwt from "jsonwebtoken";
 import Company from "../models/company.model.js";
-import { User } from "../models/user.model.js";
 import Services from "./services.js";
+import { User } from "../models/user.model.js";
+import sendEmail from "../utils/send.email.js";
+import { generateEmailTemplate } from "../utils/helpers/generate.emails.js";
+import { JWT_SECRET } from "../configs/env.js";
 
 class CompanyServices extends Services {
   constructor(req) {
@@ -24,8 +28,28 @@ class CompanyServices extends Services {
       role: "super_admin",
     };
     await User.findByIdAndUpdate(this.req.user.id, {
-      $push: { companies: newCompany },
+      $addToSet: { companies: newCompany },
     });
+
+    const enviteEmails = invitation.split(",");
+    for (const emailItem of enviteEmails) {
+      const token = this.generateTokens({
+        email: emailItem,
+        companyId: company[0]._id,
+      });
+      const actionLink = `http://localhost:5173/companies/join/${token}`;
+      const email = {
+        to: emailItem,
+        subject: `Convite para empresa ${company[0].name} no TeoChat`,
+        html: generateEmailTemplate({
+          companyName: company[0].name,
+          actionLink,
+          secondaryContent: "Este convite expira em 5 dias",
+        }),
+      };
+      console.log(`Enviando convite para ${emailItem}`);
+      await sendEmail(email);
+    }
     const token = this.generateTokens({
       user: this.req.user.id,
       companyId: company[0]._id,
@@ -101,26 +125,131 @@ class CompanyServices extends Services {
     });
     return { members: members };
   }
-  async addCompanyMember() {
-    this.restrictedActions(["admin", "super_admin"], this.req.user.role);
-
-    const members = await Company.findByIdAndUpdate(
-      this.req.params.id,
-      {
-        $addToSet: { members: this.req.body.id },
-      },
-      { new: true }
-    )
-      .populate("members")
-      .select("members");
-    if (!members) {
-      const error = new Error("Nenhuma empresa encontrada com este id");
+  async inviteCompanyMember() {
+    this.restrictedActions(["admin", "super_admin"], this.req.role);
+    const company = await Company.findById(this.req.company).populate(
+      "members"
+    );
+    if (!company) {
+      const error = new Error("Nenhuma empresa foi encontrada com este id");
       error.statusCode = 404;
       throw error;
     }
-    return { members };
-  }
 
+    const isMember = company.members.some((id) =>
+      this.req.user.id.equals(id._id)
+    );
+    if (!isMember) {
+      const error = new Error(
+        "Não podes executar está acção, não és membro desta empresa"
+      );
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const { emails } = this.req.body;
+    const enviteEmails = emails.split(",");
+    for (const emailItem of enviteEmails) {
+      const user = await User.find({ email: emailItem }).select("companies");
+      const isMember = user?.companies?.some((com) =>
+        com.companyId.equals(this.req.company)
+      );
+      if (isMember) {
+        const error = new Error(
+          "Não podes executar está acção, este membro já é participante"
+        );
+        error.statusCode = 401;
+        throw error;
+      }
+      const token = this.generateTokens({
+        email: emailItem,
+        companyId: this.req.company,
+      });
+      const actionLink = `http://localhost:5173/companies/join/${token}`;
+      console.log(actionLink);
+      const email = {
+        to: emailItem,
+        subject: `Convite para empresa ${company[0]?.name} no TeoChat`,
+        html: generateEmailTemplate({
+          companyName: company[0]?.name,
+          actionLink,
+          secondaryContent: "Este convite expira em 5 dias",
+        }),
+      };
+      console.log(`Enviando convite para ${emailItem}`);
+      await sendEmail(email);
+    }
+  }
+  async checkInviteToken() {
+    const decoded = jwt.verify(this.req.params.inviteToken, JWT_SECRET);
+    const user = await User.findById(this.req.user.id);
+    if (!user) {
+      const error = new Error("Usuário foi encontrada");
+      error.statusCode = 404;
+      throw error;
+    }
+    if (user.email !== decoded.email) {
+      const error = new Error(
+        "Este convite somente é válido para o destinatário"
+      );
+      error.statusCode = 401;
+      throw error;
+    }
+
+    if (user?.companies?.some((com) => com.companyId === decoded.companyId)) {
+      const error = new Error("O convite para está empresa já foi aceite");
+      error.statusCode = 401;
+      throw error;
+    }
+    const company = await Company.findById(decoded.companyId).select(
+      "-members"
+    );
+    return { company };
+  }
+  async acceptInvite() {
+    const decoded = jwt.verify(this.req.body.inviteToken, JWT_SECRET);
+    const user = await User.findById(this.req.user.id);
+    if (!user) {
+      const error = new Error("Usuário foi encontrada");
+      error.statusCode = 404;
+      throw error;
+    }
+    if (user.email !== decoded.email) {
+      const error = new Error(
+        "Este convite somente é válido para o destinatário"
+      );
+      error.statusCode = 401;
+      throw error;
+    }
+
+    if (user?.companies?.some((com) => com.companyId === decoded.companyId)) {
+      const error = new Error("O convite para está empresa já foi aceite");
+      error.statusCode = 401;
+      throw error;
+    }
+    const company = await Company.findByIdAndUpdate(
+      decoded.companyId,
+      {
+        $addToSet: { members: user._id },
+      },
+      { new: true }
+    ).select("-members");
+
+    await User.findByIdAndUpdate(user._id, {
+      $addToSet: {
+        companies: {
+          companyId: company._id,
+          role: "member",
+        },
+      },
+    });
+    const token = this.generateTokens({
+      user: user._id,
+      companyId: company._id,
+      role: "member",
+    });
+    return { company: company._id, token };
+  }
   async updateCompany() {
     const company = await Company.findById(this.req.params.id);
     if (!company) {

@@ -61,15 +61,45 @@ export const getCompanyMembers = async (req, res, next) => {
     next(error);
   }
 };
-export const addCompanyMember = async (req, res, next) => {
+export const inviteCompanyMember = async (req, res, next) => {
   try {
     const services = new CompanyServices(req);
-    const { members } = await services.addCompanyMember();
+    await services.inviteCompanyMember();
 
     res.status(200).json({
       succes: true,
-      results: members.length,
-      data: members,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const checkInviteToken = async (req, res, next) => {
+  try {
+    const services = new CompanyServices(req);
+    const { token, company } = await services.checkInviteToken();
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: JWT_COOKIE_EXPIRES_IN * 1000 * 60 * 60 * 24,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: { token, company },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const acceptInvite = async (req, res, next) => {
+  try {
+    const services = new CompanyServices(req);
+    const { company } = await services.acceptInvite();
+
+    res.status(200).json({
+      succes: true,
+      data: { allowed: true, company },
     });
   } catch (error) {
     next(error);

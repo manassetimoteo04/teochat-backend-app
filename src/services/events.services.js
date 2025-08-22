@@ -39,16 +39,10 @@ class EventServices extends Services {
       .select("teamId");
     const events = await Event.create({
       createdBy: this.req.user.id,
-      participants: [
-        this.req.user.id,
-        this.req.user.id,
-        this.req.user.id,
-        this.req.user.id,
-      ],
+      participants: [this.req.user.id],
       ...this.req.body,
     });
     const reminderTime = new Date(Date.now() * 60 * 1000);
-    console.log(companyName.name, teamName.teamId.name);
     await agenda.schedule(reminderTime, "sendEventReminders", {
       eventId: events._id,
       participants: events.participants,
