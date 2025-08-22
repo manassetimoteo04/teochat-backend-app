@@ -76,7 +76,20 @@ export const inviteCompanyMember = async (req, res, next) => {
 export const checkInviteToken = async (req, res, next) => {
   try {
     const services = new CompanyServices(req);
-    const { token, company } = await services.checkInviteToken();
+    const { company } = await services.checkInviteToken();
+
+    res.status(200).json({
+      succes: true,
+      data: { allowed: true, company },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const acceptInvite = async (req, res, next) => {
+  try {
+    const services = new CompanyServices(req);
+    const { company, token } = await services.acceptInvite();
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
@@ -87,19 +100,6 @@ export const checkInviteToken = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data: { token, company },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-export const acceptInvite = async (req, res, next) => {
-  try {
-    const services = new CompanyServices(req);
-    const { company } = await services.acceptInvite();
-
-    res.status(200).json({
-      succes: true,
-      data: { allowed: true, company },
     });
   } catch (error) {
     next(error);
