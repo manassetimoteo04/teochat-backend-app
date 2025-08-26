@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "O usuário deve conter uma senha"],
     },
+    avatar: {
+      type: String,
+      default: "/default-user.jpg",
+    },
     companies: [
       {
         companyId: {

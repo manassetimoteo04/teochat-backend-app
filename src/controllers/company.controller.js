@@ -55,6 +55,19 @@ export const getCompanyMembers = async (req, res, next) => {
 
     res.status(200).json({
       succes: true,
+      data: { members },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const getCompanyRecentMembers = async (req, res, next) => {
+  try {
+    const services = new CompanyServices(req);
+    const { members } = await services.getCompanyRecentMembers();
+
+    res.status(200).json({
+      succes: true,
       data: members,
     });
   } catch (error) {

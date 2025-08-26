@@ -7,6 +7,7 @@ import {
   getCompanies,
   getCompany,
   getCompanyMembers,
+  getCompanyRecentMembers,
   inviteCompanyMember,
   updateCompany,
 } from "../controllers/company.controller.js";
@@ -17,6 +18,7 @@ const companyRoute = Router();
 companyRoute.get("/", authorize, getCompanies);
 companyRoute.get("/:id", authorize, getCompany);
 companyRoute.get("/:id/members", authorize, getCompanyMembers);
+companyRoute.get("/:id/recent-members", authorize, getCompanyRecentMembers);
 companyRoute.post("/invite-member/", authorize, inviteCompanyMember);
 companyRoute.get("/check-invite/:inviteToken", authorize, checkInviteToken);
 companyRoute.put("/accept-invite/", authorize, acceptInvite);

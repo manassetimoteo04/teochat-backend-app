@@ -12,10 +12,20 @@ const teamSchema = new Schema(
       type: Types.ObjectId,
       ref: "Company",
     },
-    members: [Types.ObjectId],
+    members: [
+      {
+        type: Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    tags: [String],
     createdBy: {
       type: Types.ObjectId,
       ref: "User",
+    },
+    photo: {
+      type: "String",
+      default: "",
     },
     teamLider: {
       type: Types.ObjectId,
@@ -26,7 +36,7 @@ const teamSchema = new Schema(
       ref: "Agenda",
     },
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 
 const Team = model("Team", teamSchema);

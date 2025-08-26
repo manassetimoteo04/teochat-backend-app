@@ -11,7 +11,7 @@ class AuthServices extends Services {
     this.req = req;
   }
   async signUp() {
-    const { password, email, name } = this.req.body;
+    const { password, email, name, avatar } = this.req.body;
     if (!password || !email || !name) {
       const error = new Error(
         "Por favor providencie todos os campos, nome, email e senha"
@@ -33,7 +33,7 @@ class AuthServices extends Services {
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
     const user = await User.create([
-      { name, email, password: hashed, confirmCode, confirmExpiresIn },
+      { name, email, password: hashed, confirmCode, confirmExpiresIn, avatar },
     ]);
     const token = this.generateTokens({
       user: user[0]._id,

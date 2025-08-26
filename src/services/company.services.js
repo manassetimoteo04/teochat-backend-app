@@ -114,16 +114,67 @@ class CompanyServices extends Services {
       throw error;
     }
 
-    const members = company.members.map((mem) => {
+    const members = company.members
+      .map((mem) => {
+        return {
+          ...mem._doc,
+          role: mem.companies.find((f) => f.companyId === this.req.params.id)
+            ?.role,
+          companies: undefined,
+          password: undefined,
+          isConfirmed: undefined,
+        };
+      })
+      .filter((el) => !el._id.equals(this.req.user.id));
+    return { members };
+  }
+  async getCompanyRecentMembers() {
+    const company = await Company.findById(this.req.params.id);
+    if (!company) {
+      const error = new Error("Nenhuma empresa foi encontrada com este id");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const isMember = company.members.some((id) =>
+      this.req.user.id.equals(id._id)
+    );
+
+    if (!isMember) {
+      const error = new Error(
+        "Não podes executar está acção, não és membro desta empresa"
+      );
+      error.statusCode = 403;
+      throw error;
+    }
+
+    const daysAgo = 5;
+    const dateThreshold = new Date();
+    dateThreshold.setDate(dateThreshold.getDate() - daysAgo);
+
+    const recentMembers = await User.find({
+      _id: {
+        $ne: this.req.user.id,
+      },
+      companies: {
+        $elemMatch: {
+          companyId: this.req.company,
+          joined: { $gte: dateThreshold },
+        },
+      },
+    }).select("name email companies");
+    const result = recentMembers.map((user) => {
+      const companyInfo = user.companies
+        .filter((c) => c?.companyId === this.req.company)
+        .at(0);
       return {
-        ...mem._doc,
-        role: mem.companies.find((f) => f.companyId === this.req.params.id)
-          ?.role,
-        companies: undefined,
-        password: undefined,
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        joinedAt: companyInfo.joined,
       };
     });
-    return { members: members };
+    return { members: result };
   }
   async inviteCompanyMember() {
     this.restrictedActions(["admin", "super_admin"], this.req.role);

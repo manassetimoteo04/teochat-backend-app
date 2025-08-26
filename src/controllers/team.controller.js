@@ -29,6 +29,24 @@ export const getCompanyTeams = async (req, res, next) => {
     next(error);
   }
 };
+export const getTeam = async (req, res, next) => {
+  try {
+    const services = new TeamServices(req);
+    const { team } = await services.getTeam();
+    res.status(200).json({ success: true, data: team });
+  } catch (error) {
+    next(error);
+  }
+};
+export const getTeamParticipants = async (req, res, next) => {
+  try {
+    const services = new TeamServices(req);
+    const { participants } = await services.getTeamParticipants();
+    res.status(200).json({ success: true, data: participants });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getUserTeams = async (req, res, next) => {
   try {
