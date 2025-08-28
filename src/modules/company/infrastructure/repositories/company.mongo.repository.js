@@ -40,9 +40,10 @@ export class CompanyMongoRepository {
       select: "name email avatar companies",
     });
     if (!doc) return null;
-    console.log(doc);
     const members = doc.members.map((mem) => ({
       ...mem._doc,
+      _id: undefined,
+      id: mem._doc._id,
       companies: undefined,
       role: mem._doc.companies
         .filter((com) => com.companyId.toString() === id)
