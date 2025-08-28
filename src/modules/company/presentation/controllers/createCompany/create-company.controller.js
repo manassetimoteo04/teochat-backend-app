@@ -1,6 +1,6 @@
-import UserMongoRepository from "../../../../user/infrastructure/repositories/user.mongo.repository";
-import { CompanyMongoRepository } from "../../../infrastructure/repositories/company.mongo.repository";
-import { CreateCompanyService } from "../../../usecases/create/create-company.service";
+import UserMongoRepository from "../../../../user/infrastructure/repositories/user.mongo.repository.js";
+import { CompanyMongoRepository } from "../../../infrastructure/repositories/company.mongo.repository.js";
+import { CreateCompanyService } from "../../../usecases/create/create-company.service.js";
 const userRepo = new UserMongoRepository();
 const companyRepo = new CompanyMongoRepository();
 const createCom = new CreateCompanyService({ userRepo, companyRepo });

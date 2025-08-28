@@ -1,4 +1,4 @@
-import { CompanyEntity } from "../../domain/entities/company.entity";
+import { CompanyEntity } from "../../domain/entities/company.entity.js";
 
 export class CreateCompanyService {
   constructor({ userRepo, companyRepo }) {
@@ -17,6 +17,6 @@ export class CreateCompanyService {
 
     const newCompany = await this.companyRepo.create(company);
     await this.userRepo.addCompany(userId, newCompany.id, "super_admin");
-    return { newCompany };
+    return newCompany;
   }
 }

@@ -1,5 +1,6 @@
 export class CompanyEntity {
   constructor({
+    id,
     name,
     ownerName,
     description,
@@ -10,6 +11,7 @@ export class CompanyEntity {
     createdAt = new Date(),
     updatedAt = new Date(),
   }) {
+    this.id = id;
     this.name = name;
     this.description = description;
     this.ownerName = ownerName;
@@ -21,6 +23,6 @@ export class CompanyEntity {
     this.updatedAt = updatedAt;
   }
   isMember(userId) {
-    return this.members.some((id) => userId === id);
+    return this.members.some((id) => userId === id.toString());
   }
 }

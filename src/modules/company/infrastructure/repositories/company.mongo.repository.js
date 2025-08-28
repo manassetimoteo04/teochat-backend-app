@@ -1,4 +1,4 @@
-import { CompanyEntity } from "../../domain/entities/company.entity";
+import { CompanyEntity } from "../../domain/entities/company.entity.js";
 import Company from "../models/company.model.js";
 
 export class CompanyMongoRepository {
