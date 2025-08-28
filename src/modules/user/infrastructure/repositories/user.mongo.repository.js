@@ -55,4 +55,9 @@ export default class UserMongoRepository extends IUserRepository {
       isConfirmed: user.isConfirmed,
     });
   }
+  async addCompany(userId, companyId, role) {
+    await User.findByIdAndUpdate(userId, {
+      $addToSet: { companies: { companyId, role } },
+    });
+  }
 }
