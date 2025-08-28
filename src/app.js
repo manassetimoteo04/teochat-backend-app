@@ -4,7 +4,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
-import authRouter from "./routes/auth.routes.js";
+// import authRouter from "./routes/auth.routes.js";
 import errorMiddleware from "./middlewares/error.middlewares.js";
 import companyRoute from "./routes/company.routes.js";
 import teamRoutes from "./routes/team.route.js";
@@ -13,6 +13,7 @@ import eventRoutes from "./routes/event.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 
 import { BASE_URL } from "./configs/env.js";
+import authRouter from "./modules/auth/presentation/routes/auth.routes.js";
 
 const app = express();
 
