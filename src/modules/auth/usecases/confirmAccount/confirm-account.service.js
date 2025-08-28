@@ -1,3 +1,4 @@
+import { UserNotFoundError } from "../../../shared/infrastructure/errors/error.messages.js";
 import { UserEntity } from "../../../user/domain/entities/user.entity.js";
 
 export class ConfirmAccountService {
@@ -6,6 +7,7 @@ export class ConfirmAccountService {
   }
   async execute({ code, id }) {
     const userExists = await this.userRepo.findById(id);
+    if (!userExists) throw new UserNotFoundError();
     userExists.confirmAccount(code);
     const user = new UserEntity({
       ...userExists,

@@ -17,6 +17,7 @@ export class CompanyMongoRepository {
       updatedAt: saved.updatedAt,
     });
   }
+
   async findById(id) {
     const doc = await Company.findById(id);
     if (!doc) return null;
@@ -24,6 +25,7 @@ export class CompanyMongoRepository {
       id: doc._id.toString(),
       name: doc.name,
       ownerName: doc.ownerName,
+      description: doc.description,
       members: doc.members,
       industry: doc.industry,
       createdBy: doc.createdBy,
@@ -32,6 +34,7 @@ export class CompanyMongoRepository {
       updatedAt: doc.updatedAt,
     });
   }
+
   async addMember(companyId, userId) {
     const doc = await Company.findByIdAndUpdate(companyId, {
       $addToSet: { members: userId },
@@ -42,6 +45,7 @@ export class CompanyMongoRepository {
       name: doc.name,
       ownerName: doc.ownerName,
       members: doc.members,
+      description: doc.description,
       industry: doc.industry,
       createdBy: doc.createdBy,
       logo: doc.logo,
@@ -61,10 +65,14 @@ export class CompanyMongoRepository {
       ownerName: doc.ownerName,
       members: doc.members,
       industry: doc.industry,
+      description: doc.description,
       createdBy: doc.createdBy,
       logo: doc.logo,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
+  }
+  async delete(id) {
+    await Company.findByIdAndDelete(id);
   }
 }

@@ -13,6 +13,7 @@ import messageRoutes from "./routes/message.routes.js";
 import { BASE_URL } from "./configs/env.js";
 import authRouter from "./modules/auth/presentation/routes/auth.routes.js";
 import companyRoute from "./modules/company/presentation/routes/company.routes.js";
+import usersRoute from "./modules/user/presentation/routes/user.routes.js";
 
 const app = express();
 
@@ -23,17 +24,20 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(
   helmet({
     crossOriginResourcePolicy: false,
   })
 );
+
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use("/api/v1/auth/", authRouter);
+app.use("/api/v1/users/", usersRoute);
 app.use("/api/v1/companies/", companyRoute);
 app.use("/api/v1/teams/", teamRoutes);
 app.use("/api/v1/agendas/", agendaRoutes);

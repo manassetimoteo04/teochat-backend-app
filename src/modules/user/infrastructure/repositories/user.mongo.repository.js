@@ -41,6 +41,29 @@ export default class UserMongoRepository extends IUserRepository {
       password: doc.password,
     });
   }
+  async findCompanies(id) {
+    const doc = await User.findById(id).populate({
+      path: "companies.companyId",
+      select: "name description createdAt logo",
+    });
+    if (!doc) return null;
+    return new UserEntity({
+      id: doc._id.toString(),
+      companies: doc.companies.map((com) => {
+        const object = {};
+        Object.keys(com.companyId._doc).forEach((key) => {
+          if (key === "_id") return (object.id = com.companyId._doc[key]);
+          object[key] = com.companyId._doc[key];
+        });
+
+        return {
+          role: com._doc.role,
+          joined: com._doc.joined,
+          companyId: object,
+        };
+      }),
+    });
+  }
 
   async update(id, updateData) {
     const user = await User.findById(id);

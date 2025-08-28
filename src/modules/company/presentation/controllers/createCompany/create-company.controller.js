@@ -7,7 +7,7 @@ const createCom = new CreateCompanyService({ userRepo, companyRepo });
 export async function createCompany(req, res, next) {
   try {
     const company = await createCom.execute(req.body);
-    res.status(200).json({ success: true, data: company });
+    res.status(201).json({ success: true, data: company });
   } catch (error) {
     next(error);
   }

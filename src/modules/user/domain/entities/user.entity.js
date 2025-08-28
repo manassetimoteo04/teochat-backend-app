@@ -49,4 +49,11 @@ export class UserEntity {
       joined: new Date(),
     });
   }
+  getCompanies() {
+    return this.companies.map((com) => ({
+      role: com.role,
+      joined: com.joined,
+      company: com.companyId,
+    }));
+  }
 }

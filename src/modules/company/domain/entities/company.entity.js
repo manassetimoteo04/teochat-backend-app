@@ -25,4 +25,10 @@ export class CompanyEntity {
   isMember(userId) {
     return this.members.some((id) => userId === id.toString());
   }
+  updateCompany({ name, ownerName, industry, description }) {
+    this.name = name ? name : this.name;
+    this.ownerName = ownerName ? ownerName : this.ownerName;
+    this.industry = industry ? industry : this.industry;
+    this.description = description ? description : this.description;
+  }
 }

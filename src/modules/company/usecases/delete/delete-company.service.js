@@ -3,17 +3,15 @@ import {
   NotCompanyMemberError,
 } from "../../../shared/infrastructure/errors/error.messages.js";
 
-export class FindCompanyByIdService {
+export class DeleteCompanyService {
   constructor({ companyRepo }) {
     this.companyRepo = companyRepo;
   }
-  async execute({ userId, companyId }) {
+  async execute({ companyId, userId }) {
     const company = await this.companyRepo.findById(companyId);
     if (!company) throw new CompanyNotFoundError();
     const isMember = company.isMember(userId);
-
     if (!isMember) throw new NotCompanyMemberError();
-    company.members = undefined;
-    return company;
+    await this.companyRepo.delete(companyId);
   }
 }
