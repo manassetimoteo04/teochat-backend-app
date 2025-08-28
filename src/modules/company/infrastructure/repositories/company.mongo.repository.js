@@ -34,6 +34,28 @@ export class CompanyMongoRepository {
       updatedAt: doc.updatedAt,
     });
   }
+  async findMembers(id) {
+    const doc = await Company.findById(id).select("members").populate({
+      path: "members",
+      select: "name email avatar companies",
+    });
+    if (!doc) return null;
+    console.log(doc);
+    const members = doc.members.map((mem) => ({
+      ...mem._doc,
+      companies: undefined,
+      role: mem._doc.companies
+        .filter((com) => com.companyId.toString() === id)
+        .at(0).role,
+      joined: mem._doc.companies
+        .filter((com) => com.companyId.toString() === id)
+        .at(0).joined,
+    }));
+    return new CompanyEntity({
+      id: doc._id.toString(),
+      members: members,
+    });
+  }
 
   async addMember(companyId, userId) {
     const doc = await Company.findByIdAndUpdate(companyId, {
