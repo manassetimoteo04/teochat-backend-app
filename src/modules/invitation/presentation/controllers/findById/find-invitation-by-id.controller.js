@@ -5,8 +5,8 @@ const invitationRepo = new InvitationMongoRepository();
 const createInv = new FindInvitationByIdService({ invitationRepo });
 export async function findInvitation(req, res, next) {
   try {
-    const invitation = await createInv.execute(req.body);
-    res.status(201).json({ success: true, data: invitation });
+    const invitation = await createInv.execute(req.params);
+    res.status(200).json({ success: true, data: invitation });
   } catch (error) {
     next(error);
   }

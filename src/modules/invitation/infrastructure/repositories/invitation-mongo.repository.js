@@ -1,6 +1,6 @@
-import { InvitationEntity } from "../../domain/entities/invitation.entity";
-import { IInvitationRepository } from "../../domain/interface/invitation.repository";
-import { Invitation } from "../models/invitation.model";
+import { InvitationEntity } from "../../domain/entities/invitation.entity.js";
+import { IInvitationRepository } from "../../domain/interface/invitation.repository.js";
+import { Invitation } from "../models/invitation.model.js";
 
 export class InvitationMongoRepository extends IInvitationRepository {
   async findById(id) {
@@ -12,11 +12,28 @@ export class InvitationMongoRepository extends IInvitationRepository {
       expiresIn: invitation.expiresIn,
       createdBy: invitation.createdBy,
       company: invitation.company,
-      accepted: invitation.company,
+      accepted: invitation.accepted,
       canceled: invitation.canceled,
       createdAt: invitation.createdAt,
       updatedAt: invitation.updatedAt,
     });
+  }
+  async findByCompanyId(companyId) {
+    const invitations = await Invitation.find({ company: companyId });
+    return invitations.map(
+      (inv) =>
+        new InvitationEntity({
+          id: inv._id,
+          destination: inv.destination,
+          expiresIn: inv.expiresIn,
+          createdBy: inv.createdBy,
+          company: inv.company,
+          accepted: inv.accepted,
+          canceled: inv.canceled,
+          createdAt: inv.createdAt,
+          updatedAt: inv.updatedAt,
+        })
+    );
   }
 
   async accept(id) {
@@ -30,7 +47,7 @@ export class InvitationMongoRepository extends IInvitationRepository {
       expiresIn: doc.expiresIn,
       createdBy: doc.createdBy,
       company: doc.company,
-      accepted: doc.company,
+      accepted: doc.accepted,
       canceled: doc.canceled,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
@@ -47,7 +64,7 @@ export class InvitationMongoRepository extends IInvitationRepository {
       expiresIn: doc.expiresIn,
       createdBy: doc.createdBy,
       company: doc.company,
-      accepted: doc.company,
+      accepted: doc.accepted,
       canceled: doc.canceled,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
@@ -62,7 +79,7 @@ export class InvitationMongoRepository extends IInvitationRepository {
       expiresIn: doc.expiresIn,
       createdBy: doc.createdBy,
       company: doc.company,
-      accepted: doc.company,
+      accepted: doc.accepted,
       canceled: doc.canceled,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,

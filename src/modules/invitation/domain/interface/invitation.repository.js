@@ -2,7 +2,7 @@ export class IInvitationRepository {
   async findById(id) {
     throw new Error("Not implemented");
   }
-  async findByCompanyId(id) {
+  async findByCompanyId(companyId) {
     throw new Error("Not implemented");
   }
   async accept(id) {
