@@ -8,7 +8,7 @@ export class UserEntity {
     companies = [],
     isConfirmed = false,
     confirmCode = undefined,
-    confirmExpiresIn = null,
+    confirmExpiresIn = undefined,
     createdAt = new Date(),
     updatedAt = new Date(),
   }) {
@@ -34,7 +34,7 @@ export class UserEntity {
     }
     this.isConfirmed = true;
     this.confirmCode = undefined;
-    this.confirmExpiresIn = null;
+    this.confirmExpiresIn = undefined;
   }
 
   joinCompany(companyId, role = "member") {

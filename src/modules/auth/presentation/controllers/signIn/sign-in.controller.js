@@ -1,5 +1,5 @@
 import { JWT_SECRET } from "../../../../../configs/env.js";
-import UserMongoRepository from "../../../../user/infra/repositories/user.mongo.repository.js";
+import UserMongoRepository from "../../../../user/infrastructure/repositories/user.mongo.repository.js";
 import { AuthService } from "../../../domain/auth.service.js";
 import { JwtService } from "../../../infrastructure/jwt.service.js";
 import { signInService } from "../../../usecases/signIn/sign-in.service.js";
