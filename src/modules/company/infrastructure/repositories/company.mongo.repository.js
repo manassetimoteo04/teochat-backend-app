@@ -1,7 +1,8 @@
 import { CompanyEntity } from "../../domain/entities/company.entity.js";
+import { ICompanyRepository } from "../../domain/interface/company.repository.js";
 import Company from "../models/company.model.js";
 
-export class CompanyMongoRepository {
+export class CompanyMongoRepository extends ICompanyRepository {
   async create(data) {
     const doc = new Company(data);
     const saved = await doc.save();

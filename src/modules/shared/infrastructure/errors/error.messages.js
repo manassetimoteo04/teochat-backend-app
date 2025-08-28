@@ -23,3 +23,33 @@ export class UserAlreadyExistsError extends Error {
     this.name = "UserAlreadyExistsError";
   }
 }
+export class InvitationNotFoundError extends Error {
+  constructor(message = "Nenhum convite foi encontrado") {
+    super(message);
+    this.name = "InvitationNotFoundError";
+  }
+}
+export class InvitationExpiredError extends Error {
+  constructor(message = "Este convite está expirado") {
+    super(message);
+    this.name = "InvitationExpiredError";
+  }
+}
+export class InvitationAlreadyAcceptedError extends Error {
+  constructor(message = "Este convite já foi aceite") {
+    super(message);
+    this.name = "InvitationAlreadyAcceptedError";
+  }
+}
+export class InvitationCanceledError extends Error {
+  constructor(message = "Este convite  foi cancelado") {
+    super(message);
+    this.name = "InvitationCanceledError";
+  }
+}
+export class InvitationNotDestitationError extends Error {
+  constructor(message = "Este convite só é válido para o destinatário") {
+    super(message);
+    this.name = "InvitationNotDestitationError";
+  }
+}

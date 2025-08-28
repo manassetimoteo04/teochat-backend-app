@@ -1,5 +1,5 @@
 import { UserEntity } from "../../domain/entities/user.entity.js";
-import IUserRepository from "../../domain/repositories/user.repository.js";
+import IUserRepository from "../../domain/interface/user.repository.js";
 import { User } from "../models/user.model.js";
 
 export default class UserMongoRepository extends IUserRepository {
