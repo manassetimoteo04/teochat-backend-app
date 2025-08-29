@@ -5,7 +5,6 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
 import errorMiddleware from "./middlewares/error.middlewares.js";
-import teamRoutes from "./routes/team.route.js";
 import agendaRoutes from "./routes/agenda.routes.js";
 import eventRoutes from "./routes/event.routes.js";
 import messageRoutes from "./routes/message.routes.js";
@@ -15,6 +14,7 @@ import authRouter from "./modules/auth/presentation/routes/auth.routes.js";
 import companyRoute from "./modules/company/presentation/routes/company.routes.js";
 import usersRoute from "./modules/user/presentation/routes/user.routes.js";
 import invitationRoute from "./modules/invitation/presentation/routes/invitation.routes.js";
+import teamRoutes from "./modules/teams/presentation/routes/team.route.js";
 
 const app = express();
 

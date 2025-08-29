@@ -1,5 +1,5 @@
 export class TeamEntity {
-  constructor(
+  constructor({
     name,
     companyId,
     members,
@@ -9,8 +9,8 @@ export class TeamEntity {
     teamLider,
     agendaId,
     createdAt,
-    updatedAt
-  ) {
+    updatedAt,
+  }) {
     this.name = name;
     this.companyId = companyId;
     this.members = members;

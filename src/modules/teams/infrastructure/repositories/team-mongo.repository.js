@@ -1,12 +1,10 @@
-import { TeamEntity } from "../../domain/entities/teams.entity";
-import Team from "../models/team.model";
+import { TeamEntity } from "../../domain/entities/teams.entity.js";
+import { ITeamsRepository } from "../../domain/interface/team.repository.js";
+import Team from "../models/team.model.js";
 
-export class TeamsMongoRepository {
-  async create({ data }) {
-    const team = await Team.create({
-      data,
-    });
-
+export class TeamsMongoRepository extends ITeamsRepository {
+  async create(data) {
+    const team = await Team.create(data);
     return new TeamEntity({
       id: team._id.toString(),
       companyId: team.companyId.toString(),
@@ -61,8 +59,8 @@ export class TeamsMongoRepository {
     });
   }
 
-  async findMembers() {
-    const team = await Team.findById(this.req.params.id)
+  async findMembers(id) {
+    const team = await Team.findById(id)
       .populate({
         path: "members",
         select: "name email avatar",
