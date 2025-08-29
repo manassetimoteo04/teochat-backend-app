@@ -68,3 +68,19 @@ export class InvitationNotDestitationError extends Error {
     this.name = "InvitationNotDestitationError";
   }
 }
+
+export class TeamNotFoundError extends Error {
+  constructor(
+    message = "A equipe informado não foi encontrado ou não existe."
+  ) {
+    super(message);
+    this.name = "TeamNotFoundError";
+  }
+}
+
+export class NotTeamMemberError extends Error {
+  constructor(message = "Você não tem permissão: não é membro desta equipe.") {
+    super(message);
+    this.name = "NotTeamMemberError";
+  }
+}
