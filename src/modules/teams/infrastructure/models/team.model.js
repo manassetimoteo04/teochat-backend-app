@@ -39,5 +39,5 @@ const teamSchema = new Schema(
   { timestamps: true }
 );
 
-const Team = model("Team1", teamSchema);
+const Team = model("Team", teamSchema);
 export default Team;
