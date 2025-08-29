@@ -84,3 +84,11 @@ export class NotTeamMemberError extends Error {
     this.name = "NotTeamMemberError";
   }
 }
+export class NotTeamCompanyError extends Error {
+  constructor(
+    message = "Você não tem permissão: não podes acessar a quipe de outra empresa."
+  ) {
+    super(message);
+    this.name = "NotTeamCompanyError";
+  }
+}

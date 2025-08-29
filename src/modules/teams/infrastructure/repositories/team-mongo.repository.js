@@ -34,7 +34,7 @@ export class TeamsMongoRepository extends ITeamsRepository {
   }
 
   async findById(id) {
-    const team = await Team.findById(id).populate(
+    const team = await Team.findById(id).populate([
       {
         path: "teamLider",
         select: "name email avatar",
@@ -42,8 +42,8 @@ export class TeamsMongoRepository extends ITeamsRepository {
       {
         path: "createdBy",
         select: "name email avatar",
-      }
-    );
+      },
+    ]);
 
     if (!team) return null;
     return new TeamEntity({
@@ -54,8 +54,18 @@ export class TeamsMongoRepository extends ITeamsRepository {
       name: team.name,
       description: team.description,
       members: team.members,
-      createdBy: team.createdBy,
-      teamLider: team.teamLider,
+      createdBy: {
+        name: team.createdBy.name,
+        email: team.createdBy.email,
+        avatar: team.createdBy.avatar,
+        id: team.createdBy._id,
+      },
+      teamLider: {
+        name: team.teamLider.name,
+        email: team.teamLider.email,
+        avatar: team.teamLider.avatar,
+        id: team.teamLider._id,
+      },
     });
   }
 
