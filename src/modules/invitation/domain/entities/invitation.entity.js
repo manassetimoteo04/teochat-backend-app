@@ -23,6 +23,12 @@ export class InvitationEntity {
   isDestination(email) {
     return email === this.destination;
   }
+  isCreator(id) {
+    return id === this.createdBy.toString();
+  }
+  isExpired() {
+    return new Date(this.expiresIn) < new Date();
+  }
   isAccepted() {
     return this.accepted;
   }
