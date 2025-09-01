@@ -84,8 +84,8 @@ export class TeamsMongoRepository extends ITeamsRepository {
     });
   }
 
-  async findByUserId(userId) {
-    const teams = await Team.find({ members: { $in: [userId] } });
+  async findByUserId({ userId, companyId }) {
+    const teams = await Team.find({ companyId, members: { $in: [userId] } });
     return teams.map(
       (team) =>
         new TeamEntity({

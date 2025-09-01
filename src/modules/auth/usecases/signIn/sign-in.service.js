@@ -14,15 +14,11 @@ export class signInService {
     );
     if (!valid) throw new Error("Senha inválida");
 
-    const accessToken = this.jwtService.generateAccessToken({
-      id: user.id,
-      email: user.email,
-    });
-    const refreshToken = this.jwtService.generateRefreshToken({
+    const token = this.jwtService.generateAccessToken({
       id: user.id,
       email: user.email,
     });
 
-    return { accessToken, refreshToken, user };
+    return { token, user };
   }
 }

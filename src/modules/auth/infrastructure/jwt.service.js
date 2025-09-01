@@ -1,16 +1,13 @@
 import jwt from "jsonwebtoken";
 
 export class JwtService {
-  constructor(secret) {
+  constructor(secret, expiresIn) {
     this.secret = secret;
+    this.expiresIn = expiresIn;
   }
 
   generateAccessToken(payload) {
-    return jwt.sign(payload, this.secret, { expiresIn: "15m" });
-  }
-
-  generateRefreshToken(payload) {
-    return jwt.sign(payload, this.secret, { expiresIn: "7d" });
+    return jwt.sign(payload, this.secret, { expiresIn: this.expiresIn });
   }
 
   verifyToken(token) {

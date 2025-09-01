@@ -5,7 +5,6 @@ export class FindUserByIdService {
 
   async execute(data) {
     const user = await this.userRepo.findById(data.id);
-    if (!user) throw new Error("Usuário com este email já existe");
     return user;
   }
 }

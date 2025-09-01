@@ -26,6 +26,7 @@ export class UserEntity {
   }
 
   confirmAccount(code) {
+    console.log(code, this.confirmCode);
     if (this.confirmCode !== code) {
       throw new Error("Código de confirmação inválido");
     }

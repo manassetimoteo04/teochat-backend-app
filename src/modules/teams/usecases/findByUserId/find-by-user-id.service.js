@@ -4,7 +4,7 @@ import {
   UserNotFoundError,
 } from "../../../shared/infrastructure/errors/error.messages.js";
 
-export class FindTeamByCompanyIdService {
+export class FindTeamByUserIdService {
   constructor({ teamRepo, companyRepo, userRepo }) {
     this.teamRepo = teamRepo;
     this.companyRepo = companyRepo;
@@ -16,7 +16,7 @@ export class FindTeamByCompanyIdService {
     const user = await this.userRepo.findById(userId);
     if (!user) throw new UserNotFoundError();
     if (!company.isMember(userId)) throw new NotCompanyMemberError();
-    const teams = await this.teamRepo.findByCompanyId(companyId);
+    const teams = await this.teamRepo.findByUserId({ companyId, userId });
     return teams;
   }
 }
