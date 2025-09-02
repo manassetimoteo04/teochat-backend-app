@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken";
 import { FindUserByIdService } from "../../../user/usecases/findUser/find-one-user.service.js";
 import UserMongoRepository from "../../../user/infrastructure/repositories/user.mongo.repository.js";
 import { JWT_SECRET } from "../../../../configs/env.js";

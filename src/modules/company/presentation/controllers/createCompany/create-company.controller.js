@@ -6,7 +6,10 @@ const companyRepo = new CompanyMongoRepository();
 const createCom = new CreateCompanyService({ userRepo, companyRepo });
 export async function createCompany(req, res, next) {
   try {
-    const company = await createCom.execute(req.body);
+    const company = await createCom.execute({
+      ...req.body,
+      userId: req.user.id,
+    });
     res.status(201).json({ success: true, data: company });
   } catch (error) {
     next(error);

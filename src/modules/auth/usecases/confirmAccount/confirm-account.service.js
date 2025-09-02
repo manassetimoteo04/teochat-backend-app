@@ -1,15 +1,22 @@
-import { UserNotFoundError } from "../../../shared/infrastructure/errors/error.messages.js";
+import {
+  ExpiredConfirmCodeError,
+  InvalidConfirmCodeError,
+  UserNotFoundError,
+} from "../../../shared/infrastructure/errors/error.messages.js";
 
 export class ConfirmAccountService {
   constructor({ userRepo }) {
     this.userRepo = userRepo;
   }
   async execute({ code, userId }) {
-    const userExists = await this.userRepo.findById(userId);
-    if (!userExists) throw new UserNotFoundError();
-    userExists.confirmAccount(code);
-
-    const updatedUser = await this.userRepo.update(userExists.id, userExists);
+    const user = await this.userRepo.findById(userId);
+    if (!user) throw new UserNotFoundError();
+    if (!user.isCodeValid(code)) throw new InvalidConfirmCodeError();
+    if (user.isCodeExpired()) throw new ExpiredConfirmCodeError();
+    user.isConfirmed = true;
+    user.confirmCode = undefined;
+    user.confirmExpiresIn = undefined;
+    const updatedUser = await this.userRepo.update(user.id, user);
     return { user: updatedUser };
   }
 }

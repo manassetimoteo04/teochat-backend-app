@@ -4,10 +4,12 @@ import { findCompany } from "../controllers/findCompany/find-company.controller.
 import { updateCompany } from "../controllers/updateCompany/update-company.controller.js";
 import { deleteCompany } from "../controllers/deleteCompany/delete-company.controller.js";
 import { findCompanyMembers } from "../controllers/findCompanyMembers/find-company-members.controller.js";
-
+import { findCurrentCompany } from "../controllers/findCurrentCompany/find-current-company.controller.js";
+import { authorize } from "../../../shared/infrastructure/middlewares/auth.middlewares.js";
 const companyRoute = Router();
-companyRoute.post("/", createCompany);
+companyRoute.post("/", authorize, createCompany);
 companyRoute.get("/:id", findCompany);
+companyRoute.get("/:id/current", authorize, findCurrentCompany);
 companyRoute.get("/:id/members", findCompanyMembers);
 companyRoute.put("/:id", updateCompany);
 companyRoute.delete("/:id", deleteCompany);

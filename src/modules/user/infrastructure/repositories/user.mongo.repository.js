@@ -22,6 +22,7 @@ export default class UserMongoRepository extends IUserRepository {
       id: doc._id.toString(),
       name: doc.name,
       email: doc.email,
+      isConfirmed: doc.isConfirmed,
       password: doc.password,
     });
   }
@@ -67,6 +68,7 @@ export default class UserMongoRepository extends IUserRepository {
 
   async update(id, updateData) {
     const user = await User.findById(id);
+    console.log(updateData);
     user.set(updateData);
     await user.save();
 

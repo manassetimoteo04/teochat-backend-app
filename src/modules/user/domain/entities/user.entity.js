@@ -25,17 +25,11 @@ export class UserEntity {
     this.updatedAt = updatedAt;
   }
 
-  confirmAccount(code) {
-    console.log(code, this.confirmCode);
-    if (this.confirmCode !== code) {
-      throw new Error("Código de confirmação inválido");
-    }
-    if (this.confirmExpiresIn && this.confirmExpiresIn < new Date()) {
-      throw new Error("Código expirado");
-    }
-    this.isConfirmed = true;
-    this.confirmCode = undefined;
-    this.confirmExpiresIn = undefined;
+  isCodeValid(code) {
+    return this.confirmCode === code;
+  }
+  isCodeExpired() {
+    return this.confirmExpiresIn && this.confirmExpiresIn < new Date();
   }
 
   joinCompany(companyId, role = "member") {

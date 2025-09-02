@@ -92,3 +92,25 @@ export class NotTeamCompanyError extends Error {
     this.name = "NotTeamCompanyError";
   }
 }
+export class InvalidConfirmCodeError extends Error {
+  constructor(
+    message = "Código de confirmação inválido, por favor verifique o teu email"
+  ) {
+    super(message);
+    this.name = "InvalidConfirmCodeError";
+  }
+}
+export class EmailOrPasswordInvalidError extends Error {
+  constructor(message = "Email ou palavra-passe errada") {
+    super(message);
+    this.name = "EmailOrPasswordInvalidError";
+  }
+}
+export class ExpiredConfirmCodeError extends Error {
+  constructor(
+    message = "Código de confirmação expirado, por favor solicite outro"
+  ) {
+    super(message);
+    this.name = "ExpiredConfirmCodeError";
+  }
+}

@@ -1,3 +1,4 @@
+import { UserNotFoundError } from "../../../shared/infrastructure/errors/error.messages.js";
 import { CompanyEntity } from "../../domain/entities/company.entity.js";
 
 export class CreateCompanyService {
@@ -5,11 +6,13 @@ export class CreateCompanyService {
     this.userRepo = userRepo;
     this.companyRepo = companyRepo;
   }
-  async execute({ name, description, ownerName, industry, userId }) {
+  async execute({ name, description, industry, userId }) {
+    const user = await this.userRepo.findById(userId);
+    if (!user) throw new UserNotFoundError();
     const company = new CompanyEntity({
       name,
       description,
-      ownerName,
+      ownerName: user.name,
       industry,
       createdBy: userId,
       members: [userId],

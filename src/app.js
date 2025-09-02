@@ -4,7 +4,6 @@ import morgan from "morgan";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
-import errorMiddleware from "./middlewares/error.middlewares.js";
 import agendaRoutes from "./routes/agenda.routes.js";
 import eventRoutes from "./routes/event.routes.js";
 import messageRoutes from "./routes/message.routes.js";
@@ -15,6 +14,8 @@ import companyRoute from "./modules/company/presentation/routes/company.routes.j
 import usersRoute from "./modules/user/presentation/routes/user.routes.js";
 import invitationRoute from "./modules/invitation/presentation/routes/invitation.routes.js";
 import teamRoutes from "./modules/teams/presentation/routes/team.route.js";
+import errorMiddleware from "./modules/shared/infrastructure/middlewares/error.middlewares.js";
+import { registerUserSubscribers } from "./modules/user/infrastructure/subscribers/subscribers.js";
 
 const app = express();
 
@@ -31,6 +32,8 @@ app.use(
     crossOriginResourcePolicy: false,
   })
 );
+
+registerUserSubscribers();
 
 app.use(morgan("dev"));
 app.use(express.json());

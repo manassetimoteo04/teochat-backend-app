@@ -1,8 +1,10 @@
 import { UserEntity } from "../../domain/entities/user.entity";
+import { UserCreatedEvent } from "../../domain/events/userCreated/user-created-event";
 
 export class CreateUserService {
-  constructor(userRepo) {
+  constructor(userRepo, eventBus) {
     this.userRepo = userRepo;
+    this.eventBus = eventBus;
   }
 
   async execute(data) {
@@ -13,6 +15,9 @@ export class CreateUserService {
       email: data.email,
       password: data.password,
     });
-    return await this.userRepo.create(user);
+    const newUser = await this.userRepo.create(user);
+    const event = new UserCreatedEvent(newUser);
+    this.eventBus.emit(event.name, event);
+    return newUser;
   }
 }
