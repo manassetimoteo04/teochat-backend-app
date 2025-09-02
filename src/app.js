@@ -16,6 +16,7 @@ import invitationRoute from "./modules/invitation/presentation/routes/invitation
 import teamRoutes from "./modules/teams/presentation/routes/team.route.js";
 import errorMiddleware from "./modules/shared/infrastructure/middlewares/error.middlewares.js";
 import { registerUserSubscribers } from "./modules/user/infrastructure/subscribers/subscribers.js";
+import { registerCompanySubscribers } from "./modules/company/infrastructure/subscribers/subscribers.js";
 
 const app = express();
 
@@ -32,9 +33,8 @@ app.use(
     crossOriginResourcePolicy: false,
   })
 );
-
 registerUserSubscribers();
-
+registerCompanySubscribers();
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

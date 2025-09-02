@@ -14,9 +14,7 @@ export const generateEmailTemplate = ({
   const templates = {
     convite: {
       title: `Convite para entrar na empresa ${companyName}`,
-      subtitle: `Você foi convidado a se juntar à equipe ${
-        teamName || companyName
-      }`,
+      subtitle: `Você foi convidado a se juntar à empresa ${companyName}`,
       bgColor:
         "linear-gradient(135deg, rgba(34,197,94,0.15) 0%, rgba(16,185,129,0.15) 100%)",
       borderColor: "rgba(34, 197, 94, 0.25)",
@@ -24,8 +22,8 @@ export const generateEmailTemplate = ({
         <p style="font-size: 16px; color: #111827; margin: 0 0 10px; text-align: center;">
           <strong>${
             userData.inviter || "Um administrador"
-          }</strong> convidou você para se juntar à equipe 
-          <strong>${teamName}</strong> em <strong>${companyName}</strong>.
+          }</strong> convidou você para se juntar à empresa 
+          <strong>${companyName}</strong>.
         </p>
         <p style="font-size: 14px; color: #4b5563; margin: 0 0 15px; text-align: center;">
           Clique no botão abaixo para aceitar o convite e começar a colaborar com a equipe.
@@ -55,7 +53,7 @@ export const generateEmailTemplate = ({
       borderColor: "rgba(202,138,4,0.25)",
       mainContent: `
         <p style="font-size: 32px; font-weight: 700; text-align: center; margin: 10px 0; color: #ca8a04;">
-          ${userData.code || "123456"}
+          ${userData.code}
         </p>
         <p style="font-size: 14px; color: #4b5563; text-align: center;">
           Este código expira em 10 minutos.

@@ -1,12 +1,16 @@
+import { BASE_URL } from "../../../../configs/env.js";
 import { UserNotFoundError } from "../../../shared/infrastructure/errors/error.messages.js";
 import { CompanyEntity } from "../../domain/entities/company.entity.js";
+import { CompanyCreatedEvent } from "../../domain/events/companyCreated/company-created-event.js";
 
 export class CreateCompanyService {
-  constructor({ userRepo, companyRepo }) {
+  constructor({ userRepo, companyRepo, invitationRepo, eventBus }) {
     this.userRepo = userRepo;
     this.companyRepo = companyRepo;
+    this.invitationRepo = invitationRepo;
+    this.eventBus = eventBus;
   }
-  async execute({ name, description, industry, userId }) {
+  async execute({ name, description, industry, userId, invitation }) {
     const user = await this.userRepo.findById(userId);
     if (!user) throw new UserNotFoundError();
     const company = new CompanyEntity({
@@ -20,6 +24,19 @@ export class CreateCompanyService {
 
     const newCompany = await this.companyRepo.create(company);
     await this.userRepo.addCompany(userId, newCompany.id, "super_admin");
+    const invitations = invitation.split(",");
+    invitations.forEach(async (email) => {
+      const invData = {
+        destination: email,
+        createdBy: userId,
+        company: newCompany.id,
+      };
+      const newInvitation = await this.invitationRepo.create(invData);
+      console.log(newInvitation);
+      const link = `${BASE_URL}/companies/join/${newInvitation.id}`;
+      const event = new CompanyCreatedEvent({ ...newCompany, email, link });
+      this.eventBus.emit(event.name, event);
+    });
     return newCompany;
   }
 }
