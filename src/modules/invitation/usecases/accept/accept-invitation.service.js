@@ -24,9 +24,8 @@ export class AcceptInvitationService {
     if (invitation.isExpired()) throw new InvitationExpiredError();
     if (invitation.isAccepted()) throw new InvitationAlreadyAcceptedError();
     if (invitation.isCanceled()) throw new InvitationCanceledError();
-
-    await this.companyRepo.addMember(invitation.company, user.id);
-    await this.userRepo.addCompany(user.id, invitation.company, "member");
+    await this.companyRepo.addMember(invitation.company.id, user.id);
+    await this.userRepo.addCompany(user.id, invitation.company.id, "member");
     const invi = await this.invitationRepo.accept(invitation.id);
     return invi;
   }

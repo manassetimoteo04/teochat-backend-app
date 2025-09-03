@@ -6,7 +6,6 @@ export const generateEmailTemplate = ({
   actionLink,
   actionText,
   companyName = "TeoChat",
-  teamName = "Equipe",
   secondaryContent,
   footerNote = "Esta mensagem foi gerada automaticamente. Por favor, não responda.",
   userData = {},
@@ -33,7 +32,8 @@ export const generateEmailTemplate = ({
     },
     welcome: {
       title: `Bem-vindo(a) ao ${companyName}, ${userData.name || "Usuário"}!`,
-      subtitle: "Estamos felizes em ter você com a gente.",
+      subtitle:
+        "Estamos felizes em ter você com a gente. Agora a tua conta está activa.",
       bgColor:
         "linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(37,99,235,0.15) 100%)",
       borderColor: "rgba(37, 99, 235, 0.25)",

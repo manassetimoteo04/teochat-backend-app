@@ -31,4 +31,18 @@ export function registerUserSubscribers() {
     };
     await sendEmail(data);
   });
+  eventBus.on("UserConfirmedAccount", async (event) => {
+    const { name, email } = event.payload;
+    const data = {
+      to: email,
+      subject:
+        "Bem vindo ao TeoChat! Agora a sua conta está activa, aproveite nossos recursos",
+      html: generateEmailTemplate({
+        templateType: "welcome",
+        companyName: "TeoChat",
+        userData: { name },
+      }),
+    };
+    await sendEmail(data);
+  });
 }

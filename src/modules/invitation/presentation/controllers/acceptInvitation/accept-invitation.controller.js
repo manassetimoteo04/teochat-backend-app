@@ -15,7 +15,7 @@ export async function acceptInvitation(req, res, next) {
   try {
     const invitation = await acceptInv.execute({
       id: req.params.id,
-      ...req.body,
+      userId: req.user.id,
     });
     res.status(200).json({ success: true, data: invitation });
   } catch (error) {

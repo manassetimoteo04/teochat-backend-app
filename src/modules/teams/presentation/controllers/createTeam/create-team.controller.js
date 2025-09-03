@@ -13,7 +13,15 @@ const createTeamService = new CreateTeamService({
 });
 export async function createTeam(req, res, next) {
   try {
-    const team = await createTeamService.execute(req.body);
+    console.log({
+      ...req.params,
+      ...req.body,
+    });
+    const team = await createTeamService.execute({
+      userId: req.user.id,
+      ...req.params,
+      ...req.body,
+    });
     res.status(201).json({ success: true, data: team });
   } catch (error) {
     next(error);

@@ -1,3 +1,5 @@
+import { BASE_URL } from "../../../../configs/env.js";
+
 export class InvitationEntity {
   constructor({
     id,
@@ -34,5 +36,8 @@ export class InvitationEntity {
   }
   isCanceled() {
     return this.canceled;
+  }
+  generateLink() {
+    return `${BASE_URL}/companies/join/${this.id}`;
   }
 }

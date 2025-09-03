@@ -4,14 +4,18 @@ import { Invitation } from "../models/invitation.model.js";
 
 export class InvitationMongoRepository extends IInvitationRepository {
   async findById(id) {
-    const invitation = await Invitation.findById(id);
+    const invitation = await Invitation.findById(id).populate({
+      path: "company",
+      select: "name industry description createdAt",
+    });
     if (!invitation) return null;
+    const { _id, name, industry, description, createdAt } = invitation.company;
     return new InvitationEntity({
       id: invitation._id,
       destination: invitation.destination,
       expiresIn: invitation.expiresIn,
       createdBy: invitation.createdBy,
-      company: invitation.company,
+      company: { id: _id, name, industry, description, createdAt },
       accepted: invitation.accepted,
       canceled: invitation.canceled,
       createdAt: invitation.createdAt,

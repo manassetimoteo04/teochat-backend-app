@@ -1,10 +1,9 @@
 import { generateEmailTemplate } from "../../../shared/helpers/generate-email-templates.js";
-import sendEmail from "../../../shared/infrastructure/email/email.js";
 import { eventBus } from "../../../shared/infrastructure/events/event-bus.js";
-
-export function registerCompanySubscribers() {
-  eventBus.on("CompanyCreated", async (event) => {
-    const { email, name, link } = event.payload;
+import sendEmail from "../../../shared/infrastructure/email/email.js";
+export function registerInvitationSubscribers() {
+  eventBus.on("InvitationCreated", async (event) => {
+    const { destination: email, name, link } = event.payload;
     const data = {
       to: email,
       subject: `Convite para aderir a empresa ${name} no TeoChat.`,
@@ -13,6 +12,6 @@ export function registerCompanySubscribers() {
         actionLink: link,
       }),
     };
-    // await sendEmail(data);
+    await sendEmail(data);
   });
 }

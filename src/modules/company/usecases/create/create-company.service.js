@@ -32,8 +32,7 @@ export class CreateCompanyService {
         company: newCompany.id,
       };
       const newInvitation = await this.invitationRepo.create(invData);
-      console.log(newInvitation);
-      const link = `${BASE_URL}/companies/join/${newInvitation.id}`;
+      const link = newInvitation.generateLink();
       const event = new CompanyCreatedEvent({ ...newCompany, email, link });
       this.eventBus.emit(event.name, event);
     });

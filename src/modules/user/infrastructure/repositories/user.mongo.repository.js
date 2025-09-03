@@ -67,8 +67,8 @@ export default class UserMongoRepository extends IUserRepository {
   }
 
   async update(id, updateData) {
+    console.log(id);
     const user = await User.findById(id);
-    console.log(updateData);
     user.set(updateData);
     await user.save();
 

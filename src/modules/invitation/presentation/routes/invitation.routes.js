@@ -4,13 +4,14 @@ import { createInvitation } from "../controllers/createInvitation/create-invitat
 import { findInvitationByCompany } from "../controllers/findByCompanyId/find-by-company.controller.js";
 import { acceptInvitation } from "../controllers/acceptInvitation/accept-invitation.controller.js";
 import { cancelInvitation } from "../controllers/cancelInvitation/cancel-invitation.controller.js";
+import { authorize } from "../../../shared/infrastructure/middlewares/auth.middlewares.js";
 
 const invitationRoute = Router();
 
-invitationRoute.get("/:id", findInvitation);
+invitationRoute.get("/:id", authorize, findInvitation);
 invitationRoute.get("/company/:id", findInvitationByCompany);
-invitationRoute.put("/accept/:id", acceptInvitation);
+invitationRoute.put("/accept/:id", authorize, acceptInvitation);
 invitationRoute.put("/cancel/:id", cancelInvitation);
-invitationRoute.post("/", createInvitation);
+invitationRoute.post("/:companyId", authorize, createInvitation);
 
 export default invitationRoute;
