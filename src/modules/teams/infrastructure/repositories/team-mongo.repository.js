@@ -83,10 +83,12 @@ export class TeamsMongoRepository extends ITeamsRepository {
       })
       .select("members");
     if (!team) return null;
-
+    const members = team.members.map((t) => {
+      return { id: t._id, name: t.name, avatar: t.avatar, email: t.email };
+    });
     return new TeamEntity({
       id: team._id.toString(),
-      members: team.members,
+      members,
     });
   }
 
