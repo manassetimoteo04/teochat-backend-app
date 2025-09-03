@@ -31,7 +31,6 @@ export class SignUpService {
       confirmExpiresIn,
       password: hashedPassword,
     });
-
     const user = await this.userRepo.create(userInstance);
     const token = this.jwtService.generateAccessToken({
       id: user.id,

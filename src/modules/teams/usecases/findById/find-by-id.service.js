@@ -16,6 +16,7 @@ export class FindTeamByIdService {
     if (!team.isCompany(companyId)) throw new NotTeamCompanyError();
     const company = await this.companyRepo.findById(team.companyId);
     if (!company) throw new CompanyNotFoundError();
+
     if (!company.isMember(userId)) throw new NotCompanyMemberError();
     return team;
   }

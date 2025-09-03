@@ -12,10 +12,6 @@ const findTeams = new FindTeamByCompanyIdService({
 });
 export async function findTeamByCompany(req, res, next) {
   try {
-    console.log({
-      companyId: req.params.companyId,
-      userId: req.user.id,
-    });
     const teams = await findTeams.execute({
       companyId: req.params.companyId,
       userId: req.user.id,

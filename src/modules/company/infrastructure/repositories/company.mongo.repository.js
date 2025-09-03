@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { CompanyEntity } from "../../domain/entities/company.entity.js";
 import { ICompanyRepository } from "../../domain/interface/company.repository.js";
 import Company from "../models/company.model.js";
@@ -41,18 +42,20 @@ export class CompanyMongoRepository extends ICompanyRepository {
       select: "name email avatar companies",
     });
     if (!doc) return null;
-    const members = doc.members.map((mem) => ({
-      ...mem._doc,
-      _id: undefined,
-      id: mem._doc._id,
-      companies: undefined,
-      role: mem._doc.companies
-        .filter((com) => com.companyId.toString() === id)
-        .at(0).role,
-      joined: mem._doc.companies
-        .filter((com) => com.companyId.toString() === id)
-        .at(0).joined,
-    }));
+    const members = doc.members.map((mem) => {
+      const companyInfo = mem.companies.find(
+        (com) => com.companyId.toString() === id
+      );
+
+      return {
+        id: mem._id.toString(),
+        name: mem.name,
+        email: mem.email,
+        avatar: mem.avatar,
+        role: companyInfo?.role,
+        joined: companyInfo?.joined,
+      };
+    });
     return new CompanyEntity({
       id: doc._id.toString(),
       members: members,
@@ -94,6 +97,73 @@ export class CompanyMongoRepository extends ICompanyRepository {
       logo: doc.logo,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
+    });
+  }
+  async findRecentMembers(id) {
+    const daysAgo = 5;
+    const dateThreshold = new Date();
+    dateThreshold.setDate(dateThreshold.getDate() - daysAgo);
+
+    const doc = await Company.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(id) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "members",
+          foreignField: "_id",
+          as: "members",
+          pipeline: [
+            {
+              $match: {
+                _id: { $ne: new mongoose.Types.ObjectId(this.req.user.id) },
+              },
+            },
+            {
+              $project: {
+                name: 1,
+                email: 1,
+                avatar: 1,
+                companies: {
+                  $filter: {
+                    input: "$companies",
+                    as: "c",
+                    cond: {
+                      $and: [
+                        {
+                          $eq: [
+                            "$$c.companyId",
+                            new mongoose.Types.ObjectId(id),
+                          ],
+                        },
+                        { $gte: ["$$c.joined", dateThreshold] },
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    console.log(doc);
+    const members = doc.members.map((mem) => {
+      const companyInfo = mem.companies.find(
+        (com) => com.companyId.toString() === id
+      );
+
+      return {
+        id: mem._id.toString(),
+        name: mem.name,
+        email: mem.email,
+        avatar: mem.avatar,
+        role: companyInfo?.role,
+        joined: companyInfo?.joined,
+      };
+    });
+    return new CompanyEntity({
+      id: doc._id.toString(),
+      members: members,
     });
   }
   async delete(id) {

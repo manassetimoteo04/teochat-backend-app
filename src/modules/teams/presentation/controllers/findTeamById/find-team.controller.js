@@ -14,8 +14,9 @@ const findTeamService = new FindTeamByIdService({
 export async function findTeam(req, res, next) {
   try {
     const team = await findTeamService.execute({
+      userId: req.user.id,
       teamId: req.params.id,
-      ...req.body,
+      companyId: req.params.companyId,
     });
     res.status(200).json({ success: true, data: team });
   } catch (error) {

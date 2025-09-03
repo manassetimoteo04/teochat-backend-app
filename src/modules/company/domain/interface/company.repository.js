@@ -16,6 +16,9 @@ export class ICompanyRepository {
   async update(id, updateData) {
     throw new Error("Not implemented");
   }
+  async findRecentMembers(id) {
+    throw new Error("Not implemented");
+  }
   async delete(id) {
     throw new Error("Not implemented");
   }

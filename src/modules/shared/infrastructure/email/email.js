@@ -16,7 +16,7 @@ export default async function sendEmail(data) {
 
   const { to, subject, html } = data;
   const info = await transporter.sendMail({
-    from: '"TeoTeam" <no-reply@teoteam.com>',
+    from: '"Plataforma TeoChat" <no-reply@teochat.com>',
     to,
     subject,
     html,

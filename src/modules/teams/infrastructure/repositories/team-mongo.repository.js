@@ -17,7 +17,9 @@ export class TeamsMongoRepository extends ITeamsRepository {
     });
   }
   async findByCompanyId(id) {
+    console.log(id);
     const teams = await Team.find({ companyId: id });
+
     return teams.map(
       (team) =>
         new TeamEntity({
@@ -46,6 +48,7 @@ export class TeamsMongoRepository extends ITeamsRepository {
     ]);
 
     if (!team) return null;
+
     return new TeamEntity({
       id: team._id.toString(),
       companyId: team.companyId.toString(),
@@ -60,12 +63,15 @@ export class TeamsMongoRepository extends ITeamsRepository {
         avatar: team.createdBy.avatar,
         id: team.createdBy._id,
       },
-      teamLider: {
-        name: team.teamLider.name,
-        email: team.teamLider.email,
-        avatar: team.teamLider.avatar,
-        id: team.teamLider._id,
-      },
+
+      teamLider: team.teamLider
+        ? {
+            name: team.teamLider.name,
+            email: team.teamLider.email,
+            avatar: team.teamLider.avatar,
+            id: team.teamLider._id,
+          }
+        : undefined,
     });
   }
 

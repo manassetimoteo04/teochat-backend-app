@@ -12,6 +12,7 @@ export async function getAgendaById(req, res, next) {
     next(error);
   }
 }
+
 export async function getTeamAgenda(req, res, next) {
   try {
     const services = new AgendaServices(req);
