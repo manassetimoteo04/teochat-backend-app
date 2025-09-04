@@ -99,12 +99,12 @@ export class CompanyMongoRepository extends ICompanyRepository {
       updatedAt: doc.updatedAt,
     });
   }
-  async findRecentMembers(id) {
+  async findRecentMembers({ id, userId }) {
     const daysAgo = 5;
     const dateThreshold = new Date();
     dateThreshold.setDate(dateThreshold.getDate() - daysAgo);
 
-    const doc = await Company.aggregate([
+    const [doc] = await Company.aggregate([
       { $match: { _id: new mongoose.Types.ObjectId(id) } },
       {
         $lookup: {
@@ -115,7 +115,7 @@ export class CompanyMongoRepository extends ICompanyRepository {
           pipeline: [
             {
               $match: {
-                _id: { $ne: new mongoose.Types.ObjectId(this.req.user.id) },
+                _id: { $ne: new mongoose.Types.ObjectId(userId) },
               },
             },
             {
@@ -146,7 +146,6 @@ export class CompanyMongoRepository extends ICompanyRepository {
         },
       },
     ]);
-    console.log(doc);
     const members = doc.members.map((mem) => {
       const companyInfo = mem.companies.find(
         (com) => com.companyId.toString() === id

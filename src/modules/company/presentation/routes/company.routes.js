@@ -6,11 +6,13 @@ import { deleteCompany } from "../controllers/deleteCompany/delete-company.contr
 import { findCompanyMembers } from "../controllers/findCompanyMembers/find-company-members.controller.js";
 import { findCurrentCompany } from "../controllers/findCurrentCompany/find-current-company.controller.js";
 import { authorize } from "../../../shared/infrastructure/middlewares/auth.middlewares.js";
+import { findRecentMembers } from "../controllers/findRecentMembers/find-recent-members.controller.js";
 const companyRoute = Router();
 companyRoute.post("/", authorize, createCompany);
 companyRoute.get("/:id", findCompany);
 companyRoute.get("/:id/current", authorize, findCurrentCompany);
 companyRoute.get("/:id/members", findCompanyMembers);
+companyRoute.get("/:id/recent-members", authorize, findRecentMembers);
 companyRoute.put("/:id", updateCompany);
 companyRoute.delete("/:id", deleteCompany);
 export default companyRoute;

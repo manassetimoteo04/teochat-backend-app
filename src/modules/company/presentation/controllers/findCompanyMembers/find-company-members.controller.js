@@ -6,7 +6,7 @@ export async function findCompanyMembers(req, res, next) {
   try {
     const members = await findMembers.execute({
       id: req.params.id,
-      userId: req.body.userId,
+      userId: req.user.id,
     });
     res.status(200).json({ success: true, data: members });
   } catch (error) {
