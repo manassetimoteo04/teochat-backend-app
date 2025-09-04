@@ -5,12 +5,15 @@ import { findTeamByCompany } from "../controllers/findByCompanyId/find-team-by-c
 import { findTeamByUserId } from "../controllers/findByUserId/find-team-by-user-id.controller.js";
 import { authorize } from "../../../shared/infrastructure/middlewares/auth.middlewares.js";
 import { findTeamMembers } from "../controllers/findMembers/find-team-members.controller.js";
+import { addTeamMember } from "../controllers/addTeamMember/add-team-member.controller.js";
+
 const teamRoutes = Router();
 
 teamRoutes.get("/company/:companyId", authorize, findTeamByCompany);
 teamRoutes.post("/:companyId", authorize, createTeam);
 teamRoutes.get("/:id/:companyId", authorize, findTeam);
 teamRoutes.get("/:id/members/:companyId", authorize, findTeamMembers);
+teamRoutes.put("/:id/members/:companyId/", authorize, addTeamMember);
 teamRoutes.get("/:id", findTeam);
 teamRoutes.get("/user/:companyId", findTeamByUserId);
 
