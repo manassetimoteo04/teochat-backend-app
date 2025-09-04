@@ -18,7 +18,6 @@ export class TeamsMongoRepository extends ITeamsRepository {
     });
   }
   async findByCompanyId(id) {
-    console.log(id);
     const teams = await Team.find({ companyId: id });
 
     return teams.map(

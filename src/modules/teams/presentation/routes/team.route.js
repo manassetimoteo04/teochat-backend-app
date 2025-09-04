@@ -10,6 +10,7 @@ import { removeTeamMember } from "../controllers/removeTeamMember/remove-team-me
 import { setTeamLider } from "../controllers/setTeamLider/set-team-lider.controller.js";
 import { removeTeamLider } from "../controllers/removeTeamLider/remove-team-lider.controller.js";
 import { updateTeam } from "../controllers/updateTeam/update-team.controller.js";
+import { deleteTeam } from "../controllers/deleteTeam/delete-team.controller.js";
 
 const teamRoutes = Router();
 
@@ -17,6 +18,7 @@ teamRoutes.get("/company/:companyId", authorize, findTeamByCompany);
 teamRoutes.post("/:companyId", authorize, createTeam);
 teamRoutes.put("/:id/:companyId", authorize, updateTeam);
 teamRoutes.get("/:id/:companyId", authorize, findTeam);
+teamRoutes.delete("/:id/:companyId", authorize, deleteTeam);
 teamRoutes.get("/:id/members/:companyId", authorize, findTeamMembers);
 teamRoutes.put("/:id/members/:companyId/", authorize, addTeamMember);
 teamRoutes.put("/:id/lider/:companyId/", authorize, setTeamLider);
