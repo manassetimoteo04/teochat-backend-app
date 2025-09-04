@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { CompanyEntity } from "../../domain/entities/company.entity.js";
 import { ICompanyRepository } from "../../domain/interface/company.repository.js";
 import Company from "../models/company.model.js";
@@ -99,72 +98,7 @@ export class CompanyMongoRepository extends ICompanyRepository {
       updatedAt: doc.updatedAt,
     });
   }
-  async findRecentMembers({ id, userId }) {
-    const daysAgo = 5;
-    const dateThreshold = new Date();
-    dateThreshold.setDate(dateThreshold.getDate() - daysAgo);
 
-    const [doc] = await Company.aggregate([
-      { $match: { _id: new mongoose.Types.ObjectId(id) } },
-      {
-        $lookup: {
-          from: "users",
-          localField: "members",
-          foreignField: "_id",
-          as: "members",
-          pipeline: [
-            {
-              $match: {
-                _id: { $ne: new mongoose.Types.ObjectId(userId) },
-              },
-            },
-            {
-              $project: {
-                name: 1,
-                email: 1,
-                avatar: 1,
-                companies: {
-                  $filter: {
-                    input: "$companies",
-                    as: "c",
-                    cond: {
-                      $and: [
-                        {
-                          $eq: [
-                            "$$c.companyId",
-                            new mongoose.Types.ObjectId(id),
-                          ],
-                        },
-                        { $gte: ["$$c.joined", dateThreshold] },
-                      ],
-                    },
-                  },
-                },
-              },
-            },
-          ],
-        },
-      },
-    ]);
-    const members = doc.members.map((mem) => {
-      const companyInfo = mem.companies.find(
-        (com) => com.companyId.toString() === id
-      );
-
-      return {
-        id: mem._id.toString(),
-        name: mem.name,
-        email: mem.email,
-        avatar: mem.avatar,
-        role: companyInfo?.role,
-        joined: companyInfo?.joined,
-      };
-    });
-    return new CompanyEntity({
-      id: doc._id.toString(),
-      members: members,
-    });
-  }
   async delete(id) {
     await Company.findByIdAndDelete(id);
   }

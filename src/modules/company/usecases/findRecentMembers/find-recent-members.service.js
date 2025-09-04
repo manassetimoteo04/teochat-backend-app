@@ -15,8 +15,8 @@ export class FindRecentMembersService {
     if (!company.isMember(userId)) throw new NotCompanyMemberError();
     const user = await this.userRepo.findById(userId);
     if (!user) throw new UserNotFoundError();
-    const members = await this.companyRepo.findRecentMembers({
-      id: companyId,
+    const members = await this.userRepo.findCompanyRecentMembers({
+      companyId,
       userId,
     });
     return members;

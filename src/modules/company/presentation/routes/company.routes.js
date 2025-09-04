@@ -11,7 +11,7 @@ const companyRoute = Router();
 companyRoute.post("/", authorize, createCompany);
 companyRoute.get("/:id", findCompany);
 companyRoute.get("/:id/current", authorize, findCurrentCompany);
-companyRoute.get("/:id/members", findCompanyMembers);
+companyRoute.get("/:id/members", authorize, findCompanyMembers);
 companyRoute.get("/:id/recent-members", authorize, findRecentMembers);
 companyRoute.put("/:id", updateCompany);
 companyRoute.delete("/:id", deleteCompany);

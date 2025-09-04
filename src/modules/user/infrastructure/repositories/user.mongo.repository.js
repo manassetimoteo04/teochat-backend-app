@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { UserEntity } from "../../domain/entities/user.entity.js";
 import IUserRepository from "../../domain/interface/user.repository.js";
 import { User } from "../models/user.model.js";
@@ -65,7 +66,67 @@ export default class UserMongoRepository extends IUserRepository {
       }),
     });
   }
+  async findCompanyRecentMembers({ companyId, userId }) {
+    const daysAgo = 5;
+    const dateThreshold = new Date();
+    dateThreshold.setDate(dateThreshold.getDate() - daysAgo);
 
+    const recentMembers = await User.find({
+      _id: { $ne: userId },
+      isConfirmed: { $eq: true },
+      companies: {
+        $elemMatch: {
+          companyId: new mongoose.Types.ObjectId(companyId),
+          joined: { $gte: dateThreshold },
+        },
+      },
+    }).select("name email avatar companies isConfirmed");
+
+    const members = recentMembers.map((user) => {
+      const companyInfo = user.companies.find(
+        (c) => c.companyId.toString() === companyId
+      );
+      return new UserEntity({
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        isConfirmed: user.isConfirmed,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        avatar: user.avatar,
+        companies: { role: companyInfo?.role, joined: companyInfo?.joined },
+      });
+    });
+    return members;
+  }
+  async findCompanyMembers({ companyId, userId }) {
+    const recentMembers = await User.find({
+      _id: { $ne: userId },
+      isConfirmed: { $eq: true },
+      companies: {
+        $elemMatch: {
+          companyId: new mongoose.Types.ObjectId(companyId),
+        },
+      },
+    }).select("name email avatar companies isConfirmed");
+
+    const members = recentMembers.map((user) => {
+      const companyInfo = user.companies.find(
+        (c) => c.companyId.toString() === companyId
+      );
+      return new UserEntity({
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        isConfirmed: user.isConfirmed,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        avatar: user.avatar,
+        companies: { role: companyInfo?.role, joined: companyInfo?.joined },
+      });
+    });
+    return members;
+  }
   async update(id, updateData) {
     const user = await User.findById(id);
     user.set(updateData);

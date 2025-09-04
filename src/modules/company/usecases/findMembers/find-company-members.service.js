@@ -1,18 +1,24 @@
 import {
   CompanyNotFoundError,
   NotCompanyMemberError,
+  UserNotFoundError,
 } from "../../../shared/infrastructure/errors/error.messages.js";
 
 export class FindCompanyMembersService {
-  constructor({ companyRepo }) {
+  constructor({ companyRepo, userRepo }) {
     this.companyRepo = companyRepo;
+    this.userRepo = userRepo;
   }
-  async execute({ id, userId }) {
-    const company = await this.companyRepo.findById(id);
+  async execute({ companyId, userId }) {
+    const company = await this.companyRepo.findById(companyId);
     if (!company) throw new CompanyNotFoundError();
-    const isMember = company.isMember(userId);
-    if (!isMember) throw new NotCompanyMemberError();
-    const { members } = await this.companyRepo.findMembers(id);
+    if (!(await this.userRepo.findById(userId))) throw new UserNotFoundError();
+    if (!company.isMember(userId)) throw new NotCompanyMemberError();
+    const members = await this.userRepo.findCompanyMembers({
+      companyId,
+      userId,
+    });
+
     return members;
   }
 }
