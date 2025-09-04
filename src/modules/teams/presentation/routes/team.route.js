@@ -9,11 +9,13 @@ import { addTeamMember } from "../controllers/addTeamMember/add-team-member.cont
 import { removeTeamMember } from "../controllers/removeTeamMember/remove-team-member.controller.js";
 import { setTeamLider } from "../controllers/setTeamLider/set-team-lider.controller.js";
 import { removeTeamLider } from "../controllers/removeTeamLider/remove-team-lider.controller.js";
+import { updateTeam } from "../controllers/updateTeam/update-team.controller.js";
 
 const teamRoutes = Router();
 
 teamRoutes.get("/company/:companyId", authorize, findTeamByCompany);
 teamRoutes.post("/:companyId", authorize, createTeam);
+teamRoutes.put("/:id/:companyId", authorize, updateTeam);
 teamRoutes.get("/:id/:companyId", authorize, findTeam);
 teamRoutes.get("/:id/members/:companyId", authorize, findTeamMembers);
 teamRoutes.put("/:id/members/:companyId/", authorize, addTeamMember);

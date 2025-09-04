@@ -5,6 +5,7 @@ export class TeamEntity {
     companyId,
     members,
     tags,
+    description,
     createdBy,
     photo,
     teamLider,
@@ -14,6 +15,7 @@ export class TeamEntity {
   }) {
     this.id = id;
     this.name = name;
+    this.description = description;
     this.companyId = companyId;
     this.members = members;
     this.tags = tags;
@@ -29,5 +31,8 @@ export class TeamEntity {
   }
   isMember(memberId) {
     return this.members.some((mem) => mem.toString() === memberId);
+  }
+  isLider(memberId) {
+    return this.teamLider?.id?.toString() === memberId;
   }
 }

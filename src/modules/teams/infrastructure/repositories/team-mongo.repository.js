@@ -49,7 +49,6 @@ export class TeamsMongoRepository extends ITeamsRepository {
     ]);
 
     if (!team) return null;
-
     return new TeamEntity({
       id: team._id.toString(),
       companyId: team.companyId.toString(),
