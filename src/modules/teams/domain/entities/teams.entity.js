@@ -27,4 +27,7 @@ export class TeamEntity {
   isCompany(companyId) {
     return this.companyId.toString() === companyId;
   }
+  isMember(memberId) {
+    return this.members.some((mem) => mem.toString() === memberId);
+  }
 }

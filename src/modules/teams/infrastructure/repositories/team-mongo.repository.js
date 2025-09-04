@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { TeamEntity } from "../../domain/entities/teams.entity.js";
 import { ITeamsRepository } from "../../domain/interface/team.repository.js";
 import Team from "../models/team.model.js";
@@ -144,15 +145,13 @@ export class TeamsMongoRepository extends ITeamsRepository {
       createdBy: team.createdBy.toString(),
     });
   }
-
-  async setLider(id, liderId) {
+  async removeMember(id, memberId) {
     const team = await Team.findByIdAndUpdate(
       id,
-      {
-        teamLider: liderId,
-      },
+      { $pull: { members: new mongoose.Types.ObjectId(memberId) } },
       { new: true }
     );
+
     if (!team) return null;
     return new TeamEntity({
       id: team._id.toString(),
@@ -165,6 +164,23 @@ export class TeamsMongoRepository extends ITeamsRepository {
       createdBy: team.createdBy.toString(),
     });
   }
+  async removeLider(id) {
+    const team = await Team.findById(id);
+    team.teamLider = undefined;
+    await team.save();
+    if (!team) return null;
+    return new TeamEntity({
+      id: team._id.toString(),
+      companyId: team.companyId.toString(),
+      tags: team.tags,
+      photo: team.photo,
+      name: team.name,
+      description: team.description,
+      members: team.members,
+      createdBy: team.createdBy.toString(),
+    });
+  }
+
   async delete(id) {
     await Team.findByIdAndDelete(id);
   }
