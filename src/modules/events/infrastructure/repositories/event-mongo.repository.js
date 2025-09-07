@@ -1,6 +1,6 @@
-import { EventEntity } from "../../domain/entities/events.entities";
-import { IEventRepository } from "../../domain/interface/event.repository";
-import Event from "../models/events.model";
+import { EventEntity } from "../../domain/entities/events.entities.js";
+import { IEventRepository } from "../../domain/interface/event.repository.js";
+import Event from "../models/events.model.js";
 
 export class EventMongoRepository extends IEventRepository {
   async findById(id) {
@@ -22,6 +22,7 @@ export class EventMongoRepository extends IEventRepository {
     });
   }
   async create(eventData) {
+    console.log(eventData);
     const event = await Event.create(eventData);
 
     return new EventEntity({

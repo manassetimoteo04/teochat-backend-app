@@ -5,7 +5,6 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
 import agendaRoutes from "./routes/agenda.routes.js";
-import eventRoutes from "./routes/event.routes.js";
 import messageRoutes from "./routes/message.routes.js";
 
 import { BASE_URL } from "./configs/env.js";
@@ -18,6 +17,7 @@ import errorMiddleware from "./modules/shared/infrastructure/middlewares/error.m
 import { registerUserSubscribers } from "./modules/user/infrastructure/subscribers/subscribers.js";
 import { registerCompanySubscribers } from "./modules/company/infrastructure/subscribers/subscribers.js";
 import { registerInvitationSubscribers } from "./modules/invitation/infrastructure/subscribers/subscribers.js";
+import eventRoute from "./modules/events/presentation/routes/event.routes.js";
 
 const app = express();
 
@@ -46,7 +46,7 @@ app.use("/api/v1/companies/", companyRoute);
 app.use("/api/v1/invitations/", invitationRoute);
 app.use("/api/v1/teams/", teamRoutes);
 app.use("/api/v1/agendas/", agendaRoutes);
-app.use("/api/v1/events/", eventRoutes);
+app.use("/api/v1/events/", eventRoute);
 app.use("/api/v1/messages/", messageRoutes);
 app.use(errorMiddleware);
 registerUserSubscribers();
