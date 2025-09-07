@@ -32,6 +32,12 @@ const EventSchema = new mongoose.Schema(
       enum: ["presential", "video-call"],
       required: true,
     },
+    status: {
+      type: String,
+      enum: ["pending", "active", "canceled", "finished"],
+      required: true,
+      default: "pending",
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
