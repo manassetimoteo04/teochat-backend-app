@@ -3,9 +3,8 @@ export class CreateEventService {
     this.eventRepo = eventRepo;
     this.userRepo = userRepo;
   }
-  async execute({ agendaId, userId, ...eventData }) {
+  async execute({ ...eventData }) {
     const event = await this.eventRepo.create({
-      agenda: agendaId,
       ...eventData,
     });
     return event;

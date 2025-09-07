@@ -114,3 +114,11 @@ export class ExpiredConfirmCodeError extends Error {
     this.name = "ExpiredConfirmCodeError";
   }
 }
+export class EventNotFoundError extends Error {
+  constructor(
+    message = "O Evento informado não foi encontrado ou não existe."
+  ) {
+    super(message);
+    this.name = "EventNotFoundError";
+  }
+}

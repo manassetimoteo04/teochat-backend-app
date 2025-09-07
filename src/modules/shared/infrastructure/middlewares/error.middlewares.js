@@ -43,6 +43,7 @@ const errorMiddleware = (err, req, res, next) => {
       InvalidConfirmCodeError: { code: 400 },
       ExpiredConfirmCodeError: { code: 400 },
       EmailOrPasswordInvalidError: { code: 400 },
+      EventNotFoundError: { code: 404 },
     };
     if (customErrors[err.name]) {
       error.statusCode = customErrors[err.name].code;

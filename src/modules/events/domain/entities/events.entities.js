@@ -1,7 +1,7 @@
 export class EventEntity {
   constructor({
     id,
-    agenda,
+    teamId,
     title,
     description,
     date,
@@ -15,7 +15,7 @@ export class EventEntity {
     updatedAt,
   }) {
     this.id = id;
-    this.agenda = agenda;
+    this.teamId = teamId;
     this.title = title;
     this.description = description;
     this.date = date;

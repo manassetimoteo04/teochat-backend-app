@@ -8,13 +8,13 @@ export class EventMongoRepository extends IEventRepository {
     if (!event) return null;
     return new EventEntity({
       id: event._id.toString(),
-      agenda: event.agenda,
+      teamId: event.teamId,
       title: event.title,
       description: event.title,
       date: event.date,
       startTime: event.startTime,
       endTime: event.endTime,
-      type: event.title,
+      type: event.type,
       location: event.location,
       createdBy: event.createdBy,
       createdAt: event.createdAt,
@@ -22,12 +22,11 @@ export class EventMongoRepository extends IEventRepository {
     });
   }
   async create(eventData) {
-    console.log(eventData);
     const event = await Event.create(eventData);
 
     return new EventEntity({
       id: event._id.toString(),
-      agenda: event.agenda,
+      teamId: event.teamId,
       title: event.title,
       status: event.status,
       description: event.description,
@@ -47,7 +46,7 @@ export class EventMongoRepository extends IEventRepository {
 
     return new EventEntity({
       id: event._id.toString(),
-      agenda: event.agenda,
+      teamId: event.teamId,
       title: event.title,
       status: event.status,
       description: event.description,
@@ -65,9 +64,9 @@ export class EventMongoRepository extends IEventRepository {
     await Event.findByIdAndDelete(id);
     return true;
   }
-  async findByTime({ agenda, startTime, endTime, id }) {
+  async findByTime({ teamId, startTime, endTime, id }) {
     const event = await Event.findOne({
-      agenda,
+      teamId,
       _id: { $ne: id },
       $or: [
         {
@@ -79,7 +78,7 @@ export class EventMongoRepository extends IEventRepository {
     if (!event) return null;
     return new EventEntity({
       id: event._id.toString(),
-      agenda: event.agenda,
+      teamId: event.teamId,
       title: event.title,
       status: event.status,
       description: event.description,
@@ -93,15 +92,15 @@ export class EventMongoRepository extends IEventRepository {
       updatedAt: event.updatedAt,
     });
   }
-  async findByAgenda(agenda) {
+  async findByTeamId(teamId) {
     const events = await Event.find({
-      agenda,
+      teamId,
     });
     return events.map(
       (event) =>
         new EventEntity({
           id: event._id.toString(),
-          agenda: event.agenda,
+          teamId: event.teamId,
           title: event.title,
           status: event.status,
           description: event.description,
