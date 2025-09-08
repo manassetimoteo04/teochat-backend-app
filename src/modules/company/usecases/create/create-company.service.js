@@ -24,18 +24,14 @@ export class CreateCompanyService {
 
     const newCompany = await this.companyRepo.create(company);
     await this.userRepo.addCompany(userId, newCompany.id, "super_admin");
-    const invitations = invitation.split(",");
-    invitations.forEach(async (email) => {
-      const invData = {
-        destination: email,
-        createdBy: userId,
-        company: newCompany.id,
-      };
-      const newInvitation = await this.invitationRepo.create(invData);
-      const link = newInvitation.generateLink();
-      const event = new CompanyCreatedEvent({ ...newCompany, email, link });
-      this.eventBus.emit(event.name, event);
+
+    const event = new CompanyCreatedEvent({
+      ...newCompany,
+      companyId: newCompany.id,
+      userId,
+      emails: invitation,
     });
+    this.eventBus.emit(event.name, event);
     return newCompany;
   }
 }

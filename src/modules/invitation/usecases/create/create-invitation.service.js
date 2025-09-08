@@ -34,6 +34,7 @@ export class CreateInvitationService {
       link: invitation.generateLink(),
     }));
     const event = new InvitationCreatedEvent(payloads);
+
     this.eventBus.emit(event.name, event);
     return invitations;
   }

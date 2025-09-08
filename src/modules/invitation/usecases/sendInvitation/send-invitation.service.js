@@ -4,6 +4,7 @@ export class SendInvitationService {
     this.generateTemplates = generateTemplates;
   }
   async execute({ emails }) {
+    console.log(emails);
     await Promise.allSettled(
       emails.map(({ destination, name, link }) =>
         this.emailService({

@@ -3,7 +3,6 @@ import agenda from "../../../../configs/agenda.js";
 export function registerInvitationSubscribers() {
   eventBus.on("InvitationCreated", async (event) => {
     const emails = event.payload;
-    console.log(emails);
     await agenda.now("sendInvitation", { emails });
   });
 }
