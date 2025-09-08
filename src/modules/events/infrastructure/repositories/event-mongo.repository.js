@@ -81,6 +81,7 @@ export class EventMongoRepository extends IEventRepository {
     const event = await Event.findOne({
       teamId,
       date,
+      status: { $ne: "canceled" },
       _id: { $ne: id },
       $and: [{ startTime: { $lt: endTime } }, { endTime: { $gt: startTime } }],
     });
