@@ -1,14 +1,10 @@
-import UserMongoRepository from "../../../../user/infrastructure/repositories/user.mongo.repository.js";
-import { GetSessionService } from "../../../usecases/getSession/get-session.service.js";
+import authContainer from "../../../infrastructure/container/auth-container.js";
 
-const userRepo = new UserMongoRepository();
-
-const session = new GetSessionService({
-  userRepo,
-});
 export async function getSession(req, res, next) {
   try {
-    const user = await session.execute({ userId: req.user.id });
+    const user = await authContainer.getCurrentSession.execute({
+      userId: req.user.id,
+    });
 
     res.status(200).json({ success: true, data: user });
   } catch (err) {
