@@ -1,12 +1,8 @@
-import UserMongoRepository from "../../../../user/infrastructure/repositories/user.mongo.repository.js";
-import { CompanyMongoRepository } from "../../../infrastructure/repositories/company.mongo.repository.js";
-import { FindCompanyMembersService } from "../../../usecases/findMembers/find-company-members.service.js";
-const companyRepo = new CompanyMongoRepository();
-const userRepo = new UserMongoRepository();
-const findMembers = new FindCompanyMembersService({ companyRepo, userRepo });
+import companyContainer from "../../../infrastructure/container/company-container.js";
+
 export async function findCompanyMembers(req, res, next) {
   try {
-    const members = await findMembers.execute({
+    const members = await companyContainer.findMembers.execute({
       companyId: req.params.id,
       userId: req.user.id,
     });

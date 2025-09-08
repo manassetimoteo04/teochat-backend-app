@@ -1,10 +1,8 @@
-import { CompanyMongoRepository } from "../../../infrastructure/repositories/company.mongo.repository.js";
-import { FindCompanyByIdService } from "../../../usecases/findById/find-by-id.service.js";
-const companyRepo = new CompanyMongoRepository();
-const findCom = new FindCompanyByIdService({ companyRepo });
+import companyContainer from "../../../infrastructure/container/company-container.js";
+
 export async function findCompany(req, res, next) {
   try {
-    const company = await findCom.execute({
+    const company = await companyContainer.findCompany.execute({
       userId: req.body.userId,
       companyId: req.params.id,
     });
