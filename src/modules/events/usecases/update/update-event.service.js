@@ -28,7 +28,6 @@ export class UpdateEventService {
       endTime,
       teamId,
     });
-    console.log(conflict, eventId, date, startTime, endTime, teamId);
     if (conflict) throw new EventTimeConflictError();
 
     const event = await this.eventRepo.update(eventId, {
@@ -36,7 +35,7 @@ export class UpdateEventService {
       startTime,
       endTime,
       teamId,
-      updateData,
+      ...updateData,
     });
     if (!event) throw new EventNotFoundError();
     return event;

@@ -40,6 +40,22 @@ export class SendEventReminderService {
         };
         await this.emailService(data);
       }
+      await Promise.allSettled(
+        members.map((user) => {
+          this.emailService({
+            to: user.email,
+            subject: "Verificação da Conta TeoChat",
+            html: this.generateTemplates({
+              teamName,
+              companyName: company.name,
+              eventName: event.name,
+              eventDate: event.date,
+              eventTime: event.startTime,
+              eventLink: "http://localhost:500",
+            }),
+          });
+        })
+      );
     } catch (error) {
       console.error(error);
     }

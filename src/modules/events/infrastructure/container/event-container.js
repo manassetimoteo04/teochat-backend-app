@@ -10,14 +10,16 @@ import { FindEventByTeamIdService } from "../../usecases/findByTeamId/find-event
 import { SendEventReminderService } from "../../usecases/sendReminder/send-event-reminder.service.js";
 import { UpdateEventService } from "../../usecases/update/update-event.service.js";
 import { EventMongoRepository } from "../repositories/event-mongo.repository.js";
+
 const eventRepo = new EventMongoRepository();
 const teamRepo = new TeamsMongoRepository();
 const companyRepo = new CompanyMongoRepository();
+
 const createEvent = new CreateEventService({ eventRepo, eventBus });
 const updateEvent = new UpdateEventService({ eventRepo });
 const findEvent = new FindEventService({ eventRepo });
 const findByTeam = new FindEventByTeamIdService({ eventRepo, teamRepo });
-const cancelEvent = new CancelEventService({ eventRepo });
+const cancelEvent = new CancelEventService({ eventRepo, eventBus });
 const sendEventReminders = new SendEventReminderService({
   eventRepo,
   teamRepo,

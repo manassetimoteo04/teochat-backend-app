@@ -4,9 +4,6 @@ import morgan from "morgan";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
-import agendaRoutes from "./routes/agenda.routes.js";
-import messageRoutes from "./routes/message.routes.js";
-
 import { BASE_URL } from "./configs/env.js";
 import authRouter from "./modules/auth/presentation/routes/auth.routes.js";
 import companyRoute from "./modules/company/presentation/routes/company.routes.js";
@@ -47,9 +44,7 @@ app.use("/api/v1/users/", usersRoute);
 app.use("/api/v1/companies/", companyRoute);
 app.use("/api/v1/invitations/", invitationRoute);
 app.use("/api/v1/teams/", teamRoutes);
-app.use("/api/v1/agendas/", agendaRoutes);
 app.use("/api/v1/events/", eventRoute);
-app.use("/api/v1/messages/", messageRoutes);
 app.use(errorMiddleware);
 
 registerUserSubscribers();

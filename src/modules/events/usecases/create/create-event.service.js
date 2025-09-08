@@ -29,7 +29,7 @@ export class CreateEventService {
       endTime,
       teamId,
     });
-    // if (conflict) throw new EventTimeConflictError();
+    if (conflict) throw new EventTimeConflictError();
     const eventEntity = new EventEntity({
       date,
       startTime,
@@ -38,8 +38,11 @@ export class CreateEventService {
       ...eventData,
     });
     const createdEvent = await this.eventRepo.create(eventEntity);
+    const eventDate = new Date(eventEntity.startTime);
+
+    const reminderTime = new Date(eventDate.getTime() - 4 * 60 * 1000);
     const event = new EventCreatedEvent({
-      payload: { eventId: createdEvent.id },
+      payload: { eventId: createdEvent.id, reminderTime },
     });
     this.eventBus.emit(event.name, event);
     return createdEvent;
