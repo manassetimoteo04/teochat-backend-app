@@ -122,3 +122,11 @@ export class EventNotFoundError extends Error {
     this.name = "EventNotFoundError";
   }
 }
+export class EventTimeConflictError extends Error {
+  constructor(
+    message = " Já existe um evento neste horário para esta agenda."
+  ) {
+    super(message);
+    this.name = "EventTimeConflictError";
+  }
+}

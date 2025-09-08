@@ -1,12 +1,14 @@
 import { isBefore } from "date-fns";
-import { EventTimeConflictError } from "../../../shared/infrastructure/errors/error.messages.js";
+import {
+  EventNotFoundError,
+  EventTimeConflictError,
+} from "../../../shared/infrastructure/errors/error.messages.js";
 
-export class CreateEventService {
-  constructor({ eventRepo, userRepo }) {
+export class UpdateEventService {
+  constructor({ eventRepo }) {
     this.eventRepo = eventRepo;
-    this.userRepo = userRepo;
   }
-  async execute({ date, startTime, endTime, teamId, ...eventData }) {
+  async execute({ eventId, date, startTime, endTime, teamId, ...updateData }) {
     const start = new Date(startTime);
     const now = new Date();
     const end = new Date(endTime);
@@ -19,22 +21,24 @@ export class CreateEventService {
       throw new EventTimeConflictError(
         "Hora de término tem de ser sempre superior ao do início do evento"
       );
-
     const conflict = await this.eventRepo.findByTime({
+      id: eventId,
       date,
       startTime,
       endTime,
       teamId,
     });
+    console.log(conflict, eventId, date, startTime, endTime, teamId);
     if (conflict) throw new EventTimeConflictError();
 
-    const event = await this.eventRepo.create({
+    const event = await this.eventRepo.update(eventId, {
       date,
       startTime,
       endTime,
       teamId,
-      ...eventData,
+      updateData,
     });
+    if (!event) throw new EventNotFoundError();
     return event;
   }
 }

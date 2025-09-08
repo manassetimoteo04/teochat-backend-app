@@ -11,10 +11,10 @@ export class IEventRepository {
   async delete(id) {
     throw new Error("Not implemented");
   }
-  async findByTime({ agenda, startTime, endTime, id }) {
+  async findByTime({ teamId, startTime, endTime, id }) {
     throw new Error("Not implemented");
   }
-  async findByAgenda(agenda) {
+  async findByTeamId(agenda) {
     throw new Error("Not implemented");
   }
 }
