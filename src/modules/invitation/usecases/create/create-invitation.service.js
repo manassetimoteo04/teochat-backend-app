@@ -12,27 +12,29 @@ export class CreateInvitationService {
     this.userRepo = userRepo;
     this.eventBus = eventBus;
   }
-  async execute({ emails: destination, companyId, userId }) {
+  async execute({ emails: destinations, companyId, userId }) {
+    const isArray = Array.isArray(destinations);
+    const emailsList = isArray ? destinations : destinations.split(",");
     const user = await this.userRepo.findById(userId);
     if (!user) throw new UserNotFoundError();
     const company = await this.companyRepo.findById(companyId);
     if (!company) throw new CompanyNotFoundError();
     if (!company.isMember(userId)) throw NotCompanyMemberError();
     const expiresIn = Date.now() + 60 * 60 * 24 * 7 * 1000;
-    const invitation = await this.invitationRepo.create({
-      destination,
+    const emails = emailsList.map((email) => ({
+      destination: email,
       company: companyId,
       expiresIn,
       createdBy: userId,
-    });
-    const link = invitation.generateLink();
-    console.log(link);
-    const event = new InvitationCreatedEvent({
-      ...invitation,
+    }));
+    const invitations = await this.invitationRepo.create(emails);
+    const payloads = invitations.map((invitation) => ({
+      destination: invitation.destination,
       name: company.name,
-      link,
-    });
+      link: invitation.generateLink(),
+    }));
+    const event = new InvitationCreatedEvent(payloads);
     this.eventBus.emit(event.name, event);
-    return invitation;
+    return invitations;
   }
 }

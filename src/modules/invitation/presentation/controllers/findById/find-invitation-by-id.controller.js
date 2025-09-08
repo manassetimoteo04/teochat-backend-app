@@ -1,13 +1,8 @@
-import UserMongoRepository from "../../../../user/infrastructure/repositories/user.mongo.repository.js";
-import { InvitationMongoRepository } from "../../../infrastructure/repositories/invitation-mongo.repository.js";
-import { FindInvitationByIdService } from "../../../usecases/findById/find-invitation-by-id.service.js";
+import invitationContainer from "../../../infrastructure/container/invitation-container.js";
 
-const invitationRepo = new InvitationMongoRepository();
-const userRepo = new UserMongoRepository();
-const createInv = new FindInvitationByIdService({ invitationRepo, userRepo });
 export async function findInvitation(req, res, next) {
   try {
-    const invitation = await createInv.execute({
+    const invitation = await invitationContainer.findInvitation.execute({
       ...req.params,
       userId: req.user.id,
     });

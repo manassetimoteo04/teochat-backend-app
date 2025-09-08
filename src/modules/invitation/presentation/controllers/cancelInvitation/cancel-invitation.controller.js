@@ -1,20 +1,8 @@
-import { CompanyMongoRepository } from "../../../../company/infrastructure/repositories/company.mongo.repository.js";
-import UserMongoRepository from "../../../../user/infrastructure/repositories/user.mongo.repository.js";
-import { InvitationMongoRepository } from "../../../infrastructure/repositories/invitation-mongo.repository.js";
-import { CancelInvitationService } from "../../../usecases/cancel/cancel-invitation.service.js";
-
-const invitationRepo = new InvitationMongoRepository();
-const companyRepo = new CompanyMongoRepository();
-const userRepo = new UserMongoRepository();
-const cancelInv = new CancelInvitationService({
-  invitationRepo,
-  companyRepo,
-  userRepo,
-});
+import invitationContainer from "../../../infrastructure/container/invitation-container.js";
 
 export async function cancelInvitation(req, res, next) {
   try {
-    const invitation = await cancelInv.execute({
+    const invitation = await invitationContainer.cancelInvitation.execute({
       id: req.params.id,
       ...req.body,
     });

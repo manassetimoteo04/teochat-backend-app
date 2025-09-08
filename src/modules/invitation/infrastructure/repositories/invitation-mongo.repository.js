@@ -75,18 +75,20 @@ export class InvitationMongoRepository extends IInvitationRepository {
     });
   }
   async create(data) {
-    const doc = new Invitation(data);
-    await doc.save();
-    return new InvitationEntity({
-      id: doc._id,
-      destination: doc.destination,
-      expiresIn: doc.expiresIn,
-      createdBy: doc.createdBy,
-      company: doc.company,
-      accepted: doc.accepted,
-      canceled: doc.canceled,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-    });
+    const doc = await Invitation.create(data);
+    return doc.map(
+      (inv) =>
+        new InvitationEntity({
+          id: inv._id,
+          destination: inv.destination,
+          expiresIn: inv.expiresIn,
+          createdBy: inv.createdBy,
+          company: inv.company,
+          accepted: inv.accepted,
+          canceled: inv.canceled,
+          createdAt: inv.createdAt,
+          updatedAt: inv.updatedAt,
+        })
+    );
   }
 }
