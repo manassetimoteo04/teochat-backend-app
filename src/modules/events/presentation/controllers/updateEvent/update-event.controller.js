@@ -1,10 +1,8 @@
-import { EventMongoRepository } from "../../../infrastructure/repositories/event-mongo.repository.js";
-import { UpdateEventService } from "../../../usecases/update/update-event.service.js";
-const eventRepo = new EventMongoRepository();
-const updateEv = new UpdateEventService({ eventRepo });
+import eventContainer from "../../../infrastructure/container/event-container.js";
+
 export async function updateEvent(req, res, next) {
   try {
-    const data = await updateEv.execute({
+    const data = await eventContainer.updateEvent.execute({
       eventId: req.params.id,
       ...req.body,
     });
