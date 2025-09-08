@@ -18,6 +18,8 @@ import { registerUserSubscribers } from "./modules/user/infrastructure/subscribe
 import { registerCompanySubscribers } from "./modules/company/infrastructure/subscribers/subscribers.js";
 import { registerInvitationSubscribers } from "./modules/invitation/infrastructure/subscribers/subscribers.js";
 import eventRoute from "./modules/events/presentation/routes/event.routes.js";
+import { registerEventsSubscribers } from "./modules/events/infrastructure/subscribers/subscriber.js";
+import { startAgendaJobs } from "./modules/shared/infrastructure/jobs/index.js";
 
 const app = express();
 
@@ -49,7 +51,11 @@ app.use("/api/v1/agendas/", agendaRoutes);
 app.use("/api/v1/events/", eventRoute);
 app.use("/api/v1/messages/", messageRoutes);
 app.use(errorMiddleware);
+
 registerUserSubscribers();
 registerCompanySubscribers();
 registerInvitationSubscribers();
+registerEventsSubscribers();
+
+startAgendaJobs();
 export default app;
