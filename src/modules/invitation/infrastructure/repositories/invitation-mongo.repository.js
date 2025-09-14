@@ -1,0 +1,94 @@
+import { InvitationEntity } from "../../domain/entities/invitation.entity.js";
+import { IInvitationRepository } from "../../domain/interface/invitation.repository.js";
+import { Invitation } from "../models/invitation.model.js";
+
+export class InvitationMongoRepository extends IInvitationRepository {
+  async findById(id) {
+    const invitation = await Invitation.findById(id).populate({
+      path: "company",
+      select: "name industry description createdAt",
+    });
+    if (!invitation) return null;
+    const { _id, name, industry, description, createdAt } = invitation.company;
+    return new InvitationEntity({
+      id: invitation._id,
+      destination: invitation.destination,
+      expiresIn: invitation.expiresIn,
+      createdBy: invitation.createdBy,
+      company: { id: _id, name, industry, description, createdAt },
+      accepted: invitation.accepted,
+      canceled: invitation.canceled,
+      createdAt: invitation.createdAt,
+      updatedAt: invitation.updatedAt,
+    });
+  }
+  async findByCompanyId(companyId) {
+    const invitations = await Invitation.find({ company: companyId });
+    return invitations.map(
+      (inv) =>
+        new InvitationEntity({
+          id: inv._id,
+          destination: inv.destination,
+          expiresIn: inv.expiresIn,
+          createdBy: inv.createdBy,
+          company: inv.company,
+          accepted: inv.accepted,
+          canceled: inv.canceled,
+          createdAt: inv.createdAt,
+          updatedAt: inv.updatedAt,
+        })
+    );
+  }
+
+  async accept(id) {
+    const doc = await Invitation.findByIdAndUpdate(id, {
+      accepted: true,
+    });
+    if (!doc) return null;
+    return new InvitationEntity({
+      id: doc._id,
+      destination: doc.destination,
+      expiresIn: doc.expiresIn,
+      createdBy: doc.createdBy,
+      company: doc.company,
+      accepted: doc.accepted,
+      canceled: doc.canceled,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+    });
+  }
+  async cancel(id) {
+    const doc = await Invitation.findByIdAndUpdate(id, {
+      canceled: true,
+    });
+    if (!doc) return null;
+    return new InvitationEntity({
+      id: doc._id,
+      destination: doc.destination,
+      expiresIn: doc.expiresIn,
+      createdBy: doc.createdBy,
+      company: doc.company,
+      accepted: doc.accepted,
+      canceled: doc.canceled,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+    });
+  }
+  async create(data) {
+    const doc = await Invitation.create(data);
+    return doc.map(
+      (inv) =>
+        new InvitationEntity({
+          id: inv._id,
+          destination: inv.destination,
+          expiresIn: inv.expiresIn,
+          createdBy: inv.createdBy,
+          company: inv.company,
+          accepted: inv.accepted,
+          canceled: inv.canceled,
+          createdAt: inv.createdAt,
+          updatedAt: inv.updatedAt,
+        })
+    );
+  }
+}
