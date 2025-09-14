@@ -1,13 +1,8 @@
-import { TeamsMongoRepository } from "../../../infrastructure/repositories/team-mongo.repository.js";
-import { CompanyMongoRepository } from "../../../../company/infrastructure/repositories/company.mongo.repository.js";
-import { DeleteTeamService } from "../../../usecases/delete/delete-team.service.js";
+import teamContainer from "../../../infrastructure/container/team-container.js";
 
-const teamRepo = new TeamsMongoRepository();
-const companyRepo = new CompanyMongoRepository();
-const deleteService = new DeleteTeamService({ teamRepo, companyRepo });
 export async function deleteTeam(req, res, next) {
   try {
-    await deleteService.execute({
+    await teamContainer.deleteTeam.execute({
       userId: req.user.id,
       companyId: req.params.companyId,
       teamId: req.params.id,

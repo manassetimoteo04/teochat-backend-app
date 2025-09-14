@@ -1,4 +1,3 @@
-import { BASE_URL } from "../../../../configs/env.js";
 import { UserNotFoundError } from "../../../shared/infrastructure/errors/error.messages.js";
 import { CompanyEntity } from "../../domain/entities/company.entity.js";
 import { CompanyCreatedEvent } from "../../domain/events/companyCreated/company-created-event.js";

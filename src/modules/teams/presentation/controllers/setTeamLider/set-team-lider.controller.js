@@ -1,19 +1,8 @@
-import { TeamsMongoRepository } from "../../../infrastructure/repositories/team-mongo.repository.js";
-import { CompanyMongoRepository } from "../../../../company/infrastructure/repositories/company.mongo.repository.js";
-import UserMongoRepository from "../../../../user/infrastructure/repositories/user.mongo.repository.js";
-import { SetTeamLiderService } from "../../../usecases/setLider/set-team-lider.service.js";
+import teamContainer from "../../../infrastructure/container/team-container.js";
 
-const teamRepo = new TeamsMongoRepository();
-const companyRepo = new CompanyMongoRepository();
-const userRepo = new UserMongoRepository();
-const setLitder = new SetTeamLiderService({
-  teamRepo,
-  companyRepo,
-  userRepo,
-});
 export async function setTeamLider(req, res, next) {
   try {
-    const data = await setLitder.execute({
+    const data = await teamContainer.setTeamLider.execute({
       userId: req.user.id,
       companyId: req.params.companyId,
       teamId: req.params.id,

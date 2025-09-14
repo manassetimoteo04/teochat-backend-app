@@ -1,13 +1,8 @@
-import { CompanyMongoRepository } from "../../../../company/infrastructure/repositories/company.mongo.repository.js";
-import { TeamsMongoRepository } from "../../../infrastructure/repositories/team-mongo.repository.js";
-import { AddTeamMembersService } from "../../../usecases/addMembers/add-team-members.service.js";
+import teamContainer from "../../../infrastructure/container/team-container.js";
 
-const teamRepo = new TeamsMongoRepository();
-const companyRepo = new CompanyMongoRepository();
-const addMember = new AddTeamMembersService({ teamRepo, companyRepo });
 export async function addTeamMember(req, res, next) {
   try {
-    const data = await addMember.execute({
+    const data = await teamContainer.addTeamMember.execute({
       userId: req.user.id,
       companyId: req.params.companyId,
       teamId: req.params.id,

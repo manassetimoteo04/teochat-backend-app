@@ -1,13 +1,8 @@
-import { TeamsMongoRepository } from "../../../infrastructure/repositories/team-mongo.repository.js";
-import { CompanyMongoRepository } from "../../../../company/infrastructure/repositories/company.mongo.repository.js";
-import { updateTeamService } from "../../../usecases/update/update-team.service.js";
+import teamContainer from "../../../infrastructure/container/team-container.js";
 
-const teamRepo = new TeamsMongoRepository();
-const companyRepo = new CompanyMongoRepository();
-const update = new updateTeamService({ teamRepo, companyRepo });
 export async function updateTeam(req, res, next) {
   try {
-    const data = await update.execute({
+    const data = await teamContainer.updateTeam.execute({
       userId: req.user.id,
       companyId: req.params.companyId,
       teamId: req.params.id,
