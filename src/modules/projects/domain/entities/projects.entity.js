@@ -24,4 +24,7 @@ export class ProjectEntity {
     this.endDate = endDate;
     this.photo = photo;
   }
+  isTeam(teamId) {
+    return this.teamId.toString() === teamId;
+  }
 }

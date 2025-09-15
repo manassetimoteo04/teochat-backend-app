@@ -4,17 +4,19 @@ import {
   TeamNotFoundError,
 } from "../../../shared/infrastructure/errors/error.messages.js";
 
-export class FindProjectByIdService {
+export class UpdateProjectService {
   constructor({ projectRepo, teamRepo }) {
     this.projectRepo = projectRepo;
     this.teamRepo = teamRepo;
   }
-  async execute({ userId, id, teamId }) {
+  async execute({ id, teamId, ...restData }) {
     const team = await this.teamRepo.findById(teamId);
     if (!team) throw new TeamNotFoundError();
+    const project = await this.projectRepo.findById(id);
     if (!project) throw new ProjectNotFoundError();
     if (!project.isTeam(teamId)) throw new NotProjectTeamError();
-    const project = await this.projectRepo.findById(id);
-    return project;
+
+    const updated = await this.projectRepo.update(id, restData);
+    return updated;
   }
 }

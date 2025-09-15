@@ -3,6 +3,7 @@ import UserMongoRepository from "../../../user/infrastructure/repositories/user.
 import { CreateTeamService } from "../../usecases/create/create-project.service.js";
 import { FindProjectByIdService } from "../../usecases/findById/find-by-id.service.js";
 import { FindProjectByTeamIdService } from "../../usecases/findByTeamId/find-by-team.service.js";
+import { UpdateProjectService } from "../../usecases/update/update-project.service.js";
 import { ProjectMongoRepository } from "../repositories/projects-mongo.repository.js";
 
 const projectRepo = new ProjectMongoRepository();
@@ -13,9 +14,13 @@ const createProject = new CreateTeamService({
   teamRepo,
   userRepo,
 });
-const findProject = new FindProjectByIdService({ projectRepo });
+const findProject = new FindProjectByIdService({ projectRepo, teamRepo });
 const findProjectByTeam = new FindProjectByTeamIdService({
   teamRepo,
   projectRepo,
 });
-export default { createProject, findProject, findProjectByTeam };
+const updateProject = new UpdateProjectService({
+  teamRepo,
+  projectRepo,
+});
+export default { createProject, findProject, findProjectByTeam, updateProject };

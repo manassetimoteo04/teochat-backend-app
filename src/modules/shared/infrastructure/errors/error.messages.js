@@ -139,3 +139,11 @@ export class ProjectNotFoundError extends Error {
     this.name = "ProjectNotFoundError";
   }
 }
+export class NotProjectTeamError extends Error {
+  constructor(
+    message = "Você não tem permissão: não podes acessar projecto de outra equipa."
+  ) {
+    super(message);
+    this.name = "NotProjectTeamError";
+  }
+}
