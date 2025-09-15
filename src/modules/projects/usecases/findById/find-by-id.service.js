@@ -1,4 +1,4 @@
-import { ProjectNotFoundError } from "../../../shared/infrastructure/errors/error.messages";
+import { ProjectNotFoundError } from "../../../shared/infrastructure/errors/error.messages.js";
 
 export class FindProjectByIdService {
   constructor({ projectRepo }) {
