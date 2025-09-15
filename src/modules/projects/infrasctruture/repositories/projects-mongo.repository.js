@@ -77,7 +77,12 @@ export class ProjectMongoRepository extends IProjectRepository {
           name: doc.name,
           description: doc.description,
           createdAt: doc.createdAt,
-          createdBy: doc.createdBy,
+          createdBy: {
+            id: doc.createdBy._id,
+            name: doc.createdBy.name,
+            email: doc.createdBy.email,
+            avatar: doc.createdBy.avatar,
+          },
           updatedAt: doc.updatedAt,
           tags: doc.tags,
           teamId: doc.teamId,
