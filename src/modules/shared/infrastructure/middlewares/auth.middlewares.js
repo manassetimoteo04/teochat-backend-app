@@ -1,9 +1,7 @@
-import { FindUserByIdService } from "../../../user/usecases/findUser/find-one-user.service.js";
-import UserMongoRepository from "../../../user/infrastructure/repositories/user.mongo.repository.js";
 import { JWT_SECRET } from "../../../../configs/env.js";
 import { JwtService } from "../../../auth/infrastructure/jwt.service.js";
-const userRepo = new UserMongoRepository();
-const findUser = new FindUserByIdService(userRepo);
+import userContainer from "../../../user/infrastructure/container/user-container.js";
+
 const jwtService = new JwtService(JWT_SECRET);
 export const authorize = async (req, res, next) => {
   try {
@@ -19,7 +17,7 @@ export const authorize = async (req, res, next) => {
     token = cookie.token || token;
     if (!token) return res.status(401).json({ message: "Unauthorized" });
     const decoded = jwtService.verifyToken(token);
-    const user = await findUser.execute({ id: decoded.id });
+    const user = await userContainer.findUserById.execute({ id: decoded.id });
     if (!user) return res.status(401).json({ message: "Unauthorized" });
 
     req.user = { id: user.id };

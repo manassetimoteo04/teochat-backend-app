@@ -1,5 +1,5 @@
-import { UserEntity } from "../../domain/entities/user.entity";
-import { UserCreatedEvent } from "../../domain/events/userCreated/user-created-event";
+import { UserEntity } from "../../domain/entities/user.entity.js";
+import { UserCreatedEvent } from "../../domain/events/userCreated/user-created-event.js";
 
 export class CreateUserService {
   constructor(userRepo, eventBus) {

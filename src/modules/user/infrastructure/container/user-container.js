@@ -1,5 +1,5 @@
 import { eventBus } from "../../../shared/infrastructure/events/event-bus.js";
-import { CreateUserService } from "../../usecases/createUser/create-user.service";
+import { CreateUserService } from "../../usecases/createUser/create-user.service.js";
 import { FindUserByIdService } from "../../usecases/findUser/find-one-user.service.js";
 import { FindUserByEmailService } from "../../usecases/findUserByEmail/find-user-by-email.service.js";
 import { FindUserCompaniesService } from "../../usecases/findUserCompanies/find-user-companies.service.js";

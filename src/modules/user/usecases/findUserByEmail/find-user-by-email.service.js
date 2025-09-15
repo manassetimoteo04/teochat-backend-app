@@ -1,4 +1,4 @@
-import { UserEntity } from "../../domain/entities/user.entity";
+import { UserEntity } from "../../domain/entities/user.entity.js";
 
 export class FindUserByEmailService {
   constructor(userRepo) {

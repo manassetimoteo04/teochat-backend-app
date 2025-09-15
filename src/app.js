@@ -17,6 +17,7 @@ import { registerInvitationSubscribers } from "./modules/invitation/infrastructu
 import eventRoute from "./modules/events/presentation/routes/event.routes.js";
 import { registerEventsSubscribers } from "./modules/events/infrastructure/subscribers/subscriber.js";
 import { startAgendaJobs } from "./modules/shared/infrastructure/jobs/index.js";
+import projectRoute from "./modules/projects/presentation/routes/project.routes.js";
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use("/api/v1/companies/", companyRoute);
 app.use("/api/v1/invitations/", invitationRoute);
 app.use("/api/v1/teams/", teamRoutes);
 app.use("/api/v1/events/", eventRoute);
+app.use("/api/v1/projects/", projectRoute);
 app.use(errorMiddleware);
 
 registerUserSubscribers();

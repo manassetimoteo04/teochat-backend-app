@@ -130,3 +130,12 @@ export class EventTimeConflictError extends Error {
     this.name = "EventTimeConflictError";
   }
 }
+
+export class ProjectNotFoundError extends Error {
+  constructor(
+    message = "O projecto informado não foi encontrado ou não existe."
+  ) {
+    super(message);
+    this.name = "ProjectNotFoundError";
+  }
+}
