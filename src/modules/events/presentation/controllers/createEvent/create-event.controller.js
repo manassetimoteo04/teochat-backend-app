@@ -4,6 +4,7 @@ export async function createEvent(req, res, next) {
   try {
     const data = await eventContainer.createEvent.execute({
       createdBy: req.user.id,
+      companyId: req.params.companyId,
       ...req.body,
     });
     res.status(201).json({ success: true, data });

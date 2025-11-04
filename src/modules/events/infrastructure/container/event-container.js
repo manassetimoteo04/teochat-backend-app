@@ -5,6 +5,7 @@ import { eventBus } from "../../../shared/infrastructure/events/event-bus.js";
 import { TeamsMongoRepository } from "../../../teams/infrastructure/repositories/team-mongo.repository.js";
 import { CancelEventService } from "../../usecases/cancel/cancel-event.service.js";
 import { CreateEventService } from "../../usecases/create/create-event.service.js";
+import { FindEventByCompanyId } from "../../usecases/findByCompanyId/find-event-by-company.service.js";
 import { FindEventService } from "../../usecases/findById/find-event.service.js";
 import { FindEventByTeamIdService } from "../../usecases/findByTeamId/find-event-by-team-id.service.js";
 import { SendEventReminderService } from "../../usecases/sendReminder/send-event-reminder.service.js";
@@ -19,6 +20,7 @@ const createEvent = new CreateEventService({ eventRepo, eventBus });
 const updateEvent = new UpdateEventService({ eventRepo });
 const findEvent = new FindEventService({ eventRepo });
 const findByTeam = new FindEventByTeamIdService({ eventRepo, teamRepo });
+const findByCompany = new FindEventByCompanyId({ eventRepo, teamRepo });
 const cancelEvent = new CancelEventService({ eventRepo, eventBus });
 const sendEventReminders = new SendEventReminderService({
   eventRepo,
@@ -35,4 +37,5 @@ export default {
   createEvent,
   cancelEvent,
   sendEventReminders,
+  findByCompany,
 };

@@ -25,7 +25,7 @@ export class SignUpService {
     const confirmCode = this.generateVerification();
 
     const confirmExpiresIn = Date.now() + 10 * 60 * 1000;
-
+    console.log(confirmCode);
     const userInstance = new UserEntity({
       name,
       email,

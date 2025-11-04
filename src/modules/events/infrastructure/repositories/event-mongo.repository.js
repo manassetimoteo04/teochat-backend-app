@@ -32,6 +32,7 @@ export class EventMongoRepository extends IEventRepository {
       location: event.location,
       createdAt: event.createdAt,
       updatedAt: event.updatedAt,
+      companyId: event.companyId,
     });
   }
   async create(eventData) {
@@ -51,6 +52,7 @@ export class EventMongoRepository extends IEventRepository {
       createdBy: event.createdBy,
       createdAt: event.createdAt,
       updatedAt: event.updatedAt,
+      companyId: event.companyId,
     });
   }
   async update(id, eventData) {
@@ -71,6 +73,7 @@ export class EventMongoRepository extends IEventRepository {
       createdBy: event.createdBy,
       createdAt: event.createdAt,
       updatedAt: event.updatedAt,
+      companyId: event.companyId,
     });
   }
   async delete(id) {
@@ -100,6 +103,7 @@ export class EventMongoRepository extends IEventRepository {
       createdBy: event.createdBy,
       createdAt: event.createdAt,
       updatedAt: event.updatedAt,
+      companyId: event.companyId,
     });
   }
   async findByTeamId(teamId) {
@@ -110,7 +114,7 @@ export class EventMongoRepository extends IEventRepository {
       (event) =>
         new EventEntity({
           id: event._id.toString(),
-          teamId: { id: event.teamId.id, name: event.teamId.name },
+          teamId: { id: event?.teamId?.id, name: event?.teamId?.name },
           title: event.title,
           status: event.status,
           description: event.description,
@@ -122,6 +126,32 @@ export class EventMongoRepository extends IEventRepository {
           createdBy: event.createdBy,
           createdAt: event.createdAt,
           updatedAt: event.updatedAt,
+          companyId: event.companyId,
+        })
+    );
+  }
+  async findByCompanyId(companyId) {
+    const events = await Event.find({
+      companyId,
+    }).populate({ path: "teamId", select: "name" });
+
+    return events.map(
+      (event) =>
+        new EventEntity({
+          id: event._id.toString(),
+          teamId: { id: event?.teamId?._id, name: event?.teamId?.name },
+          title: event.title,
+          status: event.status,
+          description: event.description,
+          date: event.date,
+          startTime: event.startTime,
+          endTime: event.endTime,
+          type: event.type,
+          location: event.location,
+          createdBy: event.createdBy,
+          createdAt: event.createdAt,
+          updatedAt: event.updatedAt,
+          companyId: event.companyId,
         })
     );
   }
