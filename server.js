@@ -1,9 +1,15 @@
-import app from "./src/app.js";
 import http from "http";
-import { BASE_URL, PORT } from "./src/configs/env.js";
+import app from "./src/app.js";
+import { PORT } from "./src/configs/env.js";
 import connectToDatabase from "./src/database/mongodb.js";
+
 const server = http.createServer(app);
+
 server.listen(PORT, async () => {
-  console.log(`🚀 Server running on ${BASE_URL}`);
+  console.log(
+    `\x1b[32m%s\x1b[0m`,
+    `🚀 Servidor rodando em http://localhost:${PORT}`
+  );
+
   await connectToDatabase();
 });
