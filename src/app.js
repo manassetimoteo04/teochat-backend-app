@@ -23,7 +23,10 @@ const app = express();
 
 app.use(
   cors({
-    origin: [BASE_URL, "http://192.168.8.170:5173/"],
+    origin: [
+      "https://teochat.vercel.app",
+      BASE_URL
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
