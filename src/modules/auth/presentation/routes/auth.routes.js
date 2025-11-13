@@ -6,8 +6,8 @@ import { authorize } from "../../../shared/infrastructure/middlewares/auth.middl
 import { requestConfirmCode } from "../controllers/requestConfirmCode/request-confirm-code.controller.js";
 import { getSession } from "../controllers/getSession/get-session.controller.js";
 
-const authRouter = Router();
 
+const authRouter = Router();
 authRouter.post("/sign-in", signInUser);
 authRouter.post("/sign-up", signUpUser);
 authRouter.post("/verify-account", authorize, confirmUserAccount);
