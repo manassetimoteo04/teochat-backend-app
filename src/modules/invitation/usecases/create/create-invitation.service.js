@@ -33,7 +33,6 @@ export class CreateInvitationService {
       name: company.name,
       link: invitation.generateLink(),
     }));
-    console.log(payloads);
     const event = new InvitationCreatedEvent(payloads);
 
     this.eventBus.emit(event.name, event);
