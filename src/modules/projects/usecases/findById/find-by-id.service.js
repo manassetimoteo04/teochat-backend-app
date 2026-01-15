@@ -9,7 +9,7 @@ export class FindProjectByIdService {
     this.projectRepo = projectRepo;
     this.teamRepo = teamRepo;
   }
-  async execute({ userId, id, teamId }) {
+  async execute({ id, teamId }) {
     const team = await this.teamRepo.findById(teamId);
     if (!team) throw new TeamNotFoundError();
     if (!project) throw new ProjectNotFoundError();
