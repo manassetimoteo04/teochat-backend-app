@@ -4,6 +4,6 @@ export class UpdateTaskUsecase {
   }
 
   async execute(task) {
-    return this.repo.update(task);
+    return await this.repo.update(task);
   }
 }

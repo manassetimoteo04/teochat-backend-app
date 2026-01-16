@@ -35,7 +35,7 @@ export class MongoTasksRepository extends ITasksRepository {
       },
       { new: true }
     );
-
+    console.log(doc);
     return doc ? this.toEntity(doc) : null;
   }
 
