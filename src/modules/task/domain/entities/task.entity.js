@@ -32,6 +32,9 @@ export class TaskEntity {
   isFromProject(projectId) {
     return this.projectId.toString() === projectId;
   }
+  isCreatedBy(userId) {
+    return this.createdBy.toString() === userId;
+  }
 
   isAssignedTo(userId) {
     return this.assignedTo?.toString() === userId;
