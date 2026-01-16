@@ -18,6 +18,7 @@ import eventRoute from "./modules/events/presentation/routes/event.routes.js";
 import { registerEventsSubscribers } from "./modules/events/infrastructure/subscribers/subscriber.js";
 import { startAgendaJobs } from "./modules/shared/infrastructure/jobs/index.js";
 import projectRoute from "./modules/projects/presentation/routes/project.routes.js";
+import taskRouter from "./modules/task/presentation/routes/task.route.js";
 
 const app = express();
 
@@ -26,7 +27,7 @@ app.use(
     origin: [
       "https://teochat.vercel.app",
       BASE_URL
-    ],
+    ],  
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
@@ -50,6 +51,13 @@ app.use("/api/v1/invitations/", invitationRoute);
 app.use("/api/v1/teams/", teamRoutes);
 app.use("/api/v1/events/", eventRoute);
 app.use("/api/v1/projects/", projectRoute);
+app.use("/api/v1/tasks/", taskRouter);
+app.get("/api/v1/health", (_, res) =>
+  res.status(200).json({ message: "API running ok" })
+);
+// app.get("*", (_, res) =>
+//   res.status(404).json({ message: "API resource not found" })
+// );
 app.use(errorMiddleware);
 
 registerUserSubscribers();

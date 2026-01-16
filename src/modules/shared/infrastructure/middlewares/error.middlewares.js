@@ -47,7 +47,18 @@ const errorMiddleware = (err, req, res, next) => {
       EventTimeConflictError: { code: 409 },
       ProjectNotFoundError: { code: 404 },
       NotProjectTeamError: { code: 403 },
+      TaskNotFoundError: { code: 404 },
+      NotTaskAssigneeError: { code: 403 },
+      NotTaskCreatorError: { code: 403 },
+      NotTaskProjectError: { code: 403 },
+      TaskAlreadyCompletedError: { code: 409 },
+      InvalidTaskStatusError: { code: 400 },
+      TaskAlreadyAssignedError: { code: 409 },
+      TaskNotAssignedError: { code: 409 },
+      TaskDueDateExpiredError: { code: 400 },
+      InvalidTaskDataError: { code: 400 },
     };
+
     if (customErrors[err.name]) {
       error.statusCode = customErrors[err.name].code;
     }

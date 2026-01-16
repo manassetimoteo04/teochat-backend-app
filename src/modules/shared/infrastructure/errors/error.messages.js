@@ -147,3 +147,83 @@ export class NotProjectTeamError extends Error {
     this.name = "NotProjectTeamError";
   }
 }
+
+export class TaskNotFoundError extends Error {
+  constructor(
+    message = "A tarefa informada não foi encontrada ou não existe."
+  ) {
+    super(message);
+    this.name = "TaskNotFoundError";
+  }
+}
+
+export class NotTaskAssigneeError extends Error {
+  constructor(
+    message = "Você não tem permissão: não é o responsável por esta tarefa."
+  ) {
+    super(message);
+    this.name = "NotTaskAssigneeError";
+  }
+}
+
+export class NotTaskCreatorError extends Error {
+  constructor(
+    message = "Você não tem permissão: não foi quem criou esta tarefa."
+  ) {
+    super(message);
+    this.name = "NotTaskCreatorError";
+  }
+}
+
+export class NotTaskProjectError extends Error {
+  constructor(
+    message = "Você não tem permissão: esta tarefa pertence a outro projeto."
+  ) {
+    super(message);
+    this.name = "NotTaskProjectError";
+  }
+}
+
+export class TaskAlreadyCompletedError extends Error {
+  constructor(message = "Esta tarefa já foi concluída.") {
+    super(message);
+    this.name = "TaskAlreadyCompletedError";
+  }
+}
+
+export class InvalidTaskStatusError extends Error {
+  constructor(message = "O status da tarefa é inválido ou não permitido.") {
+    super(message);
+    this.name = "InvalidTaskStatusError";
+  }
+}
+
+export class TaskAlreadyAssignedError extends Error {
+  constructor(message = "Esta tarefa já está atribuída a um usuário.") {
+    super(message);
+    this.name = "TaskAlreadyAssignedError";
+  }
+}
+
+export class TaskNotAssignedError extends Error {
+  constructor(message = "Esta tarefa ainda não possui um responsável.") {
+    super(message);
+    this.name = "TaskNotAssignedError";
+  }
+}
+
+export class TaskDueDateExpiredError extends Error {
+  constructor(
+    message = "O prazo desta tarefa já expirou e não pode ser alterado."
+  ) {
+    super(message);
+    this.name = "TaskDueDateExpiredError";
+  }
+}
+
+export class InvalidTaskDataError extends Error {
+  constructor(message = "Os dados informados para a tarefa são inválidos.") {
+    super(message);
+    this.name = "InvalidTaskDataError";
+  }
+}

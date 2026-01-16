@@ -15,6 +15,7 @@ export const authorize = async (req, res, next) => {
     }
 
     token = cookie.token || token;
+
     if (!token) return res.status(401).json({ message: "Unauthorized" });
     const decoded = jwtService.verifyToken(token);
     const user = await userContainer.findUserById.execute({ id: decoded.id });

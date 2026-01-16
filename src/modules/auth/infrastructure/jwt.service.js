@@ -7,7 +7,6 @@ export class JwtService {
   }
 
   generateAccessToken(payload) {
-    console.log(payload);
     return jwt.sign(payload, this.secret, { expiresIn: this.expiresIn });
   }
 

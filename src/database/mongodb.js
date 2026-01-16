@@ -13,6 +13,7 @@ const connectToDatabase = async () => {
     console.log("Connected to the database");
   } catch (error) {
     console.log("Failed to connect to the database: ", error);
+    // eslint-disable-next-line no-undef
     process.exit(1);
   }
 };
