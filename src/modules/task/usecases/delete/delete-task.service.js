@@ -17,9 +17,8 @@ export class DeleteTaskUseCase {
     const task = await this.repo.findById(taskId);
     if (!task) throw new TaskNotFoundError();
     const isCreator = task.isCreatedBy(userId);
-    const isAssigned = task.isAssignedTo(userId);
-
-    if (!isCreator && !isAssigned) {
+    console.log(isCreator, task.createdBy, userId);
+    if (!isCreator) {
       throw new NotTaskCreatorError();
     }
   }

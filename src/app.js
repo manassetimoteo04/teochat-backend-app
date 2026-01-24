@@ -27,13 +27,13 @@ app.use(
     origin: ["https://teochat.vercel.app", BASE_URL],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
-  })
+  }),
 );
 
 app.use(
   helmet({
     crossOriginResourcePolicy: false,
-  })
+  }),
 );
 
 app.use(morgan("dev"));
@@ -50,10 +50,10 @@ app.use("/api/v1/events/", eventRoute);
 app.use("/api/v1/projects/", projectRoute);
 app.use("/api/v1/tasks/", taskRouter);
 app.get("/api/v1/health", (_, res) =>
-  res.status(200).json({ message: "API running ok" })
+  res.status(200).json({ message: "API running ok" }),
 );
 // app.get("*", (_, res) =>
-//   res.status(404).json({ message: "API resource not found" })
+//   res.status(404).json({ message: "API resource not found" }),
 // );
 app.use(errorMiddleware);
 

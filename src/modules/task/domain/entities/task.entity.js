@@ -33,11 +33,11 @@ export class TaskEntity {
     return this.projectId.toString() === projectId;
   }
   isCreatedBy(userId) {
-    return this.createdBy.toString() === userId;
+    return this.createdBy.id.toString() === userId;
   }
 
   isAssignedTo(userId) {
-    return this.assignedTo?.toString() === userId;
+    return this.assignedTo?.id.toString() === userId;
   }
 
   isOverdue() {

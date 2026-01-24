@@ -5,6 +5,7 @@ export async function findProject(req, res, next) {
     const data = await projectContainer.findProject.execute({
       userId: req.user.id,
       id: req.params.id,
+      teamId: req.params.teamId,
     });
     res.status(200).json({ success: true, data });
   } catch (error) {

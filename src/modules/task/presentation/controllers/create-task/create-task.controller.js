@@ -5,7 +5,6 @@ export const createTask = async (req, res) => {
     const projectId = req.params.projectId;
     const { title, description, priority, dueDate, assignedTo, tags } =
       req.body;
-
     const createdBy = req.user.id;
 
     const task = await taskContainer.createTask.execute({

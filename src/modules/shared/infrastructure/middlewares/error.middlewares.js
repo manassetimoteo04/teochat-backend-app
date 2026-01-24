@@ -1,12 +1,14 @@
 const errorMiddleware = (err, req, res, next) => {
   try {
+    console.log(err);
     let error = { ...err };
     error.message = err.message;
     if (err.name === "CastError") {
       let message = "Resource not found";
+
       if (
         String(error.reason).startsWith(
-          "BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer"
+          "BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer",
         )
       ) {
         message = "O id providenciado é inválido, deve conter 24 carácteres";

@@ -8,11 +8,12 @@ export class CreateTeamService {
     this.userRepo = userRepo;
   }
   async execute({ teamId, userId, tags, ...restData }) {
+    console.log(restData);
     const team = await this.teamRepo.findById(teamId);
     if (!team) throw new TeamNotFoundError();
     const isTags = Array.isArray(tags)
       ? tags
-      : tags.split(",").map((tag) => tag.trim());
+      : tags?.split(",").map((tag) => tag.trim());
     const project = new ProjectEntity({
       ...restData,
       teamId,

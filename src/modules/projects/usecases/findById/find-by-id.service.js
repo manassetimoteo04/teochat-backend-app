@@ -1,7 +1,6 @@
 import {
   NotProjectTeamError,
   ProjectNotFoundError,
-  TeamNotFoundError,
 } from "../../../shared/infrastructure/errors/error.messages.js";
 
 export class FindProjectByIdService {
@@ -10,11 +9,9 @@ export class FindProjectByIdService {
     this.teamRepo = teamRepo;
   }
   async execute({ id, teamId }) {
-    const team = await this.teamRepo.findById(teamId);
-    if (!team) throw new TeamNotFoundError();
+    const project = await this.projectRepo.findById(id);
     if (!project) throw new ProjectNotFoundError();
     if (!project.isTeam(teamId)) throw new NotProjectTeamError();
-    const project = await this.projectRepo.findById(id);
     return project;
   }
 }
