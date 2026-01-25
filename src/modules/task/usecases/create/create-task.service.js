@@ -18,9 +18,7 @@ export class CreateTaskUsecase {
     if (!title || title.trim().length === 0) {
       throw new Error("Task title is required");
     }
-
     const task = new TaskEntity({
-      id: undefined,
       projectId,
       title,
       description,
@@ -34,7 +32,6 @@ export class CreateTaskUsecase {
       updatedAt: new Date(),
       completedAt: null,
     });
-
     return await this.repo.create(task);
   }
 }

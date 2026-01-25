@@ -6,6 +6,7 @@ export class FindProjectByTeamIdService {
     this.projectRepo = projectRepo;
   }
   async execute({ teamId }) {
+    console.log("TEAMID:", teamId);
     const team = await this.teamRepo.findById(teamId);
     if (!team) throw new TeamNotFoundError();
     const projects = await this.projectRepo.findByTeamId(teamId);

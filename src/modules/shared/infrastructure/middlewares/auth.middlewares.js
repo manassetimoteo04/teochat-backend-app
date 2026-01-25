@@ -5,6 +5,7 @@ import userContainer from "../../../user/infrastructure/container/user-container
 const jwtService = new JwtService(JWT_SECRET);
 export const authorize = async (req, res, next) => {
   try {
+    console.log("COKKIE TOKEN", req.cookies.token);
     const cookie = req.cookies;
     let token;
     if (
@@ -15,7 +16,7 @@ export const authorize = async (req, res, next) => {
     }
 
     token = cookie.token || token;
-
+    token = token.replace(/^"|"$/g, "").trim();
     if (!token) return res.status(401).json({ message: "Unauthorized" });
     const decoded = jwtService.verifyToken(token);
     const user = await userContainer.findUserById.execute({ id: decoded.id });

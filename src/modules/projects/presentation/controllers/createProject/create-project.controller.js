@@ -8,6 +8,7 @@ export async function createProject(req, res, next) {
     });
     res.status(201).json({ success: true, data });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 }

@@ -4,7 +4,7 @@ import { ITasksRepository } from "../../domain/interface/task-repository.interfa
 
 export class MongoTasksRepository extends ITasksRepository {
   async create(task) {
-    const doc = await TaskModel.create({
+    await TaskModel.create({
       projectId: task.projectId,
       title: task.title,
       description: task.description,
@@ -14,10 +14,7 @@ export class MongoTasksRepository extends ITasksRepository {
       assignedTo: task.assignedTo,
       createdBy: task.createdBy,
       tags: task.tags,
-      completedAt: task.completedAt,
     });
-
-    return this.toEntity(doc);
   }
 
   async update(task) {
@@ -33,9 +30,10 @@ export class MongoTasksRepository extends ITasksRepository {
         tags: task.tags,
         completedAt: task.completedAt,
       },
-      { new: true }
+      { new: true },
     );
-    return doc ? this.toEntity(doc) : null;
+
+    console.log(doc);
   }
 
   async delete(taskId) {
@@ -43,12 +41,32 @@ export class MongoTasksRepository extends ITasksRepository {
   }
 
   async findById(taskId) {
-    const doc = await TaskModel.findById(taskId);
+    const doc = await TaskModel.findById(taskId).populate([
+      {
+        path: "assignedTo",
+        select: "name email avatar",
+      },
+      {
+        path: "createdBy",
+        select: "name email avatar",
+      },
+    ]);
     return doc ? this.toEntity(doc) : null;
   }
 
   async findByProject(projectId) {
-    const docs = await TaskModel.find({ projectId }).sort({ createdAt: -1 });
+    const docs = await TaskModel.find({ projectId })
+      .sort({ createdAt: -1 })
+      .populate([
+        {
+          path: "assignedTo",
+          select: "name email avatar",
+        },
+        {
+          path: "createdBy",
+          select: "name email avatar",
+        },
+      ]);
     return docs.map((d) => this.toEntity(d));
   }
 
@@ -76,8 +94,20 @@ export class MongoTasksRepository extends ITasksRepository {
       status: doc.status,
       priority: doc.priority,
       dueDate: doc.dueDate,
-      assignedTo: doc.assignedTo?.toString() || null,
-      createdBy: doc.createdBy.toString(),
+      assignedTo: doc?.assignedTo
+        ? {
+            id: doc.assignedTo?._id.toString(),
+            name: doc.assignedTo?.name,
+            avatar: doc.assignedTo?.email.avatar,
+            email: doc.assignedTo.avatar,
+          }
+        : null,
+      createdBy: {
+        id: doc.createdBy?._id.toString(),
+        name: doc.createdBy?.name,
+        avatar: doc.createdBy?.email.avatar,
+        email: doc.createdBy.avatar,
+      },
       tags: doc.tags,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,

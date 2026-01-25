@@ -19,24 +19,26 @@ import { registerEventsSubscribers } from "./modules/events/infrastructure/subsc
 import { startAgendaJobs } from "./modules/shared/infrastructure/jobs/index.js";
 import projectRoute from "./modules/projects/presentation/routes/project.routes.js";
 import taskRouter from "./modules/task/presentation/routes/task.route.js";
+import { registerTeamssSubscribers } from "./modules/teams/infrastructure/subscribers/index.js";
+import channelRouter from "./modules/channels/presentation/routes/channel.routes.js";
+import notFoundMiddleware from "./modules/shared/infrastructure/middlewares/not-found.middlewares.js";
+import messageRouter from "./modules/messages/presentation/routes/index.js";
+import { registerMessageSubscribers } from "./modules/messages/infra/subscribers/index.js";
 
 const app = express();
 
 app.use(
   cors({
-    origin: [
-      "https://teochat.vercel.app",
-      BASE_URL
-    ],  
+    origin: ["https://teochat.vercel.app", BASE_URL],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
-  })
+  }),
 );
 
 app.use(
   helmet({
     crossOriginResourcePolicy: false,
-  })
+  }),
 );
 
 app.use(morgan("dev"));
@@ -52,18 +54,20 @@ app.use("/api/v1/teams/", teamRoutes);
 app.use("/api/v1/events/", eventRoute);
 app.use("/api/v1/projects/", projectRoute);
 app.use("/api/v1/tasks/", taskRouter);
+app.use("/api/v1/channels", channelRouter);
+app.use("/api/v1/messages", messageRouter);
+
 app.get("/api/v1/health", (_, res) =>
-  res.status(200).json({ message: "API running ok" })
+  res.status(200).json({ message: "API running ok" }),
 );
-// app.get("*", (_, res) =>
-//   res.status(404).json({ message: "API resource not found" })
-// );
+app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 
 registerUserSubscribers();
 registerCompanySubscribers();
 registerInvitationSubscribers();
 registerEventsSubscribers();
-
+registerTeamssSubscribers();
+registerMessageSubscribers();
 startAgendaJobs();
 export default app;
