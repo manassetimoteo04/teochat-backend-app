@@ -1,5 +1,6 @@
 export function registerMessageHandlers(io, socket) {
   socket.on("message:send", async ({ channelId, content, type = "text" }) => {
+    console.log("MESSAGE", content, channelId);
     if (!channelId || !content) return;
 
     if (!socket.rooms.has(channelId)) {
@@ -13,7 +14,7 @@ export function registerMessageHandlers(io, socket) {
       channelId,
       content,
       type,
-      senderId: socket.user.id,
+      senderId: socket.user,
       createdAt: new Date().toISOString(),
     };
 

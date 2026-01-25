@@ -1,5 +1,6 @@
 export function registerChannelHandlers(io, socket) {
   socket.on("channel:join", ({ channelId }) => {
+    console.log(channelId);
     if (!channelId) return;
 
     socket.join(channelId);
