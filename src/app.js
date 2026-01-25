@@ -22,6 +22,8 @@ import taskRouter from "./modules/task/presentation/routes/task.route.js";
 import { registerTeamssSubscribers } from "./modules/teams/infrastructure/subscribers/index.js";
 import channelRouter from "./modules/channels/presentation/routes/channel.routes.js";
 import notFoundMiddleware from "./modules/shared/infrastructure/middlewares/not-found.middlewares.js";
+import messageRouter from "./modules/messages/presentation/routes/index.js";
+import { registerMessageSubscribers } from "./modules/messages/infra/subscribers/index.js";
 
 const app = express();
 
@@ -53,6 +55,8 @@ app.use("/api/v1/events/", eventRoute);
 app.use("/api/v1/projects/", projectRoute);
 app.use("/api/v1/tasks/", taskRouter);
 app.use("/api/v1/channels", channelRouter);
+app.use("/api/v1/messages", messageRouter);
+
 app.get("/api/v1/health", (_, res) =>
   res.status(200).json({ message: "API running ok" }),
 );
@@ -64,5 +68,6 @@ registerCompanySubscribers();
 registerInvitationSubscribers();
 registerEventsSubscribers();
 registerTeamssSubscribers();
+registerMessageSubscribers();
 startAgendaJobs();
 export default app;

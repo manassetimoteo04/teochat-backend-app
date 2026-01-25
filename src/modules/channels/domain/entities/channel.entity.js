@@ -8,12 +8,14 @@ export default class ChannelEntity {
     isArchived = false,
     createdAt,
     updatedAt,
+    lastMessage,
   }) {
     this.id = id;
     this.teamId = teamId;
     this.name = name;
     this.description = description;
     this.createdBy = createdBy;
+    this.lastMessage = lastMessage;
     this.isArchived = isArchived;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;

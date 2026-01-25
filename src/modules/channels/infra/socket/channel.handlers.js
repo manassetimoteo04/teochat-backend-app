@@ -1,26 +1,65 @@
+import teamContainer from "../../../teams/infrastructure/container/team-container";
+import channelContainer from "../containers/channel.contianer";
+
 export function registerChannelHandlers(io, socket) {
-  socket.on("channel:join", ({ channelId }) => {
-    console.log(channelId);
-    if (!channelId) return;
+  socket.on("channel:join", async ({ companyId }) => {
+    try {
+      if (!companyId) return;
 
-    socket.join(channelId);
+      console.log("JOINING COMPANY CHANNELS", companyId);
 
-    console.log(`User ${socket.user.id} entrou no channel ${channelId}`);
+      socket.joinedChannels = [];
 
-    socket.to(channelId).emit("channel:user-joined", {
-      userId: socket.user.id,
-    });
+      const teams = await teamContainer.findTeamsByUserId.execute({
+        userId: socket.user.id,
+        companyId,
+      });
 
-    socket.emit("channel:joined", { channelId });
+      if (!teams?.length) return;
+
+      const channels = await channelContainer.listChannelByTeamIds.execute(
+        teams.map((t) => t.id),
+      );
+
+      if (!channels?.length) return;
+
+      for (const channel of channels) {
+        socket.join(channel.id);
+        socket.joinedChannels.push(channel.id);
+
+        console.log(`User ${socket.user.id} entrou no channel ${channel.id}`);
+
+        socket.to(channel.id).emit("channel:user-joined", {
+          userId: socket.user.id,
+          channelId: channel.id,
+        });
+      }
+
+      socket.emit("channel:joined", {
+        channels: socket.joinedChannels,
+      });
+    } catch (err) {
+      console.error("CHANNEL JOIN ERROR:", err);
+      socket.emit("channel:error", {
+        message: "Erro ao entrar nos canais",
+      });
+    }
   });
 
-  socket.on("channel:leave", ({ channelId }) => {
-    socket.leave(channelId);
+  socket.on("channel:leave", () => {
+    if (!socket.joinedChannels?.length) return;
 
-    console.log(`User ${socket.user.id} saiu do channel ${channelId}`);
+    for (const channelId of socket.joinedChannels) {
+      socket.leave(channelId);
 
-    socket.to(channelId).emit("channel:user-left", {
-      userId: socket.user.id,
-    });
+      console.log(`User ${socket.user.id} saiu do channel ${channelId}`);
+
+      socket.to(channelId).emit("channel:user-left", {
+        userId: socket.user.id,
+        channelId,
+      });
+    }
+
+    socket.joinedChannels = [];
   });
 }

@@ -14,6 +14,10 @@ export default class ChannelRepositoryMongo extends IChannelRepository {
     const doc = await Channel.findById(id).exec();
     return ChannelMapper.toEntity(doc);
   }
+  async findByTeamIds(ids) {
+    const docs = await Channel.find({ teamId: { $in: ids } }).exec();
+    return docs.map(ChannelMapper.toEntity);
+  }
 
   async findByTeam(teamId) {
     const docs = await Channel.find({
@@ -41,6 +45,17 @@ export default class ChannelRepositoryMongo extends IChannelRepository {
       { new: true },
     ).exec();
 
+    return ChannelMapper.toEntity(doc);
+  }
+
+  async update(id, updateData) {
+    const doc = await Channel.findByIdAndUpdate(
+      id,
+      { lastMessage: { ...updateData } },
+      {
+        new: true,
+      },
+    );
     return ChannelMapper.toEntity(doc);
   }
 }

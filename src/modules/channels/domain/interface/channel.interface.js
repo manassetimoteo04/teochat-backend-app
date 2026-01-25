@@ -15,6 +15,10 @@ export default class IChannelRepository {
     throw new Error("METHOD_NOT_IMPLEMENTED");
   }
 
+  async findByTeamIds(ids) {
+    throw new Error("METHOD_NOT_IMPLEMENTED");
+  }
+
   /**
    * @param {string} teamId
    * @returns {Promise<Channel[]>}
@@ -28,7 +32,7 @@ export default class IChannelRepository {
    * @param {string} teamId
    * @returns {Promise<Channel | null>}
    */
-  findByNameAndTeam(name, teamId) {
+  async findByNameAndTeam(name, teamId) {
     throw new Error("METHOD_NOT_IMPLEMENTED");
   }
 
@@ -36,7 +40,10 @@ export default class IChannelRepository {
    * @param {string} id
    * @returns {Promise<Channel>}
    */
-  archive(id) {
+  async archive(id) {
+    throw new Error("METHOD_NOT_IMPLEMENTED");
+  }
+  async update(id, updateData) {
     throw new Error("METHOD_NOT_IMPLEMENTED");
   }
 }

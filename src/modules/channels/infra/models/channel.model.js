@@ -28,6 +28,27 @@ const ChannelSchema = new mongoose.Schema(
       required: true,
     },
 
+    //
+    lastMessage: {
+      sent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      name: {
+        type: String,
+      },
+      date: {
+        type: Date,
+        default: Date.now,
+      },
+      content: {
+        type: String,
+      },
+      type: {
+        type: String,
+      },
+    },
+
     isArchived: {
       type: Boolean,
       default: false,

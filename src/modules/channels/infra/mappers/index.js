@@ -12,6 +12,15 @@ export default class ChannelMapper {
       createdBy: doc.createdBy.toString(),
       isArchived: doc.isArchived,
       createdAt: doc.createdAt,
+      lastMessage: doc.lastMessage
+        ? {
+            sent: doc.lastMessage.sent,
+            name: doc.lastMessage.name,
+            date: doc.lastMessage.date,
+            content: doc.lastMessage.content,
+            type: doc.lastMessage.type,
+          }
+        : null,
       updatedAt: doc.updatedAt,
     });
   }
@@ -23,6 +32,15 @@ export default class ChannelMapper {
       description: entity.description,
       createdBy: entity.createdBy,
       isArchived: entity.isArchived,
+      lastMessage: entity.lastMessage
+        ? {
+            sent: entity.lastMessage.sent,
+            name: entity.lastMessage.name,
+            date: entity.lastMessage.date,
+            content: entity.lastMessage.content,
+            type: entity.lastMessage.type,
+          }
+        : undefined,
     };
   }
 }
