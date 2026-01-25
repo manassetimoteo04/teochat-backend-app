@@ -13,6 +13,7 @@ import { updateTeamService } from "../../usecases/update/update-team.service.js"
 import { AddTeamMembersService } from "../../usecases/addMembers/add-team-members.service.js";
 import { CreateTeamService } from "../../usecases/create/create-team.service.js";
 import { DeleteTeamService } from "../../usecases/delete/delete-team.service.js";
+import { eventBus } from "../../../shared/infrastructure/events/event-bus.js";
 
 const teamRepo = new TeamsMongoRepository();
 const companyRepo = new CompanyMongoRepository();
@@ -23,6 +24,7 @@ const createTeam = new CreateTeamService({
   companyRepo,
   userRepo,
   teamRepo,
+  eventBus,
 });
 const deleteTeam = new DeleteTeamService({ teamRepo, companyRepo });
 const findTeamsByCompany = new FindTeamByCompanyIdService({

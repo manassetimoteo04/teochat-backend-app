@@ -1,6 +1,5 @@
 const errorMiddleware = (err, req, res, next) => {
   try {
-    console.log(err);
     let error = { ...err };
     error.message = err.message;
     if (err.name === "CastError") {
@@ -30,25 +29,38 @@ const errorMiddleware = (err, req, res, next) => {
     }
 
     const customErrors = {
+      // COMPANY / USER
       CompanyNotFoundError: { code: 404 },
       UserNotFoundError: { code: 404 },
       NotCompanyMemberError: { code: 403 },
       UserAlreadyExistsError: { code: 400 },
+
+      // INVITATION
       InvitationNotFoundError: { code: 404 },
       InvitationExpiredError: { code: 400 },
       InvitationAlreadyAcceptedError: { code: 400 },
       InvitationCanceledError: { code: 400 },
       InvitationNotDestitationError: { code: 403 },
+
+      // TEAM
       TeamNotFoundError: { code: 404 },
       NotTeamMemberError: { code: 403 },
       NotTeamCompanyError: { code: 403 },
+
+      // AUTH
       InvalidConfirmCodeError: { code: 400 },
       ExpiredConfirmCodeError: { code: 400 },
       EmailOrPasswordInvalidError: { code: 400 },
+
+      // EVENT
       EventNotFoundError: { code: 404 },
       EventTimeConflictError: { code: 409 },
+
+      // PROJECT
       ProjectNotFoundError: { code: 404 },
       NotProjectTeamError: { code: 403 },
+
+      // TASK
       TaskNotFoundError: { code: 404 },
       NotTaskAssigneeError: { code: 403 },
       NotTaskCreatorError: { code: 403 },
@@ -59,6 +71,14 @@ const errorMiddleware = (err, req, res, next) => {
       TaskNotAssignedError: { code: 409 },
       TaskDueDateExpiredError: { code: 400 },
       InvalidTaskDataError: { code: 400 },
+
+      // CHANNEL
+      ChannelNotFoundError: { code: 404 },
+      ChannelAlreadyExistsError: { code: 409 },
+      NotChannelTeamError: { code: 403 },
+      ChannelArchivedError: { code: 400 },
+      InvalidChannelDataError: { code: 400 },
+      ChannelCreatorOnlyActionError: { code: 403 },
     };
 
     if (customErrors[err.name]) {

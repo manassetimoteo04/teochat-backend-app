@@ -2,12 +2,14 @@ import {
   CompanyNotFoundError,
   UserNotFoundError,
 } from "../../../shared/infrastructure/errors/error.messages.js";
+import { TeamCreatedEvent } from "../../domain/events/team-created-event/index.js";
 
 export class CreateTeamService {
-  constructor({ companyRepo, userRepo, teamRepo }) {
+  constructor({ companyRepo, userRepo, teamRepo, eventBus }) {
     this.companyRepo = companyRepo;
     this.userRepo = userRepo;
     this.teamRepo = teamRepo;
+    this.eventBus = eventBus;
   }
   async execute({ name, companyId, members, tags, userId, description }) {
     const user = await this.userRepo.findById(userId);
@@ -23,6 +25,9 @@ export class CreateTeamService {
       description,
       members: [userId, ...members],
     });
+
+    const event = new TeamCreatedEvent(team);
+    this.eventBus.emit(event.name, event);
     return team;
   }
 }

@@ -7,7 +7,7 @@ export class CompanyNotFoundError extends Error {
 
 export class UserNotFoundError extends Error {
   constructor(
-    message = "O usuário especificado não existe ou não foi localizado."
+    message = "O usuário especificado não existe ou não foi localizado.",
   ) {
     super(message);
     this.name = "UserNotFoundError";
@@ -23,7 +23,7 @@ export class NotCompanyMemberError extends Error {
 
 export class UserAlreadyExistsError extends Error {
   constructor(
-    message = "Já existe um usuário cadastrado com estas credenciais."
+    message = "Já existe um usuário cadastrado com estas credenciais.",
   ) {
     super(message);
     this.name = "UserAlreadyExistsError";
@@ -32,7 +32,7 @@ export class UserAlreadyExistsError extends Error {
 
 export class InvitationNotFoundError extends Error {
   constructor(
-    message = "O convite informado não foi encontrado ou não existe."
+    message = "O convite informado não foi encontrado ou não existe.",
   ) {
     super(message);
     this.name = "InvitationNotFoundError";
@@ -62,7 +62,7 @@ export class InvitationCanceledError extends Error {
 
 export class InvitationNotDestitationError extends Error {
   constructor(
-    message = "Este convite não pertence a você: somente o destinatário correto pode utilizá-lo."
+    message = "Este convite não pertence a você: somente o destinatário correto pode utilizá-lo.",
   ) {
     super(message);
     this.name = "InvitationNotDestitationError";
@@ -71,7 +71,7 @@ export class InvitationNotDestitationError extends Error {
 
 export class TeamNotFoundError extends Error {
   constructor(
-    message = "A equipe informado não foi encontrado ou não existe."
+    message = "A equipe informado não foi encontrado ou não existe.",
   ) {
     super(message);
     this.name = "TeamNotFoundError";
@@ -86,7 +86,7 @@ export class NotTeamMemberError extends Error {
 }
 export class NotTeamCompanyError extends Error {
   constructor(
-    message = "Você não tem permissão: não podes acessar a quipe de outra empresa."
+    message = "Você não tem permissão: não podes acessar a quipe de outra empresa.",
   ) {
     super(message);
     this.name = "NotTeamCompanyError";
@@ -94,7 +94,7 @@ export class NotTeamCompanyError extends Error {
 }
 export class InvalidConfirmCodeError extends Error {
   constructor(
-    message = "Código de confirmação inválido, por favor verifique o teu email"
+    message = "Código de confirmação inválido, por favor verifique o teu email",
   ) {
     super(message);
     this.name = "InvalidConfirmCodeError";
@@ -108,7 +108,7 @@ export class EmailOrPasswordInvalidError extends Error {
 }
 export class ExpiredConfirmCodeError extends Error {
   constructor(
-    message = "Código de confirmação expirado, por favor solicite outro"
+    message = "Código de confirmação expirado, por favor solicite outro",
   ) {
     super(message);
     this.name = "ExpiredConfirmCodeError";
@@ -116,7 +116,7 @@ export class ExpiredConfirmCodeError extends Error {
 }
 export class EventNotFoundError extends Error {
   constructor(
-    message = "O Evento informado não foi encontrado ou não existe."
+    message = "O Evento informado não foi encontrado ou não existe.",
   ) {
     super(message);
     this.name = "EventNotFoundError";
@@ -124,7 +124,7 @@ export class EventNotFoundError extends Error {
 }
 export class EventTimeConflictError extends Error {
   constructor(
-    message = " Já existe um evento neste horário para esta agenda."
+    message = " Já existe um evento neste horário para esta agenda.",
   ) {
     super(message);
     this.name = "EventTimeConflictError";
@@ -133,7 +133,7 @@ export class EventTimeConflictError extends Error {
 
 export class ProjectNotFoundError extends Error {
   constructor(
-    message = "O projecto informado não foi encontrado ou não existe."
+    message = "O projecto informado não foi encontrado ou não existe.",
   ) {
     super(message);
     this.name = "ProjectNotFoundError";
@@ -141,7 +141,7 @@ export class ProjectNotFoundError extends Error {
 }
 export class NotProjectTeamError extends Error {
   constructor(
-    message = "Você não tem permissão: não podes acessar projecto de outra equipa."
+    message = "Você não tem permissão: não podes acessar projecto de outra equipa.",
   ) {
     super(message);
     this.name = "NotProjectTeamError";
@@ -150,7 +150,7 @@ export class NotProjectTeamError extends Error {
 
 export class TaskNotFoundError extends Error {
   constructor(
-    message = "A tarefa informada não foi encontrada ou não existe."
+    message = "A tarefa informada não foi encontrada ou não existe.",
   ) {
     super(message);
     this.name = "TaskNotFoundError";
@@ -159,7 +159,7 @@ export class TaskNotFoundError extends Error {
 
 export class NotTaskAssigneeError extends Error {
   constructor(
-    message = "Você não tem permissão: não é o responsável por esta tarefa."
+    message = "Você não tem permissão: não é o responsável por esta tarefa.",
   ) {
     super(message);
     this.name = "NotTaskAssigneeError";
@@ -168,7 +168,7 @@ export class NotTaskAssigneeError extends Error {
 
 export class NotTaskCreatorError extends Error {
   constructor(
-    message = "Você não tem permissão: não foi quem criou esta tarefa."
+    message = "Você não tem permissão: não foi quem criou esta tarefa.",
   ) {
     super(message);
     this.name = "NotTaskCreatorError";
@@ -177,7 +177,7 @@ export class NotTaskCreatorError extends Error {
 
 export class NotTaskProjectError extends Error {
   constructor(
-    message = "Você não tem permissão: esta tarefa pertence a outro projeto."
+    message = "Você não tem permissão: esta tarefa pertence a outro projeto.",
   ) {
     super(message);
     this.name = "NotTaskProjectError";
@@ -214,7 +214,7 @@ export class TaskNotAssignedError extends Error {
 
 export class TaskDueDateExpiredError extends Error {
   constructor(
-    message = "O prazo desta tarefa já expirou e não pode ser alterado."
+    message = "O prazo desta tarefa já expirou e não pode ser alterado.",
   ) {
     super(message);
     this.name = "TaskDueDateExpiredError";
@@ -225,5 +225,55 @@ export class InvalidTaskDataError extends Error {
   constructor(message = "Os dados informados para a tarefa são inválidos.") {
     super(message);
     this.name = "InvalidTaskDataError";
+  }
+}
+
+// =========================
+// CHANNEL ERRORS
+// =========================
+
+export class ChannelNotFoundError extends Error {
+  constructor(message = "O canal informado não foi encontrado ou não existe.") {
+    super(message);
+    this.name = "ChannelNotFoundError";
+  }
+}
+
+export class ChannelAlreadyExistsError extends Error {
+  constructor(message = "Já existe um canal com este nome nesta equipa.") {
+    super(message);
+    this.name = "ChannelAlreadyExistsError";
+  }
+}
+
+export class NotChannelTeamError extends Error {
+  constructor(
+    message = "Você não tem permissão: este canal pertence a outra equipa.",
+  ) {
+    super(message);
+    this.name = "NotChannelTeamError";
+  }
+}
+
+export class ChannelArchivedError extends Error {
+  constructor(message = "Este canal está arquivado e não pode ser utilizado.") {
+    super(message);
+    this.name = "ChannelArchivedError";
+  }
+}
+
+export class InvalidChannelDataError extends Error {
+  constructor(message = "Os dados informados para o canal são inválidos.") {
+    super(message);
+    this.name = "InvalidChannelDataError";
+  }
+}
+
+export class ChannelCreatorOnlyActionError extends Error {
+  constructor(
+    message = "Você não tem permissão: apenas o criador do canal pode executar esta ação.",
+  ) {
+    super(message);
+    this.name = "ChannelCreatorOnlyActionError";
   }
 }
