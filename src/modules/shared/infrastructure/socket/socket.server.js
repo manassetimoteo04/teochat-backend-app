@@ -7,7 +7,7 @@ import { registerMessageHandlers } from "../../../messages/infra/socket/messages
 export function createSocketServer(httpServer) {
   const io = new Server(httpServer, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: ["http://localhost:5173", "https://teochat.vercel.app"],
       credentials: true,
     },
   });

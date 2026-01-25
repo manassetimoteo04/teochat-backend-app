@@ -19,6 +19,7 @@ export async function socketAuthorize(socket, next) {
 
     const decoded = jwtService.verifyToken(token);
     const user = await userContainer.findUserById.execute(decoded);
+    console.log(user);
     socket.user = {
       name: user.name,
       email: user.email,
