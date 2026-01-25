@@ -6,29 +6,33 @@ const jwtService = new JwtService(JWT_SECRET);
 
 export async function socketAuthorize(socket, next) {
   try {
-    let token = socket.handshake.auth?.token;
+    const header = socket.handshake.headers.cookie;
 
-    if (!token && socket.handshake.headers.cookie) {
-      const cookies = cookie.parse(socket.handshake.headers.cookie);
-      token = cookies.token || cookies.access_token;
+    if (!header) {
+      return next(new Error("Cookie não enviado"));
     }
+
+    const cookies = cookie.parse(header);
+    console.log("SOCKER HEADER", cookies);
+    const token = cookies.token;
+
     if (!token) {
-      return next(new Error("Token não encontrado"));
+      return next(new Error("Token ausente no cookie"));
     }
-    token = token.replace(/^"|"$/g, "").trim();
 
     const decoded = jwtService.verifyToken(token);
     const user = await userContainer.findUserById.execute(decoded);
     console.log(user);
     socket.user = {
+      id: user.id,
       name: user.name,
       email: user.email,
-      id: user.id,
       avatar: user.avatar,
     };
+
     next();
   } catch (err) {
-    console.error("ERROR SOCKET AUTH:", err.message);
+    console.error("SOCKET AUTH ERROR:", err.message);
     next(new Error("Token inválido"));
   }
 }
