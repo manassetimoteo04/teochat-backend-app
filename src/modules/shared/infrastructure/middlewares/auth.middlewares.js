@@ -5,7 +5,6 @@ import userContainer from "../../../user/infrastructure/container/user-container
 const jwtService = new JwtService(JWT_SECRET);
 export const authorize = async (req, res, next) => {
   try {
-    console.log("COKKIE TOKEN", req.cookies.token);
     const cookie = req.cookies;
     let token;
     if (

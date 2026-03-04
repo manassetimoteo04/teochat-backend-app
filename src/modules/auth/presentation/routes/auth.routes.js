@@ -5,6 +5,7 @@ import { confirmUserAccount } from "../controllers/confirmAccount/confirm-accoun
 import { authorize } from "../../../shared/infrastructure/middlewares/auth.middlewares.js";
 import { requestConfirmCode } from "../controllers/requestConfirmCode/request-confirm-code.controller.js";
 import { getSession } from "../controllers/getSession/get-session.controller.js";
+import { logoutUser } from "../controllers/logout/logout.controller.js";
 
 
 const authRouter = Router();
@@ -13,4 +14,5 @@ authRouter.post("/sign-up", signUpUser);
 authRouter.post("/verify-account", authorize, confirmUserAccount);
 authRouter.post("/verify-account/resend-code", authorize, requestConfirmCode);
 authRouter.get("/session", authorize, getSession);
+authRouter.post("/logout", authorize, logoutUser);
 export default authRouter;

@@ -7,22 +7,68 @@ import { registerMessageHandlers } from "../../../messages/infra/socket/messages
 export function createSocketServer(httpServer) {
   const io = new Server(httpServer, {
     cors: {
-      origin: ["http://localhost:5173", "https://teochat.vercel.app"],
+      origin: [
+        "http://localhost:5173",
+        "https://teochat.vercel.app",
+        "http://10.81.230.36:5173",
+      ],
       credentials: true,
+    },
+    transports: ["websocket", "polling"],
+    allowUpgrades: true,
+    pingInterval: 25000,
+    pingTimeout: 60000,
+    connectTimeout: 45000,
+    maxHttpBufferSize: 1e6,
+    connectionStateRecovery: {
+      maxDisconnectionDuration: 2 * 60 * 1000,
+      skipMiddlewares: false,
     },
   });
 
   io.use(socketAuthorize);
 
   io.on("connection", (socket) => {
-    console.log("USER CONNECTED:", socket.user.id);
+    const userId = socket.user.id;
+    socket.data.userId = userId;
+
+    console.log(
+      "USER CONNECTED:",
+      userId,
+      `transport=${socket.conn.transport.name}`,
+      `recovered=${socket.recovered}`,
+    );
+
+    socket.emit("socket:ready", {
+      ok: true,
+      recovered: socket.recovered,
+      socketId: socket.id,
+      serverTime: new Date().toISOString(),
+    });
 
     registerChannelHandlers(io, socket);
     registerMessageHandlers(io, socket);
 
-    socket.on("disconnect", (reason) => {
-      console.log("USER DISCONNECTED:", socket.user.id, reason);
+    socket.conn.on("upgrade", () => {
+      console.log("SOCKET TRANSPORT UPGRADED:", userId, socket.conn.transport.name);
     });
+
+    socket.on("error", (error) => {
+      console.error("SOCKET ERROR:", userId, error?.message || error);
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.log("USER DISCONNECTED:", userId, reason);
+    });
+  });
+
+  io.engine.on("connection_error", (error) => {
+    console.error(
+      "SOCKET CONNECTION ERROR:",
+      error.code,
+      error.message,
+      error.context?.name || "",
+    );
   });
 
   return io;

@@ -24,12 +24,17 @@ import channelRouter from "./modules/channels/presentation/routes/channel.routes
 import notFoundMiddleware from "./modules/shared/infrastructure/middlewares/not-found.middlewares.js";
 import messageRouter from "./modules/messages/presentation/routes/index.js";
 import { registerMessageSubscribers } from "./modules/messages/infra/subscribers/index.js";
+import meetingRoute from "./modules/meetings/presentation/routes/meeting.routes.js";
 
 const app = express();
 
 app.use(
   cors({
-    origin: ["https://teochat.vercel.app", BASE_URL],
+    origin: true /*[
+      "https://teochat.vercel.app",
+      BASE_URL,
+      "http://10.105.113.36:5173",
+    ],*/,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   }),
@@ -56,6 +61,7 @@ app.use("/api/v1/projects/", projectRoute);
 app.use("/api/v1/tasks/", taskRouter);
 app.use("/api/v1/channels", channelRouter);
 app.use("/api/v1/messages", messageRouter);
+app.use("/api/v1/meetings", meetingRoute);
 
 app.get("/api/v1/health", (_, res) =>
   res.status(200).json({ message: "API running ok" }),

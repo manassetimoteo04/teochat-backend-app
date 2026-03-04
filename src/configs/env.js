@@ -11,4 +11,6 @@ export const {
   JWT_COOKIE_EXPIRES_IN,
   EMAIL_USERNAME,
   EMAIL_PASSWORD,
+  STREAM_API_KEY,
+  STREAM_API_SECRET,
 } = process.env;
