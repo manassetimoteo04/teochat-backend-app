@@ -4,7 +4,7 @@ import { ITasksRepository } from "../../domain/interface/task-repository.interfa
 
 export class MongoTasksRepository extends ITasksRepository {
   async create(task) {
-    await TaskModel.create({
+    const doc = await TaskModel.create({
       projectId: task.projectId,
       title: task.title,
       description: task.description,
@@ -15,10 +15,16 @@ export class MongoTasksRepository extends ITasksRepository {
       createdBy: task.createdBy,
       tags: task.tags,
     });
+    const populated = await this.findById(doc._id);
+    return populated;
   }
 
   async update(task) {
-    const doc = await TaskModel.findByIdAndUpdate(
+    const existing = await TaskModel.findById(task.id);
+    const dueDateChanged =
+      String(existing?.dueDate || "") !== String(task.dueDate || "");
+
+    await TaskModel.findByIdAndUpdate(
       task.id,
       {
         title: task.title,
@@ -29,11 +35,12 @@ export class MongoTasksRepository extends ITasksRepository {
         assignedTo: task.assignedTo,
         tags: task.tags,
         completedAt: task.completedAt,
+        ...(dueDateChanged ? { dueReminderSentAt: null } : {}),
       },
       { new: true },
     );
 
-    console.log(doc);
+    return this.findById(task.id);
   }
 
   async delete(taskId) {
@@ -85,6 +92,35 @@ export class MongoTasksRepository extends ITasksRepository {
     return docs.map((d) => this.toEntity(d));
   }
 
+  async findDueSoon(limit = 100) {
+    const now = new Date();
+    const dueLimit = new Date(now.getTime() + 60 * 60 * 1000);
+    const docs = await TaskModel.find({
+      dueDate: { $gt: now, $lte: dueLimit },
+      status: { $ne: "done" },
+      dueReminderSentAt: null,
+    })
+      .limit(limit)
+      .populate([
+        {
+          path: "assignedTo",
+          select: "name email avatar",
+        },
+        {
+          path: "createdBy",
+          select: "name email avatar",
+        },
+      ]);
+
+    return docs.map((d) => this.toEntity(d));
+  }
+
+  async markDueReminderSent(taskId, sentAt = new Date()) {
+    await TaskModel.findByIdAndUpdate(taskId, {
+      dueReminderSentAt: sentAt,
+    });
+  }
+
   toEntity(doc) {
     return new TaskEntity({
       id: doc._id.toString(),
@@ -98,20 +134,23 @@ export class MongoTasksRepository extends ITasksRepository {
         ? {
             id: doc.assignedTo?._id.toString(),
             name: doc.assignedTo?.name,
-            avatar: doc.assignedTo?.email.avatar,
-            email: doc.assignedTo.avatar,
+            avatar: doc.assignedTo?.avatar,
+            email: doc.assignedTo?.email,
           }
         : null,
-      createdBy: {
-        id: doc.createdBy?._id.toString(),
-        name: doc.createdBy?.name,
-        avatar: doc.createdBy?.email.avatar,
-        email: doc.createdBy.avatar,
-      },
+      createdBy: doc?.createdBy
+        ? {
+            id: doc.createdBy?._id.toString(),
+            name: doc.createdBy?.name,
+            avatar: doc.createdBy?.avatar,
+            email: doc.createdBy?.email,
+          }
+        : null,
       tags: doc.tags,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
       completedAt: doc.completedAt,
+      dueReminderSentAt: doc.dueReminderSentAt,
     });
   }
 }

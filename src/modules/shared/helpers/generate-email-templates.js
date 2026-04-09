@@ -1,3 +1,183 @@
+const DEFAULT_COMPANY_NAME = "TeoChat";
+const DEFAULT_FOOTER_NOTE =
+  "Esta mensagem foi enviada automaticamente. Se precisar de ajuda, entre em contacto com a sua equipa.";
+
+const escapeHtml = (value = "") =>
+  String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
+const normalizeText = (value, fallback = "") => {
+  if (value === undefined || value === null) return fallback;
+
+  const normalized = String(value).trim();
+  return normalized || fallback;
+};
+
+const getSafeLink = (value) => {
+  const normalized = normalizeText(value);
+
+  if (!normalized) return "";
+
+  return /^https?:\/\//i.test(normalized) ? normalized : "";
+};
+
+const formatDate = (value) => {
+  if (!value) return "A confirmar";
+
+  const parsedDate = new Date(value);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return escapeHtml(normalizeText(value, "A confirmar"));
+  }
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "full",
+    timeZone: "Africa/Luanda",
+  }).format(parsedDate);
+};
+
+const formatTime = (value) => {
+  const normalized = normalizeText(value);
+  if (!normalized) return "A confirmar";
+
+  const dateTimeMatch = normalized.match(/T(\d{2}:\d{2})/);
+  if (dateTimeMatch) return escapeHtml(dateTimeMatch[1]);
+
+  const timeMatch = normalized.match(/^(\d{1,2}:\d{2})/);
+  if (timeMatch) return escapeHtml(timeMatch[1]);
+
+  const parsedDate = new Date(normalized);
+  if (!Number.isNaN(parsedDate.getTime())) {
+    return new Intl.DateTimeFormat("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Africa/Luanda",
+    }).format(parsedDate);
+  }
+
+  return escapeHtml(normalized);
+};
+
+const renderActionButton = (actionLink, actionText) => {
+  const safeLink = getSafeLink(actionLink);
+  const safeText = escapeHtml(normalizeText(actionText));
+
+  if (!safeLink || !safeText) return "";
+
+  return `
+    <table role="presentation" border="0" cellspacing="0" cellpadding="0" style="margin: 24px auto 0;">
+      <tr>
+        <td align="center" bgcolor="#0f766e" style="border-radius: 10px;">
+          <a
+            href="${safeLink}"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="display: inline-block; padding: 14px 24px; font-size: 15px; font-weight: 600; color: #ffffff; text-decoration: none;"
+          >
+            ${safeText}
+          </a>
+        </td>
+      </tr>
+    </table>
+  `;
+};
+
+const renderEmailLayout = ({
+  companyName,
+  title,
+  subtitle,
+  accentColor,
+  badge,
+  bodyContent,
+  actionLink,
+  actionText,
+  secondaryContent,
+  footerNote,
+}) => {
+  const safeCompanyName = escapeHtml(
+    normalizeText(companyName, DEFAULT_COMPANY_NAME),
+  );
+  const safeTitle = escapeHtml(normalizeText(title, "Notificação TeoChat"));
+  const safeSubtitle = escapeHtml(normalizeText(subtitle));
+  const safeFooterNote = escapeHtml(
+    normalizeText(footerNote, DEFAULT_FOOTER_NOTE),
+  );
+
+  return `
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>${safeTitle}</title>
+  </head>
+  <body style="margin: 0; padding: 0; background-color: #f4f7fb; font-family: Arial, Helvetica, sans-serif; color: #0f172a;">
+    <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #f4f7fb;">
+      <tr>
+        <td align="center" style="padding: 32px 16px;">
+          <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 640px;">
+            <tr>
+              <td style="padding-bottom: 18px; text-align: center;">
+                <p style="margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: ${accentColor};">
+                  ${safeCompanyName}
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="background-color: #ffffff; border: 1px solid #dbe4ee; border-radius: 20px; overflow: hidden; box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);">
+                <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td style="padding: 32px 32px 24px; background: linear-gradient(135deg, #ecfeff 0%, #f8fafc 100%); border-bottom: 1px solid #e2e8f0;">
+                      <p style="margin: 0 0 14px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: ${accentColor};">
+                        ${escapeHtml(normalizeText(badge, "Notificação"))}
+                      </p>
+                      <h1 style="margin: 0 0 10px; font-size: 28px; line-height: 1.25; color: #0f172a;">
+                        ${safeTitle}
+                      </h1>
+                      ${
+                        safeSubtitle
+                          ? `<p style="margin: 0; font-size: 15px; line-height: 1.7; color: #475569;">${safeSubtitle}</p>`
+                          : ""
+                      }
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 32px;">
+                      ${bodyContent}
+                      ${renderActionButton(actionLink, actionText)}
+                      ${
+                        secondaryContent
+                          ? `<div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 14px; line-height: 1.7; color: #475569;">${secondaryContent}</div>`
+                          : ""
+                      }
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 18px 10px 0; text-align: center;">
+                <p style="margin: 0; font-size: 12px; line-height: 1.7; color: #64748b;">
+                  ${safeFooterNote}
+                </p>
+                <p style="margin: 8px 0 0; font-size: 12px; line-height: 1.7; color: #94a3b8;">
+                  &copy; ${new Date().getFullYear()} ${safeCompanyName}. Todos os direitos reservados.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+`;
+};
+
 export const generateEmailTemplate = ({
   templateType = "convite",
   title,
@@ -5,197 +185,136 @@ export const generateEmailTemplate = ({
   mainContent,
   actionLink,
   actionText,
-  companyName = "TeoChat",
+  companyName = DEFAULT_COMPANY_NAME,
   secondaryContent,
-  footerNote = "Esta mensagem foi gerada automaticamente. Por favor, não responda.",
+  footerNote = DEFAULT_FOOTER_NOTE,
   userData = {},
 }) => {
+  const safeCompanyName = normalizeText(companyName, DEFAULT_COMPANY_NAME);
+  const userName = normalizeText(userData.name, "utilizador");
+  const safeInviter = escapeHtml(
+    normalizeText(userData.inviter, "um administrador da plataforma"),
+  );
+  const safeDevice = escapeHtml(normalizeText(userData.device, "Não identificado"));
+  const safeLocation = escapeHtml(
+    normalizeText(userData.location, "Localização indisponível"),
+  );
+  const safeCode = escapeHtml(normalizeText(userData.code));
+
   const templates = {
     convite: {
-      title: `Convite para entrar na empresa ${companyName}`,
-      subtitle: `Você foi convidado a se juntar à empresa ${companyName}`,
-      bgColor:
-        "linear-gradient(135deg, rgba(34,197,94,0.15) 0%, rgba(16,185,129,0.15) 100%)",
-      borderColor: "rgba(34, 197, 94, 0.25)",
-      mainContent: `
-        <p style="font-size: 16px; color: #111827; margin: 0 0 10px; text-align: center;">
-          <strong>${
-            userData.inviter || "Um administrador"
-          }</strong> convidou você para se juntar à empresa 
-          <strong>${companyName}</strong>.
+      badge: "Convite",
+      title: `Convite para entrar na empresa ${safeCompanyName}`,
+      subtitle: `Recebeu um convite para colaborar com a empresa ${safeCompanyName} no TeoChat.`,
+      accentColor: "#0f766e",
+      bodyContent: `
+        <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.7; color: #334155;">
+          <strong style="color: #0f172a;">${safeInviter}</strong> convidou-o(a) para se juntar à empresa
+          <strong style="color: #0f172a;">${escapeHtml(safeCompanyName)}</strong>.
         </p>
-        <p style="font-size: 14px; color: #4b5563; margin: 0 0 15px; text-align: center;">
-          Clique no botão abaixo para aceitar o convite e começar a colaborar com a equipe.
+        <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #475569;">
+          Ao aceitar o convite, terá acesso ao espaço de trabalho da equipa e poderá começar a colaborar imediatamente.
         </p>
       `,
       actionText: "Aceitar convite",
     },
     welcome: {
-      title: `Bem-vindo(a) ao ${companyName}, ${userData.name || "Usuário"}!`,
-      subtitle:
-        "Estamos felizes em ter você com a gente. Agora a tua conta está activa.",
-      bgColor:
-        "linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(37,99,235,0.15) 100%)",
-      borderColor: "rgba(37, 99, 235, 0.25)",
-      mainContent: `
-        <p style="font-size: 15px; color: #111827; text-align: center;">
-          Agora você faz parte da nossa comunidade 🚀. Explore as funcionalidades do ${companyName} 
-          e aproveite ao máximo a colaboração em equipe.
+      badge: "Conta ativada",
+      title: `Bem-vindo(a) ao ${safeCompanyName}`,
+      subtitle: `A sua conta foi confirmada com sucesso, ${userName}.`,
+      accentColor: "#2563eb",
+      bodyContent: `
+        <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.7; color: #334155;">
+          A sua conta está pronta para utilização. Já pode entrar no ${escapeHtml(safeCompanyName)} e começar a organizar conversas, equipas e projetos.
+        </p>
+        <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #475569;">
+          Se estiver a entrar pela primeira vez, recomendamos rever as suas equipas e notificações para configurar a experiência ideal.
         </p>
       `,
-      actionText: "Acessar plataforma",
+      actionText: "Aceder à plataforma",
     },
     verification: {
+      badge: "Verificação",
       title: "Verifique a sua conta",
-      subtitle: "Aqui está o seu código de confirmação:",
-      bgColor:
-        "linear-gradient(135deg, rgba(234,179,8,0.15) 0%, rgba(202,138,4,0.15) 100%)",
-      borderColor: "rgba(202,138,4,0.25)",
-      mainContent: `
-        <p style="font-size: 32px; font-weight: 700; text-align: center; margin: 10px 0; color: #ca8a04;">
-          ${userData.code}
-        </p>
-        <p style="font-size: 14px; color: #4b5563; text-align: center;">
-          Este código expira em 10 minutos.
-        </p>
-      `,
+      subtitle:
+        "Use o código abaixo para concluir a verificação. Por motivos de segurança, este código expira em 10 minutos.",
+      accentColor: "#ca8a04",
+      bodyContent: safeCode
+        ? `
+          <div style="margin: 0 0 18px; padding: 18px; border: 1px solid #fde68a; border-radius: 16px; background-color: #fffbeb; text-align: center;">
+            <p style="margin: 0 0 8px; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: #a16207;">
+              Código de confirmação
+            </p>
+            <p style="margin: 0; font-size: 34px; font-weight: 700; letter-spacing: 0.18em; color: #92400e;">
+              ${safeCode}
+            </p>
+          </div>
+          <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #475569;">
+            Se não reconhece esta ação, ignore esta mensagem e proteja o acesso à sua conta.
+          </p>
+        `
+        : `
+          <p style="margin: 0; font-size: 15px; line-height: 1.7; color: #475569;">
+            O código de verificação não pôde ser apresentado nesta mensagem. Solicite um novo código para continuar com segurança.
+          </p>
+        `,
     },
     resetPassword: {
-      title: "Recuperação de Senha",
-      subtitle: "Recebemos uma solicitação para redefinir sua senha.",
-      bgColor:
-        "linear-gradient(135deg, rgba(239,68,68,0.15) 0%, rgba(220,38,38,0.15) 100%)",
-      borderColor: "rgba(220,38,38,0.25)",
-      mainContent: `
-        <p style="font-size: 15px; color: #111827; text-align: center; margin-bottom: 20px;">
-          Clique no botão abaixo para criar uma nova senha. Se não foi você que solicitou, ignore este email.
+      badge: "Segurança",
+      title: "Recuperação de senha",
+      subtitle:
+        "Recebemos um pedido para redefinir a senha da sua conta.",
+      accentColor: "#dc2626",
+      bodyContent: `
+        <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.7; color: #334155;">
+          Clique no botão abaixo para criar uma nova senha. Se não fez este pedido, pode ignorar esta mensagem com segurança.
+        </p>
+        <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #64748b;">
+          Por segurança, o link de recuperação deve ser utilizado o mais cedo possível.
         </p>
       `,
       actionText: "Redefinir senha",
     },
     security: {
-      title: "Alerta de Segurança",
-      subtitle: "Detectamos uma atividade suspeita em sua conta",
-      bgColor:
-        "linear-gradient(135deg, rgba(168,85,247,0.15) 0%, rgba(147,51,234,0.15) 100%)",
-      borderColor: "rgba(147,51,234,0.25)",
-      mainContent: `
-        <p style="font-size: 15px; color: #111827; margin: 0 0 10px;">
-          Olá <strong>${
-            userData.name || "usuário"
-          }</strong>, houve um login não reconhecido.
+      badge: "Alerta de segurança",
+      title: "Atividade suspeita detetada",
+      subtitle: `Encontrámos uma tentativa de acesso incomum na conta de ${userName}.`,
+      accentColor: "#7c3aed",
+      bodyContent: `
+        <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.7; color: #334155;">
+          Revise os detalhes abaixo. Se não reconhece esta atividade, altere a sua senha imediatamente.
         </p>
-        <p style="font-size: 14px; color: #4b5563;">
-          <strong>Dispositivo:</strong> ${
-            userData.device || "Desconhecido"
-          } <br/>
-          <strong>Localização:</strong> ${
-            userData.location || "Não identificada"
-          }
-        </p>
-        <p style="font-size: 14px; color: #dc2626; margin-top: 15px;">
-          Caso não tenha sido você, recomendamos alterar sua senha imediatamente.
-        </p>
+        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="border: 1px solid #e2e8f0; border-radius: 14px; background-color: #f8fafc;">
+          <tr>
+            <td style="padding: 14px 16px; font-size: 14px; color: #334155;">
+              <strong style="color: #0f172a;">Dispositivo:</strong> ${safeDevice}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 16px 14px; font-size: 14px; color: #334155;">
+              <strong style="color: #0f172a;">Localização:</strong> ${safeLocation}
+            </td>
+          </tr>
+        </table>
       `,
-      actionText: "Proteger minha conta",
+      actionText: "Proteger conta",
     },
   };
 
   const config = templates[templateType] || templates.convite;
 
-  return `
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>${title || config.title}</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body style="font-family: 'Inter', Arial, sans-serif; background-color: #f9fafb; margin: 0; padding: 0;">
-  <table width="100%" border="0" cellspacing="0" cellpadding="0">
-    <!-- Header -->
-    <tr>
-      <td align="center" style="padding: 40px 0 20px;">
-        <h1 style="margin: 0; font-weight: 700; font-size: 28px; color: #16a34a;">
-          ${companyName}
-        </h1>
-      </td>
-    </tr>
-
-    <!-- Card -->
-    <tr>
-      <td align="center">
-        <div style="
-          background: ${config.bgColor};
-          border: 1px solid ${config.borderColor};
-          border-radius: 16px;
-          padding: 32px 24px;
-          width: 90%;
-          max-width: 600px;
-          box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-          backdrop-filter: blur(12px);
-        ">
-          <h2 style="margin: 0 0 10px; color: #111827; font-weight: 600; font-size: 20px;">
-            ${title || config.title}
-          </h2>
-          <p style="margin: 0 0 20px; color: #374151; font-size: 15px; line-height: 1.5;">
-            ${subtitle || config.subtitle}
-          </p>
-
-          <div style="
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            border: 1px solid ${config.borderColor};
-          ">
-            ${mainContent || config.mainContent || ""}
-          </div>
-
-          ${
-            actionLink && (actionText || config.actionText)
-              ? `
-            <a href="${actionLink}" target="_blank" 
-               style="
-                 display: inline-block;
-                 padding: 14px 28px;
-                 background: linear-gradient(135deg, #22c55e, #16a34a);
-                 color: white;
-                 text-decoration: none;
-                 border-radius: 10px;
-                 font-weight: 600;
-                 font-size: 15px;
-                 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-               ">
-              ${actionText || config.actionText}
-            </a>
-          `
-              : ""
-          }
-
-          ${
-            secondaryContent
-              ? `<div style="margin-top: 25px; font-size: 14px; color: #4b5563; line-height: 1.6;">${secondaryContent}</div>`
-              : ""
-          }
-        </div>
-      </td>
-    </tr>
-
-    <!-- Footer -->
-    <tr>
-      <td align="center" style="padding: 30px 0;">
-        <p style="font-size: 12px; color: #9ca3af; max-width: 600px; margin: 0 auto; padding: 0 20px; line-height: 1.4;">
-          ${footerNote}<br>
-          © ${new Date().getFullYear()} ${companyName}. Todos os direitos reservados.
-        </p>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
-`;
+  return renderEmailLayout({
+    companyName: safeCompanyName,
+    title: normalizeText(title, config.title),
+    subtitle: normalizeText(subtitle, config.subtitle),
+    accentColor: config.accentColor,
+    badge: config.badge,
+    bodyContent: mainContent || config.bodyContent,
+    actionLink,
+    actionText: normalizeText(actionText, config.actionText),
+    secondaryContent,
+    footerNote,
+  });
 };
 
 export const upcomingEventTemplate = ({
@@ -205,104 +324,58 @@ export const upcomingEventTemplate = ({
   eventDate,
   eventTime,
   eventLink,
-}) => `
-<!DOCTYPE html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Lembrete de Evento</title>
-    <style>
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: #f4f6f8;
-        padding: 0;
-        margin: 0;
-        color: #333;
-      }
-      .wrapper {
-        max-width: 600px;
-        margin: 30px auto;
-        background: #fff;
-        border-radius: 14px;
-        overflow: hidden;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-      }
-      .header {
-        background: linear-gradient(135deg, #9333ea, #7e22ce);
-        color: #fff;
-        padding: 20px;
-        text-align: center;
-      }
-      .header h1 {
-        margin: 0;
-        font-size: 20px;
-      }
-      .content {
-        padding: 25px;
-      }
-      .content h2 {
-        font-size: 22px;
-        color: #111;
-      }
-      .content p {
-        line-height: 1.6;
-        margin: 12px 0;
-      }
-      .details {
-        background: #f9f9fb;
-        border-radius: 10px;
-        padding: 15px;
-        margin: 20px 0;
-        border: 1px solid #e5e7eb;
-      }
-      .btn {
-        display: inline-block;
-        margin-top: 20px;
-        padding: 12px 20px;
-        background: #9333ea;
-        color: #fff !important;
-        text-decoration: none;
-        border-radius: 8px;
-        font-weight: bold;
-        transition: background 0.2s ease;
-      }
-      .btn:hover {
-        background: #7e22ce;
-      }
-      .footer {
-        font-size: 12px;
-        color: #888;
-        text-align: center;
-        padding: 20px;
-        border-top: 1px solid #eee;
-        background: #fafafa;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="wrapper">
-      <div class="header">
-        <h1>${teamName} • ${companyName}</h1>
-      </div>
-      <div class="content">
-        <h2>📅 Lembrete de Evento</h2>
-        <p>Olá! O evento <strong>${eventName}</strong> que você faz parte está chegando.</p>
-        
-        <div class="details">
-          <p><strong>Equipe:</strong> ${teamName}</p>
-          <p><strong>Empresa:</strong> ${companyName}</p>
-          <p><strong>Data:</strong> ${eventDate}</p>
-          <p><strong>Hora:</strong> ${eventTime}</p>
-        </div>
-        
-        <a class="btn" href="${eventLink}">➡ Acessar Evento</a>
-      </div>
-      <div class="footer">
-        <p>Você recebeu este lembrete porque é membro da equipe <strong>${teamName}</strong> na <strong>${companyName}</strong>.</p>
-        <p>Se não quiser mais receber notificações, ajuste suas preferências no app.</p>
-        <p>&copy; ${new Date().getFullYear()} ${companyName}. Todos os direitos reservados.</p>
-      </div>
-    </div>
-  </body>
-</html>
-`;
+}) => {
+  const normalizedTeamName = normalizeText(teamName, "Sua equipa");
+  const safeCompanyName = normalizeText(companyName, DEFAULT_COMPANY_NAME);
+  const normalizedEventName = normalizeText(eventName, "evento da equipa");
+  const safeTeamName = escapeHtml(normalizedTeamName);
+  const safeEventName = escapeHtml(normalizedEventName);
+  const safeEventDate = formatDate(eventDate);
+  const safeEventTime = formatTime(eventTime);
+
+  return renderEmailLayout({
+    companyName: safeCompanyName,
+    title: "Lembrete de evento",
+    subtitle: `O evento ${normalizedEventName} está a aproximar-se.`,
+    badge: "Agenda",
+    accentColor: "#0f766e",
+    bodyContent: `
+      <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.7; color: #334155;">
+        Este é um lembrete para que se possa preparar com antecedência e participar sem imprevistos.
+      </p>
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="border: 1px solid #dbe4ee; border-radius: 16px; background-color: #f8fafc;">
+        <tr>
+          <td style="padding: 18px 18px 10px; font-size: 14px; line-height: 1.7; color: #334155;">
+            <strong style="color: #0f172a;">Evento:</strong> ${safeEventName}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 0 18px 10px; font-size: 14px; line-height: 1.7; color: #334155;">
+            <strong style="color: #0f172a;">Equipa:</strong> ${safeTeamName}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 0 18px 10px; font-size: 14px; line-height: 1.7; color: #334155;">
+            <strong style="color: #0f172a;">Empresa:</strong> ${escapeHtml(safeCompanyName)}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 0 18px 10px; font-size: 14px; line-height: 1.7; color: #334155;">
+            <strong style="color: #0f172a;">Data:</strong> ${safeEventDate}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 0 18px 18px; font-size: 14px; line-height: 1.7; color: #334155;">
+            <strong style="color: #0f172a;">Hora:</strong> ${safeEventTime}
+          </td>
+        </tr>
+      </table>
+    `,
+    actionLink: eventLink,
+    actionText: "Abrir plataforma",
+    secondaryContent:
+      "<p style='margin: 0;'>Recebeu este lembrete porque faz parte da equipa associada a este evento.</p>",
+    footerNote:
+      "Se os detalhes deste evento foram alterados recentemente, consulte a plataforma para ver a versão mais atualizada.",
+  });
+};

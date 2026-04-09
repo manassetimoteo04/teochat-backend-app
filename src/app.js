@@ -4,7 +4,6 @@ import morgan from "morgan";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 
-import { BASE_URL } from "./configs/env.js";
 import authRouter from "./modules/auth/presentation/routes/auth.routes.js";
 import companyRoute from "./modules/company/presentation/routes/company.routes.js";
 import usersRoute from "./modules/user/presentation/routes/user.routes.js";
@@ -25,6 +24,8 @@ import notFoundMiddleware from "./modules/shared/infrastructure/middlewares/not-
 import messageRouter from "./modules/messages/presentation/routes/index.js";
 import { registerMessageSubscribers } from "./modules/messages/infra/subscribers/index.js";
 import meetingRoute from "./modules/meetings/presentation/routes/meeting.routes.js";
+import notificationRoute from "./modules/notifications/presentation/routes/notification.routes.js";
+import { registerNotificationsSubscribers } from "./modules/notifications/infrastructure/subscribers/index.js";
 
 const app = express();
 
@@ -50,7 +51,6 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
 app.use("/api/v1/auth/", authRouter);
 app.use("/api/v1/users/", usersRoute);
 app.use("/api/v1/companies/", companyRoute);
@@ -62,9 +62,10 @@ app.use("/api/v1/tasks/", taskRouter);
 app.use("/api/v1/channels", channelRouter);
 app.use("/api/v1/messages", messageRouter);
 app.use("/api/v1/meetings", meetingRoute);
+app.use("/api/v1/notifications", notificationRoute);
 
 app.get("/api/v1/health", (_, res) =>
-  res.status(200).json({ message: "API running ok" }),
+  res.status(200).json({ message: "API RODANDO FIXE COM A NURIA DE LADO" }),
 );
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
@@ -75,5 +76,6 @@ registerInvitationSubscribers();
 registerEventsSubscribers();
 registerTeamssSubscribers();
 registerMessageSubscribers();
+registerNotificationsSubscribers();
 startAgendaJobs();
 export default app;

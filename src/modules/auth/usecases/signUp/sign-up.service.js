@@ -38,6 +38,7 @@ export class SignUpService {
       id: user.id,
       email: user.email,
     });
+
     const event = new UserCreatedEvent({ ...user, confirmCode });
     this.eventBus.emit(event.name, event);
     return { user, token };

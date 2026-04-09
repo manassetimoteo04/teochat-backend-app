@@ -64,33 +64,74 @@ export class ProjectMongoRepository extends IProjectRepository {
       photo: doc.photo,
     });
   }
-  async findByTeamId(teamId) {
-    const docs = await Project.find({ teamId }).populate({
-      path: "createdBy",
-      select: "name avatar email tags",
-    });
+  async findByTeamId(teamId, options = {}) {
+    const {
+      query,
+      status,
+      dateRange,
+      sort = "createdat_desc",
+      page = 1,
+      limit = 20,
+    } = options;
 
-    return docs.map(
-      (doc) =>
-        new ProjectEntity({
-          id: doc._id,
-          name: doc.name,
-          description: doc.description,
-          createdAt: doc.createdAt,
-          createdBy: {
-            id: doc.createdBy._id,
-            name: doc.createdBy.name,
-            email: doc.createdBy.email,
-            avatar: doc.createdBy.avatar,
-          },
-          updatedAt: doc.updatedAt,
-          tags: doc.tags,
-          teamId: doc.teamId,
-          startDate: doc.startDate,
-          endDate: doc.endDate,
-          photo: doc.photo,
-        })
-    );
+    const filter = { teamId };
+
+    if (typeof query === "string" && query.trim() !== "") {
+      const safeQuery = escapeRegex(query.trim());
+      filter.name = { $regex: safeQuery, $options: "i" };
+    }
+
+    if (typeof status === "string" && status.trim() !== "") {
+      filter.status = status.trim();
+    }
+
+    if (dateRange?.startUtc && dateRange?.endUtc) {
+      filter.createdAt = { $gte: dateRange.startUtc, $lte: dateRange.endUtc };
+    }
+
+    const sortDirection = sort === "createdat_asc" ? 1 : -1;
+    const skip = (page - 1) * limit;
+
+    const [docs, total] = await Promise.all([
+      Project.find(filter)
+        .sort({ createdAt: sortDirection })
+        .skip(skip)
+        .limit(limit)
+        .populate({
+          path: "createdBy",
+          select: "name avatar email tags",
+        }),
+      Project.countDocuments(filter),
+    ]);
+
+    return {
+      data: docs.map(
+        (doc) =>
+          new ProjectEntity({
+            id: doc._id,
+            name: doc.name,
+            description: doc.description,
+            createdAt: doc.createdAt,
+            createdBy: {
+              id: doc.createdBy._id,
+              name: doc.createdBy.name,
+              email: doc.createdBy.email,
+              avatar: doc.createdBy.avatar,
+            },
+            updatedAt: doc.updatedAt,
+            tags: doc.tags,
+            teamId: doc.teamId,
+            startDate: doc.startDate,
+            endDate: doc.endDate,
+            photo: doc.photo,
+          })
+      ),
+      total,
+    };
   }
   async findTaks(id) {}
+}
+
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

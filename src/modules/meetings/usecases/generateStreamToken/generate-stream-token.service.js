@@ -28,7 +28,6 @@ export class GenerateStreamTokenService {
     const company = await this.companyRepo.findById(companyId);
     if (!company) throw new CompanyNotFoundError();
     if (!company.isMember(userId)) throw new NotCompanyMemberError();
-
     const team = await this.teamRepo.findById(teamId);
     if (!team) throw new TeamNotFoundError();
     if (!team.isCompany(companyId)) throw new NotTeamCompanyError();

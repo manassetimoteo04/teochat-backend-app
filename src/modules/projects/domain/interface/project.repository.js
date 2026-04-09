@@ -3,6 +3,6 @@ export class IProjectRepository {
   async update(id, updateData) {}
   async delete(id) {}
   async findById(id) {}
-  async findByTeamId(teamId) {}
+  async findByTeamId(teamId, options = {}) {}
   async findTaks(id) {}
 }

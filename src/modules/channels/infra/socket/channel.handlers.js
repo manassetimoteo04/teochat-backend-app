@@ -1,5 +1,5 @@
-import teamContainer from "../../../teams/infrastructure/container/team-container";
-import channelContainer from "../containers/channel.contianer";
+import teamContainer from "../../../teams/infrastructure/container/team-container.js";
+import channelContainer from "../containers/channel.contianer.js";
 
 function emitAck(ack, payload) {
   if (typeof ack === "function") ack(payload);

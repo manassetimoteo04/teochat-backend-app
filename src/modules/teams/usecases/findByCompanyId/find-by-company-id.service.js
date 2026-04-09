@@ -16,7 +16,16 @@ export class FindTeamByCompanyIdService {
     const user = await this.userRepo.findById(userId);
     if (!user) throw new UserNotFoundError();
     if (!company.isMember(userId)) throw new NotCompanyMemberError();
-    const teams = await this.teamRepo.findByCompanyId(companyId);
+
+    const companyAccess = user.companies?.find(
+      (item) => item.companyId?.toString() === companyId.toString(),
+    );
+    const isAdmin = ["admin", "super_admin"].includes(companyAccess?.role);
+
+    const teams = isAdmin
+      ? await this.teamRepo.findByCompanyId(companyId)
+      : await this.teamRepo.findByUserId({ companyId, userId });
+
     return teams;
   }
 }

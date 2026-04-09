@@ -13,6 +13,7 @@ export class TaskEntity {
     createdAt,
     updatedAt,
     completedAt,
+    dueReminderSentAt = null,
   }) {
     this.id = id;
     this.projectId = projectId;
@@ -27,6 +28,7 @@ export class TaskEntity {
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.completedAt = completedAt;
+    this.dueReminderSentAt = dueReminderSentAt;
   }
 
   isFromProject(projectId) {

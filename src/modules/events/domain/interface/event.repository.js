@@ -14,7 +14,7 @@ export class IEventRepository {
   async findByTime({ teamId, startTime, endTime, id }) {
     throw new Error("Not implemented");
   }
-  async findByTeamId(teamId) {
+  async findByTeamId(teamId, options = {}) {
     throw new Error("Not implemented");
   }
   async findByCompanyId(companyId) {}

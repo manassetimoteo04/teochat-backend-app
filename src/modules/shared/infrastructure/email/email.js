@@ -1,30 +1,62 @@
-import nodemailer from "nodemailer";
-// import { EMAIL_PASSWORD, EMAIL_USERNAME } from "../configs/env.js";
+import { BrevoClient } from "@getbrevo/brevo";
+import {
+  BREVO_API_KEY,
+  BREVO_SENDER_NAME,
+  BREVO_SENDER_EMAIL, // ← adiciona esta variável de ambiente
+  NODE_ENV,
+} from "../../../../configs/env.js";
 
-export default async function sendEmail(data) {
-  try {
-    const testAccount = await nodemailer.createTestAccount();
+const isDevelopment = NODE_ENV !== "production";
+const senderEmail = BREVO_SENDER_EMAIL; // ✅ email verificado na Brevo
+const senderName = BREVO_SENDER_NAME || "Plataforma TeoChat";
 
-    const transporter = nodemailer.createTransport({
-      host: testAccount.smtp.host,
-      port: testAccount.smtp.port,
-      secure: testAccount.smtp.secure,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass,
-      },
-    });
+export default async function sendEmail(data = {}) {
+  const to = String(data.to || "").trim();
+  const subject = String(data.subject || "").trim();
+  const html = String(data.html || "").trim();
 
-    const { to, subject, html } = data;
-    const info = await transporter.sendMail({
-      from: '"Plataforma TeoChat" <no-reply@teochat.com>',
+  if (!to || !subject || !html) {
+    console.error("Email not sent: required fields are missing.", {
       to,
       subject,
-      html,
+      hasHtml: Boolean(html),
+    });
+    return null;
+  }
+
+  if (!BREVO_API_KEY) {
+    console.error("Email not sent: BREVO_API_KEY is missing.");
+    return null;
+  }
+
+  if (!senderEmail) {
+    console.error("Email not sent: BREVO_SENDER_EMAIL is missing.");
+    return null;
+  }
+
+  try {
+    const client = new BrevoClient({ apiKey: BREVO_API_KEY });
+
+    const response = await client.transactionalEmails.sendTransacEmail({
+      subject,
+      htmlContent: html,
+      sender: {
+        email: senderEmail, // ✅ domínio verificado na Brevo
+        name: senderName,
+      },
+      to: [{ email: to }],
     });
 
-    console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+    if (isDevelopment) {
+      console.log("Email sent with Brevo.", {
+        to,
+        messageId: response?.messageId, // ✅ corrigido (sem .data)
+      });
+    }
+
+    return response;
   } catch (error) {
-    console.error(error);
+    console.error("Failed to send email with Brevo.", error?.message || error);
+    return null;
   }
 }

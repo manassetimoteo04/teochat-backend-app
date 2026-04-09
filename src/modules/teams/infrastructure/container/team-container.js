@@ -19,7 +19,12 @@ const teamRepo = new TeamsMongoRepository();
 const companyRepo = new CompanyMongoRepository();
 const userRepo = new UserMongoRepository();
 
-const addTeamMember = new AddTeamMembersService({ teamRepo, companyRepo });
+const addTeamMember = new AddTeamMembersService({
+  teamRepo,
+  companyRepo,
+  userRepo,
+  eventBus,
+});
 const createTeam = new CreateTeamService({
   companyRepo,
   userRepo,
@@ -49,6 +54,7 @@ const setTeamLider = new SetTeamLiderService({
   teamRepo,
   companyRepo,
   userRepo,
+  eventBus,
 });
 const updateTeam = new updateTeamService({ teamRepo, companyRepo });
 

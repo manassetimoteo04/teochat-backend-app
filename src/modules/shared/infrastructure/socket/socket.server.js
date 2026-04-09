@@ -1,8 +1,9 @@
 // src/modules/shared/infrastructure/socket/socket.server.js
 import { Server } from "socket.io";
-import { socketAuthorize } from "../middlewares/socket.auth.middlewares";
-import { registerChannelHandlers } from "../../../channels/infra/socket/channel.handlers";
-import { registerMessageHandlers } from "../../../messages/infra/socket/messages.handlers";
+import { socketAuthorize } from "../middlewares/socket.auth.middlewares.js";
+import { registerChannelHandlers } from "../../../channels/infra/socket/channel.handlers.js";
+import { registerMessageHandlers } from "../../../messages/infra/socket/messages.handlers.js";
+import { getUserRoom, setSocketServer } from "../../utils/send.notifications.js";
 
 export function createSocketServer(httpServer) {
   const io = new Server(httpServer, {
@@ -26,11 +27,13 @@ export function createSocketServer(httpServer) {
     },
   });
 
+  setSocketServer(io);
   io.use(socketAuthorize);
 
   io.on("connection", (socket) => {
     const userId = socket.user.id;
     socket.data.userId = userId;
+    socket.join(getUserRoom(userId));
 
     console.log(
       "USER CONNECTED:",
@@ -44,6 +47,7 @@ export function createSocketServer(httpServer) {
       recovered: socket.recovered,
       socketId: socket.id,
       serverTime: new Date().toISOString(),
+      notificationRoom: getUserRoom(userId),
     });
 
     registerChannelHandlers(io, socket);

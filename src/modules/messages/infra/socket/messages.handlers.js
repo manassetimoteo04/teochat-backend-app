@@ -1,5 +1,5 @@
-import channelContainer from "../../../channels/infra/containers/channel.contianer";
-import messagesContainer from "../containers/messages.container";
+import channelContainer from "../../../channels/infra/containers/channel.contianer.js";
+import messagesContainer from "../containers/messages.container.js";
 
 const MESSAGE_RETRY_WINDOW_MS = 5 * 60 * 1000;
 const MAX_MESSAGE_SIZE = 4000;
@@ -153,7 +153,7 @@ export function registerMessageHandlers(io, socket) {
           message: newMessage,
         });
       } catch (error) {
-        console.error("❌ Erro ao enviar mensagem:", error);
+        console.error("Erro ao enviar mensagem:", error);
 
         const errorPayload = {
           ok: false,
@@ -167,43 +167,46 @@ export function registerMessageHandlers(io, socket) {
     },
   );
 
-  socket.on("message:history", async ({ channelId, cursor, limit = 30 }, ack) => {
-    try {
-      if (!channelId) {
+  socket.on(
+    "message:history",
+    async ({ channelId, cursor, limit = 30 }, ack) => {
+      try {
+        if (!channelId) {
+          emitAck(ack, {
+            ok: false,
+            reason: "INVALID_PAYLOAD",
+            message: "channelId é obrigatório",
+          });
+          return;
+        }
+
+        if (!socket.rooms.has(channelId)) {
+          emitAck(ack, {
+            ok: false,
+            reason: "NOT_IN_CHANNEL",
+            message: "Não estás neste channel",
+          });
+          return;
+        }
+
+        const data = await messagesContainer.listMessages.execute({
+          channelId,
+          cursor,
+          limit: Math.min(Math.max(Number(limit) || 30, 1), 100),
+        });
+
+        emitAck(ack, {
+          ok: true,
+          data,
+        });
+      } catch (error) {
+        console.error("MESSAGE HISTORY ERROR:", error);
         emitAck(ack, {
           ok: false,
-          reason: "INVALID_PAYLOAD",
-          message: "channelId é obrigatório",
+          reason: "SERVER_ERROR",
+          message: "Não foi possível sincronizar mensagens",
         });
-        return;
       }
-
-      if (!socket.rooms.has(channelId)) {
-        emitAck(ack, {
-          ok: false,
-          reason: "NOT_IN_CHANNEL",
-          message: "Não estás neste channel",
-        });
-        return;
-      }
-
-      const data = await messagesContainer.listMessages.execute({
-        channelId,
-        cursor,
-        limit: Math.min(Math.max(Number(limit) || 30, 1), 100),
-      });
-
-      emitAck(ack, {
-        ok: true,
-        data,
-      });
-    } catch (error) {
-      console.error("MESSAGE HISTORY ERROR:", error);
-      emitAck(ack, {
-        ok: false,
-        reason: "SERVER_ERROR",
-        message: "Não foi possível sincronizar mensagens",
-      });
-    }
-  });
+    },
+  );
 }
