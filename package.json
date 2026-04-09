@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "bun server.js",
+    "start": "bun install && bun server.js",
     "dev": "bun --watch server.js"
   },
   "dependencies": {
