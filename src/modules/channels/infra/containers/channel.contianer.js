@@ -1,10 +1,10 @@
-import ArchiveChannelUseCase from "../../usecases/achive-channel-usecase";
-import CreateChannelUseCase from "../../usecases/create-channel-usecase";
-import GetChannelByIdUseCase from "../../usecases/get-channel-by-id-usecase";
-import ListChannelsByTeamUseCase from "../../usecases/list-channel-by-team-id-usecase";
-import ListChannelsByTeamIdsUseCase from "../../usecases/list-channel-by-team-ids-usecase";
-import UpdateChannelUseCase from "../../usecases/update-channel-usecase";
-import ChannelRepositoryMongo from "../repo/channel.mongo.repo";
+import ArchiveChannelUseCase from "../../usecases/achive-channel-usecase/index.js";
+import CreateChannelUseCase from "../../usecases/create-channel-usecase/index.js";
+import GetChannelByIdUseCase from "../../usecases/get-channel-by-id-usecase/index.js";
+import ListChannelsByTeamUseCase from "../../usecases/list-channel-by-team-id-usecase/index.js";
+import ListChannelsByTeamIdsUseCase from "../../usecases/list-channel-by-team-ids-usecase/index.js";
+import UpdateChannelUseCase from "../../usecases/update-channel-usecase/index.js";
+import ChannelRepositoryMongo from "../repo/channel.mongo.repo.js";
 
 const repo = new ChannelRepositoryMongo();
 const createChannel = new CreateChannelUseCase(repo);

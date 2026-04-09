@@ -35,8 +35,7 @@ export function registerUserSubscribers() {
     const { name, email } = event.payload;
     const data = {
       to: email,
-      subject:
-        "Bem vindo ao TeoChat! Agora a sua conta está activa, aproveite nossos recursos",
+      subject: "Bem-vindo(a) ao TeoChat",
       html: generateEmailTemplate({
         templateType: "welcome",
         companyName: "TeoChat",

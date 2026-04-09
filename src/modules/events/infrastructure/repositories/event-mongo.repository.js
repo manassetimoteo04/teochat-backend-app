@@ -56,7 +56,7 @@ export class EventMongoRepository extends IEventRepository {
     });
   }
   async update(id, eventData) {
-    const event = await Event.findByIdAndUpdate(id, eventData);
+    const event = await Event.findByIdAndUpdate(id, eventData, { new: true });
     if (!event) return null;
 
     return new EventEntity({
@@ -106,10 +106,26 @@ export class EventMongoRepository extends IEventRepository {
       companyId: event.companyId,
     });
   }
-  async findByTeamId(teamId) {
-    const events = await Event.find({
-      teamId,
-    }).populate({ path: "teamId", select: "name " });
+  async findByTeamId(teamId, options = {}) {
+    const filter = { teamId };
+    const { query, dateRange } = options;
+
+    if (typeof query === "string" && query.trim() !== "") {
+      const safeQuery = escapeRegex(query.trim());
+      filter.$or = [
+        { title: { $regex: safeQuery, $options: "i" } },
+        { description: { $regex: safeQuery, $options: "i" } },
+      ];
+    }
+
+    if (dateRange?.startUtc && dateRange?.endUtc) {
+      filter.date = { $gte: dateRange.startUtc, $lte: dateRange.endUtc };
+    }
+
+    const events = await Event.find(filter).populate({
+      path: "teamId",
+      select: "name ",
+    });
     return events.map(
       (event) =>
         new EventEntity({
@@ -155,4 +171,8 @@ export class EventMongoRepository extends IEventRepository {
         })
     );
   }
+}
+
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

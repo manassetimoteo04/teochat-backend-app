@@ -4,18 +4,18 @@ export class SendInvitationService {
     this.generateTemplates = generateTemplates;
   }
   async execute({ emails }) {
-    console.log(emails);
     await Promise.allSettled(
       emails.map(({ destination, name, link }) =>
         this.emailService({
           to: destination,
-          subject: `Convite para aderir a empresa ${name} no TeoChat.`,
+          subject: `Convite para aderir à empresa ${name || "TeoChat"} no TeoChat`,
           html: this.generateTemplates({
+            templateType: "convite",
             companyName: name,
             actionLink: link,
           }),
-        })
-      )
+        }),
+      ),
     );
   }
 }

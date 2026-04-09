@@ -29,9 +29,17 @@ export class CreateInvitationService {
     }));
     const invitations = await this.invitationRepo.create(emails);
     const payloads = invitations.map((invitation) => ({
+      invitationId: invitation.id.toString(),
       destination: invitation.destination,
       name: company.name,
+      companyId: company.id,
+      companyName: company.name,
       link: invitation.generateLink(),
+      createdBy: {
+        id: user.id,
+        name: user.name,
+        avatar: user.avatar,
+      },
     }));
     const event = new InvitationCreatedEvent(payloads);
 

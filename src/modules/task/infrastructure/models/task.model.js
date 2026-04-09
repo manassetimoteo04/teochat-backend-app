@@ -63,6 +63,12 @@ const TaskSchema = new Schema(
       type: Date,
       default: null,
     },
+
+    dueReminderSentAt: {
+      type: Date,
+      default: null,
+      index: true,
+    },
   },
   {
     timestamps: true,

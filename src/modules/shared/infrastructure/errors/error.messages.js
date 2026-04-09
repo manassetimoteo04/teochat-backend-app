@@ -277,3 +277,21 @@ export class ChannelCreatorOnlyActionError extends Error {
     this.name = "ChannelCreatorOnlyActionError";
   }
 }
+
+export class InvalidStreamTokenRequestError extends Error {
+  constructor(
+    message = "Dados inválidos para gerar token da chamada. companyId e teamId são obrigatórios.",
+  ) {
+    super(message);
+    this.name = "InvalidStreamTokenRequestError";
+  }
+}
+
+export class StreamServiceConfigError extends Error {
+  constructor(
+    message = "Configuração do Stream ausente. Defina STREAM_API_KEY e STREAM_API_SECRET.",
+  ) {
+    super(message);
+    this.name = "StreamServiceConfigError";
+  }
+}

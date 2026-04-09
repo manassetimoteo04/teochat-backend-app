@@ -79,6 +79,10 @@ const errorMiddleware = (err, req, res, next) => {
       ChannelArchivedError: { code: 400 },
       InvalidChannelDataError: { code: 400 },
       ChannelCreatorOnlyActionError: { code: 403 },
+
+      // MEETINGS / STREAM
+      InvalidStreamTokenRequestError: { code: 400 },
+      StreamServiceConfigError: { code: 500 },
     };
 
     if (customErrors[err.name]) {

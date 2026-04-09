@@ -5,6 +5,7 @@ import UserMongoRepository from "../../../user/infrastructure/repositories/user.
 import { AuthService } from "../../domain/auth.service.js";
 import { ConfirmAccountService } from "../../usecases/confirmAccount/confirm-account.service.js";
 import { GetSessionService } from "../../usecases/getSession/get-session.service.js";
+import { LogoutService } from "../../usecases/logout/logout.service.js";
 import { RequestConfirmationCodeService } from "../../usecases/requestConfirmCode/request-code.service.js";
 import { SignInService } from "../../usecases/signIn/sign-in.service.js";
 import { SignUpService } from "../../usecases/signUp/sign-up.service.js";
@@ -32,11 +33,13 @@ const requestConfirmationCode = new RequestConfirmationCodeService({
 const getCurrentSession = new GetSessionService({
   userRepo,
 });
+const logout = new LogoutService();
 const confirmAccount = new ConfirmAccountService({ userRepo, eventBus });
 export default {
   signUp,
   signIn,
   requestConfirmationCode,
   getCurrentSession,
+  logout,
   confirmAccount,
 };

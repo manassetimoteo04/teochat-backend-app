@@ -1,31 +1,58 @@
-import teamContainer from "../../../teams/infrastructure/container/team-container";
-import channelContainer from "../containers/channel.contianer";
+import teamContainer from "../../../teams/infrastructure/container/team-container.js";
+import channelContainer from "../containers/channel.contianer.js";
+
+function emitAck(ack, payload) {
+  if (typeof ack === "function") ack(payload);
+}
 
 export function registerChannelHandlers(io, socket) {
-  socket.on("channel:join", async ({ companyId }) => {
+  socket.on("channel:join", async ({ companyId }, ack) => {
     try {
-      if (!companyId) return;
+      if (!companyId) {
+        const errorPayload = {
+          ok: false,
+          reason: "INVALID_PAYLOAD",
+          message: "companyId é obrigatório",
+        };
+        socket.emit("channel:error", errorPayload);
+        emitAck(ack, errorPayload);
+        return;
+      }
 
       console.log("JOINING COMPANY CHANNELS", companyId);
 
-      socket.joinedChannels = [];
+      if (!socket.data.joinedChannels) {
+        socket.data.joinedChannels = [];
+      }
 
       const teams = await teamContainer.findTeamsByUserId.execute({
         userId: socket.user.id,
         companyId,
       });
 
-      if (!teams?.length) return;
+      if (!teams?.length) {
+        const payload = { ok: true, channels: [] };
+        socket.emit("channel:joined", payload);
+        emitAck(ack, payload);
+        return;
+      }
 
       const channels = await channelContainer.listChannelByTeamIds.execute(
         teams.map((t) => t.id),
       );
 
-      if (!channels?.length) return;
+      if (!channels?.length) {
+        const payload = { ok: true, channels: [] };
+        socket.emit("channel:joined", payload);
+        emitAck(ack, payload);
+        return;
+      }
 
       for (const channel of channels) {
         socket.join(channel.id);
-        socket.joinedChannels.push(channel.id);
+        if (!socket.data.joinedChannels.includes(channel.id)) {
+          socket.data.joinedChannels.push(channel.id);
+        }
 
         console.log(`User ${socket.user.id} entrou no channel ${channel.id}`);
 
@@ -35,21 +62,31 @@ export function registerChannelHandlers(io, socket) {
         });
       }
 
-      socket.emit("channel:joined", {
-        channels: socket.joinedChannels,
-      });
+      const payload = {
+        ok: true,
+        channels: socket.data.joinedChannels,
+      };
+      socket.emit("channel:joined", payload);
+      emitAck(ack, payload);
     } catch (err) {
       console.error("CHANNEL JOIN ERROR:", err);
-      socket.emit("channel:error", {
+      const errorPayload = {
+        ok: false,
+        reason: "SERVER_ERROR",
         message: "Erro ao entrar nos canais",
-      });
+      };
+      socket.emit("channel:error", errorPayload);
+      emitAck(ack, errorPayload);
     }
   });
 
-  socket.on("channel:leave", () => {
-    if (!socket.joinedChannels?.length) return;
+  socket.on("channel:leave", (_, ack) => {
+    if (!socket.data.joinedChannels?.length) {
+      emitAck(ack, { ok: true, channels: [] });
+      return;
+    }
 
-    for (const channelId of socket.joinedChannels) {
+    for (const channelId of socket.data.joinedChannels) {
       socket.leave(channelId);
 
       console.log(`User ${socket.user.id} saiu do channel ${channelId}`);
@@ -60,6 +97,7 @@ export function registerChannelHandlers(io, socket) {
       });
     }
 
-    socket.joinedChannels = [];
+    socket.data.joinedChannels = [];
+    emitAck(ack, { ok: true, channels: [] });
   });
 }

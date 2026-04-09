@@ -29,6 +29,14 @@ export class ITasksRepository {
     throw new Error("Method not implemented");
   }
 
+  async findDueSoon(limit) {
+    throw new Error("Method not implemented");
+  }
+
+  async markDueReminderSent(taskId, sentAt) {
+    throw new Error("Method not implemented");
+  }
+
   async save(task) {
     throw new Error("Method not implemented");
   }
