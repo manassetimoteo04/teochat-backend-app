@@ -3,6 +3,29 @@ import { IEventRepository } from "../../domain/interface/event.repository.js";
 import Event from "../models/events.model.js";
 
 export class EventMongoRepository extends IEventRepository {
+  async find(filter = {}) {
+    const events = await Event.find(filter);
+
+    return events.map(
+      (event) =>
+        new EventEntity({
+          id: event._id.toString(),
+          teamId: event.teamId,
+          title: event.title,
+          status: event.status,
+          description: event.description,
+          date: event.date,
+          startTime: event.startTime,
+          endTime: event.endTime,
+          type: event.type,
+          location: event.location,
+          createdBy: event.createdBy,
+          createdAt: event.createdAt,
+          updatedAt: event.updatedAt,
+          companyId: event.companyId,
+        }),
+    );
+  }
   async findById(id) {
     const event = await Event.findById(id).populate([
       { path: "teamId", select: "name photo tags" },
@@ -76,6 +99,18 @@ export class EventMongoRepository extends IEventRepository {
       companyId: event.companyId,
     });
   }
+
+  async updateMany(filterIds, updateData) {
+    const result = await Event.updateMany(
+      { _id: { $in: filterIds } },
+      { $set: updateData },
+    );
+    return result.modifiedCount;
+  }
+  async updateStatusByIds(ids, updateData) {
+    if (!ids || ids.length === 0) return 0;
+    return this.updateMany(ids, updateData);
+  }
   async delete(id) {
     await Event.findByIdAndDelete(id);
     return true;
@@ -143,7 +178,7 @@ export class EventMongoRepository extends IEventRepository {
           createdAt: event.createdAt,
           updatedAt: event.updatedAt,
           companyId: event.companyId,
-        })
+        }),
     );
   }
   async findByCompanyId(companyId) {
@@ -168,7 +203,7 @@ export class EventMongoRepository extends IEventRepository {
           createdAt: event.createdAt,
           updatedAt: event.updatedAt,
           companyId: event.companyId,
-        })
+        }),
     );
   }
 }

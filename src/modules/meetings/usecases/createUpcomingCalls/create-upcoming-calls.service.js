@@ -1,37 +1,40 @@
-import Event from "../../../events/infrastructure/models/events.model.js";
-
 export class CreateUpcomingCallsService {
-  constructor({ meetingCallRepo }) {
+  constructor({ meetingCallRepo, eventRepo }) {
     this.meetingCallRepo = meetingCallRepo;
+    this.eventRepo = eventRepo;
   }
 
   async execute() {
-    const now = new Date();
-    const inOneHour = new Date(now.getTime() + 60 * 60 * 1000);
+    try {
+      const now = new Date();
+      const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
 
-    const upcoming = await Event.find({
-      type: "video-call",
-      status: "pending",
-      startTime: { $gte: now, $lte: inOneHour },
-    }).select("_id");
+      const toStart = await this.eventRepo.find({
+        type: "video-call",
+        status: "pending",
+        startTime: { $gte: now, $lte: oneHourFromNow },
+      });
 
-    if (upcoming.length) {
-      const upcomingIds = upcoming.map((e) => e._id);
-      await this.meetingCallRepo.updateStatusByEventIds(upcomingIds, "started");
-    }
+      if (toStart.length) {
+        const ids = toStart.map((event) => event.id);
 
-    const finished = await Event.find({
-      type: "video-call",
-      status: "active",
-      endTime: { $lte: now },
-    }).select("_id");
+        await this.meetingCallRepo.updateStatusByEventIds(ids, "started");
+        await this.eventRepo.updateMany(ids, { status: "active" });
+      }
 
-    if (finished.length) {
-      const finishedIds = finished.map((e) => e._id);
-      await this.meetingCallRepo.updateStatusByEventIds(
-        finishedIds,
-        "finished",
-      );
+      const toFinish = await this.eventRepo.find({
+        type: "video-call",
+        status: "active",
+        endTime: { $lte: now },
+      });
+      if (toFinish.length) {
+        const ids = toFinish.map((event) => event.id);
+
+        await this.meetingCallRepo.updateStatusByEventIds(ids, "finished");
+        await this.eventRepo.updateMany(ids, { status: "finished" });
+      }
+    } catch (error) {
+      console.error("Error in CreateUpcomingCallsService:", error);
     }
   }
 }

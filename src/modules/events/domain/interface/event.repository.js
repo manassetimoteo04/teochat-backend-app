@@ -8,6 +8,9 @@ export class IEventRepository {
   async update(id, eventData) {
     throw new Error("Not implemented");
   }
+  async updateStatusByIds(ids, updateData) {
+    throw new Error("Not implemented");
+  }
   async delete(id) {
     throw new Error("Not implemented");
   }

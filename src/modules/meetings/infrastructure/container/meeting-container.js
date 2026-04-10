@@ -4,6 +4,7 @@ import { GenerateStreamTokenService } from "../../usecases/generateStreamToken/g
 import { MeetingCallMongoRepository } from "../repositories/meeting-call.mongo.repository.js";
 import { CreateUpcomingCallsService } from "../../usecases/createUpcomingCalls/create-upcoming-calls.service.js";
 import { ListTeamCallsService } from "../../usecases/listTeamCalls/list-team-calls.service.js";
+import { EventMongoRepository } from "../../../events/infrastructure/repositories/event-mongo.repository.js";
 
 const companyRepo = new CompanyMongoRepository();
 const teamRepo = new TeamsMongoRepository();
@@ -13,9 +14,11 @@ const generateStreamToken = new GenerateStreamTokenService({
   teamRepo,
 });
 
+const eventRepo = new EventMongoRepository();
 const meetingCallRepo = new MeetingCallMongoRepository();
 const createUpcomingCalls = new CreateUpcomingCallsService({
   meetingCallRepo,
+  eventRepo,
 });
 
 const listTeamCalls = new ListTeamCallsService({

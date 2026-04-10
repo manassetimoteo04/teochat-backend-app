@@ -7,14 +7,13 @@ import {
 } from "../../../../configs/env.js";
 
 const isDevelopment = NODE_ENV !== "production";
-const senderEmail = BREVO_SENDER_EMAIL; // ✅ email verificado na Brevo
+const senderEmail = BREVO_SENDER_EMAIL;
 const senderName = BREVO_SENDER_NAME || "Plataforma TeoChat";
 
 export default async function sendEmail(data = {}) {
   const to = String(data.to || "").trim();
   const subject = String(data.subject || "").trim();
   const html = String(data.html || "").trim();
-
   if (!to || !subject || !html) {
     console.error("Email not sent: required fields are missing.", {
       to,
@@ -41,7 +40,7 @@ export default async function sendEmail(data = {}) {
       subject,
       htmlContent: html,
       sender: {
-        email: senderEmail, // ✅ domínio verificado na Brevo
+        email: senderEmail,
         name: senderName,
       },
       to: [{ email: to }],
@@ -50,7 +49,7 @@ export default async function sendEmail(data = {}) {
     if (isDevelopment) {
       console.log("Email sent with Brevo.", {
         to,
-        messageId: response?.messageId, // ✅ corrigido (sem .data)
+        messageId: response?.messageId,
       });
     }
 
