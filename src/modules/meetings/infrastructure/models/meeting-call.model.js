@@ -19,6 +19,11 @@ const MeetingCallSchema = new mongoose.Schema(
       ref: "Company",
       required: true,
     },
+    callId: {
+      type: String,
+      trim: true,
+      index: true,
+    },
     status: {
       type: String,
       enum: ["pending", "started", "finished"],

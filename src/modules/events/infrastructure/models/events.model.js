@@ -48,8 +48,12 @@ const EventSchema = new mongoose.Schema(
       ref: "Company",
       required: true,
     },
+    callId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "MeetingCall",
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Event = mongoose.model("Event", EventSchema);

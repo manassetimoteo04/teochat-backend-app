@@ -21,12 +21,35 @@ export class CreateInvitationService {
     if (!company) throw new CompanyNotFoundError();
     if (!company.isMember(userId)) throw NotCompanyMemberError();
     const expiresIn = Date.now() + 60 * 60 * 24 * 7 * 1000;
-    const emails = emailsList.map((email) => ({
-      destination: email,
-      company: companyId,
-      expiresIn,
-      createdBy: userId,
-    }));
+    const uniqueEmails = [...new Set(
+      emailsList
+        .map((email) => email?.trim().toLowerCase())
+        .filter(Boolean),
+    )];
+
+    const emails = (
+      await Promise.all(
+        uniqueEmails.map(async (email) => {
+          const invitedUser = await this.userRepo.findByEmail(email);
+          const isAlreadyCompanyMember = invitedUser?.companies?.some(
+            ({ companyId: invitedCompanyId }) =>
+              invitedCompanyId?.toString() === companyId.toString(),
+          );
+
+          if (isAlreadyCompanyMember) return null;
+
+          return {
+            destination: email,
+            company: companyId,
+            expiresIn,
+            createdBy: userId,
+          };
+        }),
+      )
+    ).filter(Boolean);
+
+    if (!emails.length) return [];
+
     const invitations = await this.invitationRepo.create(emails);
     const payloads = invitations.map((invitation) => ({
       invitationId: invitation.id.toString(),

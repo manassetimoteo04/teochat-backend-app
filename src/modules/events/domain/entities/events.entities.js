@@ -14,6 +14,7 @@ export class EventEntity {
     createdAt,
     updatedAt,
     companyId,
+    callId,
   }) {
     this.id = id;
     this.teamId = teamId;
@@ -29,5 +30,6 @@ export class EventEntity {
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.companyId = companyId;
+    this.callId = callId;
   }
 }

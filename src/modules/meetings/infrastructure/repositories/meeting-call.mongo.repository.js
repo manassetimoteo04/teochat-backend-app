@@ -5,6 +5,7 @@ export class MeetingCallMongoRepository {
     eventId,
     teamId,
     companyId,
+    callId,
     allowedMembers,
     startTime,
     endTime,
@@ -17,6 +18,7 @@ export class MeetingCallMongoRepository {
           eventId,
           teamId,
           companyId,
+          callId,
           allowedMembers,
           status,
           startTime,
@@ -65,6 +67,7 @@ export class MeetingCallMongoRepository {
 
       return {
         id: call._id,
+        callId: call.callId || String(event?._id || call._id),
         eventId: event?._id || call.eventId,
         teamId: call.teamId,
         companyId: call.companyId,

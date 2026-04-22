@@ -14,8 +14,6 @@ export default async function sendEmail(data = {}) {
   const to = String(data.to || "").trim();
   const subject = String(data.subject || "").trim();
   const html = String(data.html || "").trim();
-
-  console.log("email html", html);
   if (!to || !subject || !html) {
     console.error("Email not sent: required fields are missing.", {
       to,

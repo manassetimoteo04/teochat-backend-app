@@ -56,6 +56,7 @@ export class EventMongoRepository extends IEventRepository {
       createdAt: event.createdAt,
       updatedAt: event.updatedAt,
       companyId: event.companyId,
+      callId: event.callId,
     });
   }
   async create(eventData) {

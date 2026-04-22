@@ -17,12 +17,12 @@ export class CreateEventService {
     const end = new Date(endTime);
     if (isBefore(start, now))
       throw new EventTimeConflictError(
-        "Eventos não podem ser agendados no passado"
+        "Eventos não podem ser agendados no passado",
       );
 
     if (isBefore(end, start))
       throw new EventTimeConflictError(
-        "Hora de término tem de ser sempre superior ao do início do evento"
+        "Hora de término tem de ser sempre superior ao do início do evento",
       );
 
     const conflict = await this.eventRepo.findByTime({
@@ -67,7 +67,7 @@ export class CreateEventService {
 
     if (eventData.type === "video-call" && this.meetingCallRepo) {
       const allowedMembers = team?.members || [];
-      await this.meetingCallRepo.createIfNotExists({
+      const meeting = await this.meetingCallRepo.createIfNotExists({
         eventId: createdEvent.id,
         teamId,
         companyId: createdEvent.companyId,
@@ -76,7 +76,12 @@ export class CreateEventService {
         endTime: createdEvent.endTime,
         status: "pending",
       });
+      const updatedEvent = await this.eventRepo.update(createdEvent.id, {
+        callId: meeting._id,
+      });
+      return updatedEvent;
     }
+
     return createdEvent;
   }
 }

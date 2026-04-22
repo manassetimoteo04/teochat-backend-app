@@ -379,3 +379,58 @@ export const upcomingEventTemplate = ({
       "Se os detalhes deste evento foram alterados recentemente, consulte a plataforma para ver a versão mais atualizada.",
   });
 };
+
+export const instantCallStartedTemplate = ({
+  teamName,
+  companyName,
+  callTitle,
+  startedBy,
+  startTime,
+  callLink,
+}) => {
+  const normalizedTeamName = normalizeText(teamName, "Sua equipa");
+  const safeCompanyName = normalizeText(companyName, DEFAULT_COMPANY_NAME);
+  const normalizedCallTitle = normalizeText(callTitle, "Chamada instantânea");
+  const normalizedStartedBy = normalizeText(startedBy, "um membro da equipa");
+
+  return renderEmailLayout({
+    companyName: safeCompanyName,
+    title: "Chamada instantânea iniciada",
+    subtitle: `${normalizedCallTitle} começou agora para a equipa ${normalizedTeamName}.`,
+    badge: "Videochamada",
+    accentColor: "#2563eb",
+    bodyContent: `
+      <p style="margin: 0 0 18px; font-size: 15px; line-height: 1.7; color: #334155;">
+        <strong style="color: #0f172a;">${escapeHtml(normalizedStartedBy)}</strong> iniciou uma chamada instantânea para a equipa <strong style="color: #0f172a;">${escapeHtml(normalizedTeamName)}</strong>.
+      </p>
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="border: 1px solid #dbe4ee; border-radius: 16px; background-color: #f8fafc;">
+        <tr>
+          <td style="padding: 18px 18px 10px; font-size: 14px; line-height: 1.7; color: #334155;">
+            <strong style="color: #0f172a;">Chamada:</strong> ${escapeHtml(normalizedCallTitle)}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 0 18px 10px; font-size: 14px; line-height: 1.7; color: #334155;">
+            <strong style="color: #0f172a;">Equipa:</strong> ${escapeHtml(normalizedTeamName)}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 0 18px 10px; font-size: 14px; line-height: 1.7; color: #334155;">
+            <strong style="color: #0f172a;">Início:</strong> ${formatTime(startTime)}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 0 18px 18px; font-size: 14px; line-height: 1.7; color: #334155;">
+            <strong style="color: #0f172a;">Empresa:</strong> ${escapeHtml(safeCompanyName)}
+          </td>
+        </tr>
+      </table>
+    `,
+    actionLink: callLink,
+    actionText: "Entrar na chamada",
+    secondaryContent:
+      "<p style='margin: 0;'>Abra a plataforma para entrar na sala assim que estiver disponível.</p>",
+    footerNote:
+      "Recebeu esta mensagem porque faz parte da equipa associada a esta chamada instantânea.",
+  });
+};

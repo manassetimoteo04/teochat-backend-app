@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "start": "bun install && bun server.js",
-    "dev": "bun --watch server.js"
+    "dev": "bun --watch server.js",
+    "load:test": "node scripts/load-test.js",
+    "load:suite": "node scripts/load-test-suite.js"
   },
   "dependencies": {
     "@getbrevo/brevo": "^5.0.3",
