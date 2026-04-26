@@ -14,6 +14,7 @@ export class CompanyMongoRepository extends ICompanyRepository {
       industry: saved.industry,
       createdBy: saved.createdBy,
       logo: saved.logo,
+      isActive: saved.isActive,
       createdAt: saved.createdAt,
       updatedAt: saved.updatedAt,
     });
@@ -31,6 +32,7 @@ export class CompanyMongoRepository extends ICompanyRepository {
       industry: doc.industry,
       createdBy: doc.createdBy,
       logo: doc.logo,
+      isActive: doc.isActive,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
@@ -75,6 +77,7 @@ export class CompanyMongoRepository extends ICompanyRepository {
       industry: doc.industry,
       createdBy: doc.createdBy,
       logo: doc.logo,
+      isActive: doc.isActive,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
@@ -94,6 +97,31 @@ export class CompanyMongoRepository extends ICompanyRepository {
       description: doc.description,
       createdBy: doc.createdBy,
       logo: doc.logo,
+      isActive: doc.isActive,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+    });
+  }
+
+  async removeMember(companyId, userId) {
+    const doc = await Company.findByIdAndUpdate(
+      companyId,
+      { $pull: { members: userId } },
+      { new: true },
+    );
+
+    if (!doc) return null;
+
+    return new CompanyEntity({
+      id: doc._id.toString(),
+      name: doc.name,
+      ownerName: doc.ownerName,
+      members: doc.members,
+      industry: doc.industry,
+      description: doc.description,
+      createdBy: doc.createdBy,
+      logo: doc.logo,
+      isActive: doc.isActive,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });

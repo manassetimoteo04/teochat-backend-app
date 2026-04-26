@@ -34,6 +34,11 @@ const errorMiddleware = (err, req, res, next) => {
       UserNotFoundError: { code: 404 },
       NotCompanyMemberError: { code: 403 },
       UserAlreadyExistsError: { code: 400 },
+      AccountDeactivatedError: { code: 403 },
+      CompanyDeactivatedError: { code: 403 },
+      InsufficientCompanyRoleError: { code: 403 },
+      InvalidPasswordError: { code: 400 },
+      SelfActionNotAllowedError: { code: 400 },
 
       // INVITATION
       InvitationNotFoundError: { code: 404 },

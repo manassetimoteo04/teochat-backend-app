@@ -13,7 +13,7 @@ export class UpdateCompanyService {
     const isMember = company.isMember(userId);
     if (!isMember) throw new NotCompanyMemberError();
     company.updateCompany({ name, ownerName, industry, description });
-    this.companyRepo.update(id, company);
+    await this.companyRepo.update(id, company);
     company.members = undefined;
     return company;
   }

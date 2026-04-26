@@ -4,7 +4,7 @@ export async function findInvitationByCompany(req, res, next) {
   try {
     const invitations = await invitationContainer.findByCompany.execute({
       companyId: req.params.id,
-      userId: req.body.userId,
+      userId: req.user.id,
     });
 
     res.status(200).json({ success: true, data: invitations });

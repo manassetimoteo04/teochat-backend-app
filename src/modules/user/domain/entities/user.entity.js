@@ -7,6 +7,7 @@ export class UserEntity {
     avatar = "/default-user.jpg",
     companies = [],
     isConfirmed = false,
+    isActive = true,
     confirmCode = undefined,
     confirmExpiresIn = undefined,
     createdAt = new Date(),
@@ -19,6 +20,7 @@ export class UserEntity {
     this.avatar = avatar;
     this.companies = companies;
     this.isConfirmed = isConfirmed;
+    this.isActive = isActive;
     this.confirmCode = confirmCode;
     this.confirmExpiresIn = confirmExpiresIn;
     this.createdAt = createdAt;
@@ -50,5 +52,27 @@ export class UserEntity {
       joined: com.joined,
       company: com.companyId,
     }));
+  }
+
+  getCompanyMembership(companyId) {
+    return (
+      this.companies.find(
+        ({ companyId: currentCompanyId }) =>
+          currentCompanyId?.toString() === companyId?.toString(),
+      ) || null
+    );
+  }
+
+  getCompanyRole(companyId) {
+    return this.getCompanyMembership(companyId)?.role || null;
+  }
+
+  isCompanyAdmin(companyId) {
+    const role = this.getCompanyRole(companyId);
+    return role === "admin" || role === "super_admin";
+  }
+
+  isCompanySuperAdmin(companyId) {
+    return this.getCompanyRole(companyId) === "super_admin";
   }
 }

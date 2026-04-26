@@ -13,6 +13,10 @@ export default class UserMongoRepository extends IUserRepository {
       name: saved.name,
       email: saved.email,
       password: saved.password,
+      avatar: saved.avatar,
+      companies: saved.companies,
+      isConfirmed: saved.isConfirmed,
+      isActive: saved.isActive,
     });
   }
 
@@ -24,6 +28,9 @@ export default class UserMongoRepository extends IUserRepository {
       name: doc.name,
       email: doc.email,
       isConfirmed: doc.isConfirmed,
+      isActive: doc.isActive,
+      avatar: doc.avatar,
+      companies: doc.companies,
       password: doc.password,
     });
   }
@@ -37,6 +44,7 @@ export default class UserMongoRepository extends IUserRepository {
       confirmCode: doc.confirmCode,
       confirmExpiresIn: doc.confirmExpiresIn,
       isConfirmed: doc.isConfirmed,
+      isActive: doc.isActive,
       companies: doc.companies,
       avatar: doc.avatar,
       email: doc.email,
@@ -46,7 +54,7 @@ export default class UserMongoRepository extends IUserRepository {
   async findCompanies(id) {
     const doc = await User.findById(id).populate({
       path: "companies.companyId",
-      select: "name description createdAt logo",
+      select: "name description createdAt logo isActive",
     });
     if (!doc) return null;
     return new UserEntity({
@@ -63,7 +71,7 @@ export default class UserMongoRepository extends IUserRepository {
           joined: com._doc.joined,
           companyId: object,
         };
-      }),
+      }).filter((company) => company.companyId?.isActive !== false),
     });
   }
   async findCompanyRecentMembers({ companyId, userId }) {
@@ -80,7 +88,7 @@ export default class UserMongoRepository extends IUserRepository {
           joined: { $gte: dateThreshold },
         },
       },
-    }).select("name email avatar companies isConfirmed");
+    }).select("name email avatar companies isConfirmed isActive");
 
     const members = recentMembers.map((user) => {
       const companyInfo = user.companies.find(
@@ -91,6 +99,7 @@ export default class UserMongoRepository extends IUserRepository {
         name: user.name,
         email: user.email,
         isConfirmed: user.isConfirmed,
+        isActive: user.isActive,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         avatar: user.avatar,
@@ -108,7 +117,7 @@ export default class UserMongoRepository extends IUserRepository {
           companyId: new mongoose.Types.ObjectId(companyId),
         },
       },
-    }).select("name email avatar companies isConfirmed");
+    }).select("name email avatar companies isConfirmed isActive");
 
     const members = recentMembers.map((user) => {
       const companyInfo = user.companies.find(
@@ -119,6 +128,7 @@ export default class UserMongoRepository extends IUserRepository {
         name: user.name,
         email: user.email,
         isConfirmed: user.isConfirmed,
+        isActive: user.isActive,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         avatar: user.avatar,
@@ -129,6 +139,7 @@ export default class UserMongoRepository extends IUserRepository {
   }
   async update(id, updateData) {
     const user = await User.findById(id);
+    if (!user) return null;
     user.set(updateData);
     await user.save();
 
@@ -138,11 +149,56 @@ export default class UserMongoRepository extends IUserRepository {
       email: user.email,
       password: user.password,
       isConfirmed: user.isConfirmed,
+      isActive: user.isActive,
+      avatar: user.avatar,
+      companies: user.companies,
     });
   }
   async addCompany(userId, companyId, role) {
     await User.findByIdAndUpdate(userId, {
       $addToSet: { companies: { companyId, role } },
+    });
+  }
+
+  async updateCompanyRole({ userId, companyId, role }) {
+    const user = await User.findOneAndUpdate(
+      { _id: userId, "companies.companyId": companyId },
+      { $set: { "companies.$.role": role } },
+      { new: true },
+    );
+
+    if (!user) return null;
+
+    return new UserEntity({
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      avatar: user.avatar,
+      companies: user.companies,
+      isConfirmed: user.isConfirmed,
+      isActive: user.isActive,
+    });
+  }
+
+  async removeCompany({ userId, companyId }) {
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { companies: { companyId } } },
+      { new: true },
+    );
+
+    if (!user) return null;
+
+    return new UserEntity({
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      avatar: user.avatar,
+      companies: user.companies,
+      isConfirmed: user.isConfirmed,
+      isActive: user.isActive,
     });
   }
 }

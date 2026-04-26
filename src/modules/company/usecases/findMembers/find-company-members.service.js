@@ -1,4 +1,5 @@
 import {
+  CompanyDeactivatedError,
   CompanyNotFoundError,
   NotCompanyMemberError,
   UserNotFoundError,
@@ -12,6 +13,7 @@ export class FindCompanyMembersService {
   async execute({ companyId, userId }) {
     const company = await this.companyRepo.findById(companyId);
     if (!company) throw new CompanyNotFoundError();
+    if (!company.isActive) throw new CompanyDeactivatedError();
     if (!(await this.userRepo.findById(userId))) throw new UserNotFoundError();
     if (!company.isMember(userId)) throw new NotCompanyMemberError();
     const members = await this.userRepo.findCompanyMembers({
@@ -22,5 +24,4 @@ export class FindCompanyMembersService {
     return members;
   }
 }
-
 

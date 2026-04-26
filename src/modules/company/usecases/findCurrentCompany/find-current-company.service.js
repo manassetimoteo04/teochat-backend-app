@@ -1,4 +1,5 @@
 import {
+  CompanyDeactivatedError,
   CompanyNotFoundError,
   NotCompanyMemberError,
 } from "../../../shared/infrastructure/errors/error.messages.js";
@@ -11,6 +12,7 @@ export class FindCurrentCompanyService {
   async execute({ companyId, userId }) {
     const company = await this.companyRepo.findById(companyId);
     if (!company) throw new CompanyNotFoundError();
+    if (!company.isActive) throw new CompanyDeactivatedError();
     if (!company.isMember(userId)) throw new NotCompanyMemberError();
     const user = await this.userRepo.findCompanies(userId);
     const current = user.companies

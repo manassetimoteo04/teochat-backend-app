@@ -9,7 +9,7 @@ import { authorize } from "../../../shared/infrastructure/middlewares/auth.middl
 const invitationRoute = Router();
 
 invitationRoute.get("/:id", authorize, findInvitation);
-invitationRoute.get("/company/:id", findInvitationByCompany);
+invitationRoute.get("/company/:id", authorize, findInvitationByCompany);
 invitationRoute.put("/accept/:id", authorize, acceptInvitation);
 invitationRoute.put("/cancel/:id", cancelInvitation);
 invitationRoute.post("/:companyId", authorize, createInvitation);

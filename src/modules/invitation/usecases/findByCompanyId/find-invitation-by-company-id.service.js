@@ -1,4 +1,5 @@
 import {
+  CompanyDeactivatedError,
   CompanyNotFoundError,
   NotCompanyMemberError,
 } from "../../../shared/infrastructure/errors/error.messages.js";
@@ -11,6 +12,7 @@ export class FindInvitationByCompanyIdService {
   async execute({ companyId, userId }) {
     const company = await this.companyRepo.findById(companyId);
     if (!company) throw new CompanyNotFoundError();
+    if (!company.isActive) throw new CompanyDeactivatedError();
     const isMember = company.isMember(userId);
     if (!isMember) throw new NotCompanyMemberError();
     const invitations = await this.invitationRepo.findByCompanyId(companyId);

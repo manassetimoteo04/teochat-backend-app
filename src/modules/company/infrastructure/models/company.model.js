@@ -20,6 +20,10 @@ const CompanySchema = new mongoose.Schema(
     },
     members: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     logo: String,
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

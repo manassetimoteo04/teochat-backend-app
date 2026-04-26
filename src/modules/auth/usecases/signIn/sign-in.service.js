@@ -1,4 +1,7 @@
-import { EmailOrPasswordInvalidError } from "../../../shared/infrastructure/errors/error.messages.js";
+import {
+  AccountDeactivatedError,
+  EmailOrPasswordInvalidError,
+} from "../../../shared/infrastructure/errors/error.messages.js";
 
 export class SignInService {
   constructor({ userRepo, authService, jwtService }) {
@@ -10,6 +13,7 @@ export class SignInService {
   async execute({ email, password }) {
     const user = await this.userRepo.findByEmail(email);
     if (!user) throw new EmailOrPasswordInvalidError();
+    if (user.isActive === false) throw new AccountDeactivatedError();
     const valid = await this.authService.comparePasswords(
       password,
       user.password

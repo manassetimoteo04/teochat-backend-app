@@ -1,5 +1,6 @@
 import { JWT_SECRET } from "../../../../configs/env.js";
 import { JwtService } from "../../../auth/infrastructure/jwt.service.js";
+import { AccountDeactivatedError } from "../errors/error.messages.js";
 import userContainer from "../../../user/infrastructure/container/user-container.js";
 
 const jwtService = new JwtService(JWT_SECRET);
@@ -21,6 +22,7 @@ export const authorize = async (req, res, next) => {
     const decoded = jwtService.verifyToken(token);
     const user = await userContainer.findUserById.execute({ id: decoded.id });
     if (!user) return res.status(401).json({ message: "Unauthorized" });
+    if (user.isActive === false) throw new AccountDeactivatedError();
 
     req.user = { id: user.id };
     next();

@@ -30,6 +30,43 @@ export class UserAlreadyExistsError extends Error {
   }
 }
 
+export class AccountDeactivatedError extends Error {
+  constructor(message = "A tua conta está desativada.") {
+    super(message);
+    this.name = "AccountDeactivatedError";
+  }
+}
+
+export class CompanyDeactivatedError extends Error {
+  constructor(message = "Esta empresa está desativada.") {
+    super(message);
+    this.name = "CompanyDeactivatedError";
+  }
+}
+
+export class InsufficientCompanyRoleError extends Error {
+  constructor(
+    message = "Você não tem permissão suficiente para executar esta ação na empresa.",
+  ) {
+    super(message);
+    this.name = "InsufficientCompanyRoleError";
+  }
+}
+
+export class InvalidPasswordError extends Error {
+  constructor(message = "A palavra-passe atual está incorreta.") {
+    super(message);
+    this.name = "InvalidPasswordError";
+  }
+}
+
+export class SelfActionNotAllowedError extends Error {
+  constructor(message = "Esta ação não pode ser executada sobre a própria conta.") {
+    super(message);
+    this.name = "SelfActionNotAllowedError";
+  }
+}
+
 export class InvitationNotFoundError extends Error {
   constructor(
     message = "O convite informado não foi encontrado ou não existe.",
