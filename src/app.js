@@ -65,7 +65,7 @@ app.use("/api/v1/meetings", meetingRoute);
 app.use("/api/v1/notifications", notificationRoute);
 
 app.get("/api/v1/health", (_, res) =>
-  res.status(200).json({ message: "API RODANDO FIXE COM A NURIA DE LADO" }),
+  res.status(200).json({ message: "BACKEND RUNNIG HEALTHY" }),
 );
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

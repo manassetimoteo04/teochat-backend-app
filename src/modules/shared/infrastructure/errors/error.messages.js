@@ -67,6 +67,20 @@ export class SelfActionNotAllowedError extends Error {
   }
 }
 
+export class MessageChannelAccessError extends Error {
+  constructor(message = "Você não tem acesso a este canal.") {
+    super(message);
+    this.name = "MessageChannelAccessError";
+  }
+}
+
+export class InvalidMessagePayloadError extends Error {
+  constructor(message = "A mensagem enviada é inválida.") {
+    super(message);
+    this.name = "InvalidMessagePayloadError";
+  }
+}
+
 export class InvitationNotFoundError extends Error {
   constructor(
     message = "O convite informado não foi encontrado ou não existe.",

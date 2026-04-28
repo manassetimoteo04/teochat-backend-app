@@ -1,5 +1,6 @@
 import channelContainer from "../../../channels/infra/containers/channel.contianer.js";
 import messagesContainer from "../containers/messages.container.js";
+import { buildChannelRealtimePayload } from "../../shared/message-presenters.js";
 
 const MESSAGE_RETRY_WINDOW_MS = 5 * 60 * 1000;
 const MAX_MESSAGE_SIZE = 4000;
@@ -43,10 +44,10 @@ function setCachedMessage(userId, channelId, tempId, message) {
 export function registerMessageHandlers(io, socket) {
   socket.on(
     "message:send",
-    async ({ tempId, channelId, content, type = "text" }, ack) => {
+    async ({ tempId, channelId, content, type = "text", attachment = null }, ack) => {
       const trimmed = typeof content === "string" ? content.trim() : "";
 
-      if (!channelId || !content) {
+      if (!channelId || (!content && !attachment)) {
         const errorPayload = {
           ok: false,
           tempId,
@@ -69,7 +70,7 @@ export function registerMessageHandlers(io, socket) {
         return;
       }
 
-      if (!trimmed || trimmed.length > MAX_MESSAGE_SIZE) {
+      if ((!trimmed && !attachment) || trimmed.length > MAX_MESSAGE_SIZE) {
         const errorPayload = {
           ok: false,
           tempId,
@@ -115,6 +116,7 @@ export function registerMessageHandlers(io, socket) {
           channelId,
           content: trimmed,
           type,
+          attachment,
           senderId: socket.user.id,
         });
 
@@ -125,21 +127,8 @@ export function registerMessageHandlers(io, socket) {
           message: newMessage,
         });
 
-        const channel =
-          await channelContainer.getChannelById.execute(channelId);
-
-        const updatedChannel = {
-          id: channel.id,
-          name: channel.name,
-          teamId: channel.teamId,
-          lastMessage: {
-            senderId: newMessage.senderId.id,
-            name: newMessage.senderId.name,
-            content: newMessage.content,
-            type: newMessage.type,
-            date: newMessage.createdAt,
-          },
-        };
+        const channel = newMessage.channel || await channelContainer.getChannelById.execute(channelId);
+        const updatedChannel = buildChannelRealtimePayload(channel, newMessage);
 
         socket.to(channelId).emit("channel:new-msg", updatedChannel);
 

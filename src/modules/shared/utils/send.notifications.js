@@ -4,6 +4,10 @@ export function setSocketServer(io) {
   ioInstance = io;
 }
 
+export function getSocketServer() {
+  return ioInstance;
+}
+
 export function getUserRoom(userId) {
   return `user:${userId}`;
 }
@@ -11,6 +15,11 @@ export function getUserRoom(userId) {
 export function emitToUser(userId, event, payload) {
   if (!ioInstance || !userId) return;
   ioInstance.to(getUserRoom(userId)).emit(event, payload);
+}
+
+export function emitToRoom(roomId, event, payload) {
+  if (!ioInstance || !roomId) return;
+  ioInstance.to(roomId).emit(event, payload);
 }
 
 export function emitUnreadCount(userId, unreadCount) {

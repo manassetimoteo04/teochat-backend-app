@@ -2,6 +2,7 @@ import { InvitationMongoRepository } from "../../../invitation/infrastructure/re
 import notificationContainer from "../../../notifications/infrastructure/container/notification-container.js";
 import sendEmail from "../../../shared/infrastructure/email/email.js";
 import { eventBus } from "../../../shared/infrastructure/events/event-bus.js";
+import { CloudinaryAssetService } from "../../../shared/services/cloudinary-asset.service.js";
 import UserMongoRepository from "../../../user/infrastructure/repositories/user.mongo.repository.js";
 import { CreateCompanyService } from "../../usecases/create/create-company.service.js";
 import { DeactivateCompanyService } from "../../usecases/deactivate/deactivate-company.service.js";
@@ -19,6 +20,7 @@ import { CompanyMongoRepository } from "../repositories/company.mongo.repository
 const userRepo = new UserMongoRepository();
 const companyRepo = new CompanyMongoRepository();
 const invitationRepo = new InvitationMongoRepository();
+const assetService = new CloudinaryAssetService();
 
 const createCompany = new CreateCompanyService({
   userRepo,
@@ -41,6 +43,7 @@ const updateCompany = new UpdateCompanyService({ companyRepo });
 const updateCompanySettings = new UpdateCompanySettingsService({
   companyRepo,
   userRepo,
+  assetService,
 });
 const deactivateCompany = new DeactivateCompanyService({
   companyRepo,

@@ -1,11 +1,12 @@
 import { UserAlreadyExistsError, UserNotFoundError } from "../../../shared/infrastructure/errors/error.messages.js";
 
 export class UpdateProfileService {
-  constructor({ userRepo }) {
+  constructor({ userRepo, assetService }) {
     this.userRepo = userRepo;
+    this.assetService = assetService;
   }
 
-  async execute({ userId, name, email, avatar }) {
+  async execute({ userId, name, email, avatar, avatarFile }) {
     const user = await this.userRepo.findById(userId);
     if (!user) throw new UserNotFoundError();
 
@@ -17,11 +18,35 @@ export class UpdateProfileService {
       }
     }
 
+    let avatarPayload = {};
+    let previousAvatarAsset = null;
+    if (avatarFile) {
+      const uploadedAvatar = await this.assetService.uploadAvatar({
+        userId,
+        file: avatarFile,
+      });
+
+      previousAvatarAsset = user.avatarAsset;
+      avatarPayload = {
+        avatar: uploadedAvatar.secureUrl,
+        avatarAsset: uploadedAvatar,
+      };
+    } else if (avatar) {
+      avatarPayload = { avatar };
+    }
+
     const updatedUser = await this.userRepo.update(userId, {
       ...(name ? { name } : {}),
       ...(nextEmail ? { email: nextEmail } : {}),
-      ...(avatar ? { avatar } : {}),
+      ...avatarPayload,
     });
+
+    if (previousAvatarAsset?.publicId) {
+      await this.assetService.deleteAsset({
+        publicId: previousAvatarAsset.publicId,
+        resourceType: previousAvatarAsset.resourceType || "image",
+      });
+    }
 
     updatedUser.password = undefined;
     return updatedUser;

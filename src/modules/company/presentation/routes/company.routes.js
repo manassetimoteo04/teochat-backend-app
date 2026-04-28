@@ -12,6 +12,8 @@ import { deactivateCompany } from "../controllers/deactivateCompany/deactivate-c
 import { findInvitationByCompany } from "../../../invitation/presentation/controllers/findByCompanyId/find-by-company.controller.js";
 import { promoteCompanyMember } from "../controllers/promoteMember/promote-member.controller.js";
 import { removeCompanyMember } from "../controllers/removeMember/remove-company-member.controller.js";
+import { createSingleUploadMiddleware } from "../../../shared/infrastructure/middlewares/upload.middlewares.js";
+import { IMAGE_MIME_TYPES, UPLOAD_LIMITS } from "../../../shared/constants/upload.constants.js";
 const companyRoute = Router();
 companyRoute.post("/", authorize, createCompany);
 companyRoute.get("/:id", findCompany);
@@ -19,7 +21,16 @@ companyRoute.get("/:id/current", authorize, findCurrentCompany);
 companyRoute.get("/:id/members", authorize, findCompanyMembers);
 companyRoute.get("/:id/invitations", authorize, findInvitationByCompany);
 companyRoute.get("/:id/recent-members", authorize, findRecentMembers);
-companyRoute.patch("/:id/settings", authorize, updateCompanySettings);
+companyRoute.patch(
+  "/:id/settings",
+  authorize,
+  createSingleUploadMiddleware({
+    fieldName: "logo",
+    allowedMimeTypes: IMAGE_MIME_TYPES,
+    maxFileSize: UPLOAD_LIMITS.companyLogo,
+  }),
+  updateCompanySettings,
+);
 companyRoute.patch("/:id/deactivate", authorize, deactivateCompany);
 companyRoute.patch("/:id/members/:memberId/promote", authorize, promoteCompanyMember);
 companyRoute.delete("/:id/members/:memberId", authorize, removeCompanyMember);

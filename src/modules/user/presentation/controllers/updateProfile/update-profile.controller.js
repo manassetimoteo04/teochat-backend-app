@@ -5,6 +5,7 @@ export async function updateProfile(req, res, next) {
     const user = await userContainer.updateProfile.execute({
       userId: req.user.id,
       ...req.body,
+      avatarFile: req.file,
     });
 
     res.status(200).json({ success: true, data: user });

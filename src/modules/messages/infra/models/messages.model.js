@@ -15,7 +15,7 @@ const MessageSchema = new mongoose.Schema(
     },
     content: {
       type: String,
-      required: true,
+      default: "",
     },
     status: {
       type: String,
@@ -23,8 +23,23 @@ const MessageSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["text", "image"],
+      enum: ["text", "image", "file"],
       default: "text",
+    },
+    attachment: {
+      kind: {
+        type: String,
+        enum: ["image", "file"],
+      },
+      fileName: String,
+      fileSize: Number,
+      mimeType: String,
+      secureUrl: String,
+      publicId: String,
+      resourceType: String,
+      format: String,
+      width: Number,
+      height: Number,
     },
   },
   { timestamps: true },

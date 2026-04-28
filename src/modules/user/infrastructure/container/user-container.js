@@ -1,5 +1,6 @@
 import { AuthService } from "../../../auth/domain/auth.service.js";
 import { eventBus } from "../../../shared/infrastructure/events/event-bus.js";
+import { CloudinaryAssetService } from "../../../shared/services/cloudinary-asset.service.js";
 import { CreateUserService } from "../../usecases/createUser/create-user.service.js";
 import { FindUserByIdService } from "../../usecases/findUser/find-one-user.service.js";
 import { FindUserByEmailService } from "../../usecases/findUserByEmail/find-user-by-email.service.js";
@@ -10,11 +11,12 @@ import UserMongoRepository from "../repositories/user.mongo.repository.js";
 
 const userRepo = new UserMongoRepository();
 const authService = new AuthService();
+const assetService = new CloudinaryAssetService();
 const createUser = new CreateUserService(userRepo, eventBus);
 const findUserById = new FindUserByIdService(userRepo);
 const findUserByEmail = new FindUserByEmailService(userRepo);
 const findUserCompanies = new FindUserCompaniesService({ userRepo });
-const updateProfile = new UpdateProfileService({ userRepo });
+const updateProfile = new UpdateProfileService({ userRepo, assetService });
 const updatePassword = new UpdatePasswordService({ userRepo, authService });
 export default {
   createUser,

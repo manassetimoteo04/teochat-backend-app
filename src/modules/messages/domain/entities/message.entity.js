@@ -5,6 +5,7 @@ export class Message {
     senderId,
     content,
     type,
+    attachment = null,
     status,
     createdAt,
     updatedAt,
@@ -14,6 +15,7 @@ export class Message {
     this.senderId = senderId;
     this.content = content;
     this.type = type;
+    this.attachment = attachment;
     this.status = status;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;

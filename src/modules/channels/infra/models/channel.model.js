@@ -34,6 +34,10 @@ const ChannelSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
+      senderId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
       name: {
         type: String,
       },
@@ -46,6 +50,12 @@ const ChannelSchema = new mongoose.Schema(
       },
       type: {
         type: String,
+      },
+      attachment: {
+        kind: String,
+        fileName: String,
+        secureUrl: String,
+        mimeType: String,
       },
     },
 

@@ -16,21 +16,23 @@ export class MessageMongoRepository extends MessageRepository {
             name: doc.senderId.name,
             email: doc.senderId.email,
             avatar: doc.senderId.avatar,
-          }
+      }
         : doc.senderId.toString(),
       content: doc.content,
       type: doc.type,
+      attachment: doc.attachment || null,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });
   }
 
-  async create({ channelId, senderId, content, type }) {
+  async create({ channelId, senderId, content, type, attachment }) {
     const doc = await MessageModel.create({
       channelId,
       senderId,
       content,
       type,
+      attachment,
     });
 
     await doc.populate("senderId", "name email avatar");

@@ -2,6 +2,7 @@ import cookie from "cookie";
 import { JwtService } from "../../../auth/infrastructure/jwt.service.js";
 import { JWT_SECRET } from "../../../../configs/env.js";
 import userContainer from "../../../user/infrastructure/container/user-container.js";
+
 const jwtService = new JwtService(JWT_SECRET);
 
 export async function socketAuthorize(socket, next) {
@@ -25,6 +26,11 @@ export async function socketAuthorize(socket, next) {
     if (!user) {
       const error = new Error("Usuário inválido");
       error.data = { code: "UNAUTHORIZED" };
+      return next(error);
+    }
+    if (user.isActive === false) {
+      const error = new Error("Conta desativada");
+      error.data = { code: "ACCOUNT_DISABLED" };
       return next(error);
     }
 

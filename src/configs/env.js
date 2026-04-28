@@ -1,3 +1,4 @@
+/* global process */
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -18,4 +19,7 @@ export const {
   BREVO_SENDER_NAME,
   STREAM_API_KEY,
   STREAM_API_SECRET,
+  CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET,
 } = process.env;

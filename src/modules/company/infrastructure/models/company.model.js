@@ -20,6 +20,17 @@ const CompanySchema = new mongoose.Schema(
     },
     members: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     logo: String,
+    logoAsset: {
+      secureUrl: String,
+      publicId: String,
+      resourceType: String,
+      bytes: Number,
+      width: Number,
+      height: Number,
+      format: String,
+      originalFileName: String,
+      mimeType: String,
+    },
     isActive: {
       type: Boolean,
       default: true,

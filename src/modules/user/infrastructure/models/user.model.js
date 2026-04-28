@@ -19,6 +19,17 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "/default-user.jpg",
     },
+    avatarAsset: {
+      secureUrl: String,
+      publicId: String,
+      resourceType: String,
+      bytes: Number,
+      width: Number,
+      height: Number,
+      format: String,
+      originalFileName: String,
+      mimeType: String,
+    },
     companies: [
       {
         companyId: {

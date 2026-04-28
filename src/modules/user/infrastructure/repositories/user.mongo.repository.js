@@ -14,6 +14,7 @@ export default class UserMongoRepository extends IUserRepository {
       email: saved.email,
       password: saved.password,
       avatar: saved.avatar,
+      avatarAsset: saved.avatarAsset,
       companies: saved.companies,
       isConfirmed: saved.isConfirmed,
       isActive: saved.isActive,
@@ -30,6 +31,7 @@ export default class UserMongoRepository extends IUserRepository {
       isConfirmed: doc.isConfirmed,
       isActive: doc.isActive,
       avatar: doc.avatar,
+      avatarAsset: doc.avatarAsset,
       companies: doc.companies,
       password: doc.password,
     });
@@ -47,6 +49,7 @@ export default class UserMongoRepository extends IUserRepository {
       isActive: doc.isActive,
       companies: doc.companies,
       avatar: doc.avatar,
+      avatarAsset: doc.avatarAsset,
       email: doc.email,
       password: doc.password,
     });
@@ -54,7 +57,7 @@ export default class UserMongoRepository extends IUserRepository {
   async findCompanies(id) {
     const doc = await User.findById(id).populate({
       path: "companies.companyId",
-      select: "name description createdAt logo isActive",
+      select: "name description createdAt logo logoAsset isActive",
     });
     if (!doc) return null;
     return new UserEntity({
@@ -103,6 +106,7 @@ export default class UserMongoRepository extends IUserRepository {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         avatar: user.avatar,
+        avatarAsset: user.avatarAsset,
         companies: { role: companyInfo?.role, joined: companyInfo?.joined },
       });
     });
@@ -132,6 +136,7 @@ export default class UserMongoRepository extends IUserRepository {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         avatar: user.avatar,
+        avatarAsset: user.avatarAsset,
         companies: { role: companyInfo?.role, joined: companyInfo?.joined },
       });
     });
@@ -151,6 +156,7 @@ export default class UserMongoRepository extends IUserRepository {
       isConfirmed: user.isConfirmed,
       isActive: user.isActive,
       avatar: user.avatar,
+      avatarAsset: user.avatarAsset,
       companies: user.companies,
     });
   }
@@ -175,6 +181,7 @@ export default class UserMongoRepository extends IUserRepository {
       email: user.email,
       password: user.password,
       avatar: user.avatar,
+      avatarAsset: user.avatarAsset,
       companies: user.companies,
       isConfirmed: user.isConfirmed,
       isActive: user.isActive,
@@ -196,6 +203,7 @@ export default class UserMongoRepository extends IUserRepository {
       email: user.email,
       password: user.password,
       avatar: user.avatar,
+      avatarAsset: user.avatarAsset,
       companies: user.companies,
       isConfirmed: user.isConfirmed,
       isActive: user.isActive,

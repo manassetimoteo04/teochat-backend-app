@@ -1,3 +1,10 @@
+import {
+  AssetUploadFailedError,
+  InvalidUploadMimeTypeError,
+  UploadMissingFileError,
+  UploadTooLargeError,
+} from "../errors/upload.errors.js";
+
 const errorMiddleware = (err, req, res, next) => {
   try {
     let error = { ...err };
@@ -39,6 +46,8 @@ const errorMiddleware = (err, req, res, next) => {
       InsufficientCompanyRoleError: { code: 403 },
       InvalidPasswordError: { code: 400 },
       SelfActionNotAllowedError: { code: 400 },
+      MessageChannelAccessError: { code: 403 },
+      InvalidMessagePayloadError: { code: 400 },
 
       // INVITATION
       InvitationNotFoundError: { code: 404 },
@@ -93,6 +102,19 @@ const errorMiddleware = (err, req, res, next) => {
     if (customErrors[err.name]) {
       error.statusCode = customErrors[err.name].code;
     }
+
+    if (err instanceof InvalidUploadMimeTypeError || err instanceof UploadTooLargeError) {
+      error.statusCode = 400;
+    }
+
+    if (err instanceof UploadMissingFileError) {
+      error.statusCode = 400;
+    }
+
+    if (err instanceof AssetUploadFailedError) {
+      error.statusCode = 502;
+    }
+
     res.status(error.statusCode || 500).json({
       success: false,
       message: error.message || "Internal server error",
