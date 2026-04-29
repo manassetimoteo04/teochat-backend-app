@@ -5,7 +5,7 @@ export class UserEntity {
     email,
     password,
     avatar = "/default-user.jpg",
-    avatarAsset = null,
+
     companies = [],
     isConfirmed = false,
     isActive = true,
@@ -19,7 +19,7 @@ export class UserEntity {
     this.email = email;
     this.password = password;
     this.avatar = avatar;
-    this.avatarAsset = avatarAsset;
+
     this.companies = companies;
     this.isConfirmed = isConfirmed;
     this.isActive = isActive;

@@ -22,7 +22,6 @@ function getCachedMessage(userId, channelId, tempId) {
     dedupeCache.delete(key);
     return null;
   }
-
   return cached.message;
 }
 
@@ -33,7 +32,6 @@ function setCachedMessage(userId, channelId, tempId, message) {
       if (value.expiresAt <= now) dedupeCache.delete(key);
     }
   }
-
   const key = buildMessageKey(userId, channelId, tempId);
   dedupeCache.set(key, {
     message,
@@ -41,13 +39,28 @@ function setCachedMessage(userId, channelId, tempId, message) {
   });
 }
 
+function normalizeFiles(files) {
+  if (!Array.isArray(files) || files.length === 0) return [];
+  return files
+    .filter((f) => f && f.name && f.mimeType && f.buffer)
+    .map((f) => ({
+      name: f.name,
+      size: f.size ?? 0,
+      mimeType: f.mimeType,
+      buffer: Buffer.isBuffer(f.buffer) ? f.buffer : Buffer.from(f.buffer),
+    }));
+}
+
 export function registerMessageHandlers(io, socket) {
   socket.on(
     "message:send",
-    async ({ tempId, channelId, content, type = "text", attachment = null }, ack) => {
+    async ({ tempId, channelId, content, type = "text", files = [] }, ack) => {
       const trimmed = typeof content === "string" ? content.trim() : "";
+      const hasContent = trimmed.length > 0;
+      const normalizedFiles = normalizeFiles(files);
+      const hasFiles = normalizedFiles.length > 0;
 
-      if (!channelId || (!content && !attachment)) {
+      if (!channelId || (!hasContent && !hasFiles)) {
         const errorPayload = {
           ok: false,
           tempId,
@@ -70,7 +83,7 @@ export function registerMessageHandlers(io, socket) {
         return;
       }
 
-      if ((!trimmed && !attachment) || trimmed.length > MAX_MESSAGE_SIZE) {
+      if (hasContent && trimmed.length > MAX_MESSAGE_SIZE) {
         const errorPayload = {
           ok: false,
           tempId,
@@ -94,20 +107,20 @@ export function registerMessageHandlers(io, socket) {
         return;
       }
 
+      // Deduplicação
       const cachedMessage = getCachedMessage(socket.user.id, channelId, tempId);
       if (cachedMessage) {
-        const successPayload = {
-          ok: true,
-          deduplicated: true,
-          tempId,
-          message: cachedMessage,
-        };
         socket.emit("message:sent", {
           tempId,
           message: cachedMessage,
           deduplicated: true,
         });
-        emitAck(ack, successPayload);
+        emitAck(ack, {
+          ok: true,
+          deduplicated: true,
+          tempId,
+          message: cachedMessage,
+        });
         return;
       }
 
@@ -116,34 +129,25 @@ export function registerMessageHandlers(io, socket) {
           channelId,
           content: trimmed,
           type,
-          attachment,
+          files: normalizedFiles,
           senderId: socket.user.id,
         });
 
         socket.to(channelId).emit("message:new", newMessage);
+        socket.emit("message:sent", { tempId, message: newMessage });
 
-        socket.emit("message:sent", {
-          tempId,
-          message: newMessage,
-        });
-
-        const channel = newMessage.channel || await channelContainer.getChannelById.execute(channelId);
+        const channel =
+          newMessage.channel ||
+          (await channelContainer.getChannelById.execute(channelId));
         const updatedChannel = buildChannelRealtimePayload(channel, newMessage);
 
         socket.to(channelId).emit("channel:new-msg", updatedChannel);
-
         socket.emit("channel:new-msg-sent", updatedChannel);
 
         setCachedMessage(socket.user.id, channelId, tempId, newMessage);
-
-        emitAck(ack, {
-          ok: true,
-          tempId,
-          message: newMessage,
-        });
+        emitAck(ack, { ok: true, tempId, message: newMessage });
       } catch (error) {
         console.error("Erro ao enviar mensagem:", error);
-
         const errorPayload = {
           ok: false,
           tempId,
@@ -184,10 +188,7 @@ export function registerMessageHandlers(io, socket) {
           limit: Math.min(Math.max(Number(limit) || 30, 1), 100),
         });
 
-        emitAck(ack, {
-          ok: true,
-          data,
-        });
+        emitAck(ack, { ok: true, data });
       } catch (error) {
         console.error("MESSAGE HISTORY ERROR:", error);
         emitAck(ack, {

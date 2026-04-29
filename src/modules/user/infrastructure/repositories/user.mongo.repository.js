@@ -14,7 +14,7 @@ export default class UserMongoRepository extends IUserRepository {
       email: saved.email,
       password: saved.password,
       avatar: saved.avatar,
-      avatarAsset: saved.avatarAsset,
+
       companies: saved.companies,
       isConfirmed: saved.isConfirmed,
       isActive: saved.isActive,
@@ -31,7 +31,7 @@ export default class UserMongoRepository extends IUserRepository {
       isConfirmed: doc.isConfirmed,
       isActive: doc.isActive,
       avatar: doc.avatar,
-      avatarAsset: doc.avatarAsset,
+
       companies: doc.companies,
       password: doc.password,
     });
@@ -49,7 +49,7 @@ export default class UserMongoRepository extends IUserRepository {
       isActive: doc.isActive,
       companies: doc.companies,
       avatar: doc.avatar,
-      avatarAsset: doc.avatarAsset,
+
       email: doc.email,
       password: doc.password,
     });
@@ -62,19 +62,21 @@ export default class UserMongoRepository extends IUserRepository {
     if (!doc) return null;
     return new UserEntity({
       id: doc._id.toString(),
-      companies: doc.companies.map((com) => {
-        const object = {};
-        Object.keys(com.companyId._doc).forEach((key) => {
-          if (key === "_id") return (object.id = com.companyId._doc[key]);
-          object[key] = com.companyId._doc[key];
-        });
+      companies: doc.companies
+        .map((com) => {
+          const object = {};
+          Object.keys(com.companyId._doc).forEach((key) => {
+            if (key === "_id") return (object.id = com.companyId._doc[key]);
+            object[key] = com.companyId._doc[key];
+          });
 
-        return {
-          role: com._doc.role,
-          joined: com._doc.joined,
-          companyId: object,
-        };
-      }).filter((company) => company.companyId?.isActive !== false),
+          return {
+            role: com._doc.role,
+            joined: com._doc.joined,
+            companyId: object,
+          };
+        })
+        .filter((company) => company.companyId?.isActive !== false),
     });
   }
   async findCompanyRecentMembers({ companyId, userId }) {
@@ -95,7 +97,7 @@ export default class UserMongoRepository extends IUserRepository {
 
     const members = recentMembers.map((user) => {
       const companyInfo = user.companies.find(
-        (c) => c.companyId.toString() === companyId
+        (c) => c.companyId.toString() === companyId,
       );
       return new UserEntity({
         id: user._id.toString(),
@@ -106,7 +108,7 @@ export default class UserMongoRepository extends IUserRepository {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         avatar: user.avatar,
-        avatarAsset: user.avatarAsset,
+
         companies: { role: companyInfo?.role, joined: companyInfo?.joined },
       });
     });
@@ -125,7 +127,7 @@ export default class UserMongoRepository extends IUserRepository {
 
     const members = recentMembers.map((user) => {
       const companyInfo = user.companies.find(
-        (c) => c.companyId.toString() === companyId
+        (c) => c.companyId.toString() === companyId,
       );
       return new UserEntity({
         id: user._id.toString(),
@@ -136,29 +138,35 @@ export default class UserMongoRepository extends IUserRepository {
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         avatar: user.avatar,
-        avatarAsset: user.avatarAsset,
+
         companies: { role: companyInfo?.role, joined: companyInfo?.joined },
       });
     });
     return members;
   }
   async update(id, updateData) {
-    const user = await User.findById(id);
-    if (!user) return null;
-    user.set(updateData);
-    await user.save();
+    try {
+      const user = await User.findById(id);
+      if (!user) return null;
+      console.log("USER TO UPDATE", updateData);
+      user.set(updateData);
+      await user.save();
 
-    return new UserEntity({
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      password: user.password,
-      isConfirmed: user.isConfirmed,
-      isActive: user.isActive,
-      avatar: user.avatar,
-      avatarAsset: user.avatarAsset,
-      companies: user.companies,
-    });
+      return new UserEntity({
+        id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        password: user.password,
+        isConfirmed: user.isConfirmed,
+        isActive: user.isActive,
+        avatar: user.avatar,
+
+        companies: user.companies,
+      });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   }
   async addCompany(userId, companyId, role) {
     await User.findByIdAndUpdate(userId, {
@@ -181,7 +189,7 @@ export default class UserMongoRepository extends IUserRepository {
       email: user.email,
       password: user.password,
       avatar: user.avatar,
-      avatarAsset: user.avatarAsset,
+
       companies: user.companies,
       isConfirmed: user.isConfirmed,
       isActive: user.isActive,
@@ -203,7 +211,7 @@ export default class UserMongoRepository extends IUserRepository {
       email: user.email,
       password: user.password,
       avatar: user.avatar,
-      avatarAsset: user.avatarAsset,
+
       companies: user.companies,
       isConfirmed: user.isConfirmed,
       isActive: user.isActive,

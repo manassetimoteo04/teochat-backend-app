@@ -19,17 +19,17 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "/default-user.jpg",
     },
-    avatarAsset: {
-      secureUrl: String,
-      publicId: String,
-      resourceType: String,
-      bytes: Number,
-      width: Number,
-      height: Number,
-      format: String,
-      originalFileName: String,
-      mimeType: String,
-    },
+    // avatarAsset: {
+    //   secureUrl: String,
+    //   publicId: String,
+    //   resourceType: String,
+    //   bytes: Number,
+    //   width: Number,
+    //   height: Number,
+    //   format: String,
+    //   originalFileName: String,
+    //   mimeType: String,
+    // },
     companies: [
       {
         companyId: {
@@ -63,7 +63,7 @@ const userSchema = new mongoose.Schema(
       type: Date,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const User = mongoose.model("User", userSchema);

@@ -25,10 +25,12 @@ const listMessages = new ListChannelMessagesUseCase(
   messageRepository,
   channelAccessService,
 );
+
 const sendMessage = new SendMessageUseCase({
   channelRepository,
   messageRepository,
   channelAccessService,
+  assetService,
   eventBus,
 });
 

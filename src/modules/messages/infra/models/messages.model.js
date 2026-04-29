@@ -26,21 +26,14 @@ const MessageSchema = new mongoose.Schema(
       enum: ["text", "image", "file"],
       default: "text",
     },
-    attachment: {
-      kind: {
-        type: String,
-        enum: ["image", "file"],
+    files: [
+      {
+        name: String,
+        size: Number,
+        mimeType: String,
+        url: String,
       },
-      fileName: String,
-      fileSize: Number,
-      mimeType: String,
-      secureUrl: String,
-      publicId: String,
-      resourceType: String,
-      format: String,
-      width: Number,
-      height: Number,
-    },
+    ],
   },
   { timestamps: true },
 );

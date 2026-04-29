@@ -11,16 +11,20 @@ export class ConfirmAccountService {
     this.eventBus = eventBus;
   }
   async execute({ code, userId }) {
-    const user = await this.userRepo.findById(userId);
-    if (!user) throw new UserNotFoundError();
-    if (!user.isCodeValid(code)) throw new InvalidConfirmCodeError();
-    if (user.isCodeExpired()) throw new ExpiredConfirmCodeError();
-    user.isConfirmed = true;
-    user.confirmCode = undefined;
-    user.confirmExpiresIn = undefined;
-    const updatedUser = await this.userRepo.update(user.id, user);
-    const event = new UserConfirmedAccountEvent(updatedUser);
-    this.eventBus.emit(event.name, event);
-    return { user: updatedUser };
+    try {
+      const user = await this.userRepo.findById(userId);
+      if (!user) throw new UserNotFoundError();
+      if (!user.isCodeValid(code)) throw new InvalidConfirmCodeError();
+      if (user.isCodeExpired()) throw new ExpiredConfirmCodeError();
+      user.isConfirmed = true;
+      user.confirmCode = undefined;
+      user.confirmExpiresIn = undefined;
+      const updatedUser = await this.userRepo.update(user.id, user);
+      const event = new UserConfirmedAccountEvent(updatedUser);
+      this.eventBus.emit(event.name, event);
+      return { user: updatedUser };
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
